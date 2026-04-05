@@ -20,6 +20,14 @@ export const saveLocalProgress = (appId, data) => {
     }
 };
 
+export const clearLocalProgress = (appId) => {
+    try {
+        localStorage.removeItem(STORAGE_KEY(appId));
+    } catch (e) {
+        console.warn('localStorage clear failed:', e);
+    }
+};
+
 export const mergeProgress = (local, remote) => {
     if (!remote) return local;
 
@@ -82,3 +90,5 @@ const getDefaultProgress = () => ({
     modesUsed: [],
     uid: null
 });
+
+export const getDefaultProgressObj = getDefaultProgress;

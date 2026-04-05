@@ -1,5 +1,5 @@
 import { initFirebase, loginWithGoogle, logout, loadProgress, saveProgress, listenAuth } from './firebase.js';
-import { getLocalProgress, saveLocalProgress, mergeProgress } from './storage.js';
+import { getLocalProgress, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js';
 import { GlossaryEngine } from './glossary.js';
 import { FlashcardEngine } from './flashcards.js';
 import { QuizEngine } from './quiz.js';
@@ -77,13 +77,41 @@ window.app = {
         }
     },
 
-    logout() {
-        if (auth) logout();
-        this._onAuth(null);
+    async logout() {
+        if (auth) {
+            try { await logout(); } catch (e) {}
+        }
+        const { clearLocalProgress } = await import('./storage.js');
+        clearLocalProgress(appId);
+        window.location.reload();
+    },
+
+    async resetData() {
+        if (confirm("⚠️ Are you sure you want to completely RESET ALL your progress data? This cannot be undone!")) {
+            const { clearLocalProgress, getDefaultProgressObj } = await import('./storage.js');
+            clearLocalProgress(appId);
+            if (auth && state.uid) {
+                try {
+                    const { saveProgress } = await import('./firebase.js');
+                    await saveProgress(appId, state.uid, getDefaultProgressObj());
+                } catch (e) {
+                    console.warn("Failed to reset firebase.", e);
+                }
+            }
+            window.location.reload();
+        }
     },
 
     async _onAuth(user) {
+        const prevUid = state.uid;
         state.uid = user?.uid || null;
+
+        if (prevUid !== null && state.uid !== null && prevUid !== state.uid) {
+            const { clearLocalProgress } = await import('./storage.js');
+            clearLocalProgress(appId);
+            window.location.reload();
+            return;
+        }
 
         if (user) {
             console.log('✅ User signed in:', user.email);
