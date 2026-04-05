@@ -21,8 +21,11 @@ export class GlossaryEngine {
     }
 
     toggleColumn(col) {
-        if (this.hiddenCols.has(col)) this.hiddenCols.delete(col);
-        else this.hiddenCols.add(col);
+        const wasHidden = this.hiddenCols.has(col);
+        this.hiddenCols.clear();
+        if (!wasHidden) {
+            this.hiddenCols.add(col);
+        }
         this.render();
     }
 
@@ -63,7 +66,7 @@ export class GlossaryEngine {
             const isMixed = this.hiddenCols.has('mixed');
             const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
             const hideEN = this.hiddenCols.has('en') || (isMixed && !hideDE);
-            const hideArticle = this.hiddenCols.has('article');
+            const hideArticle = this.hiddenCols.has('article') || hideDE;
 
             return `
         <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
