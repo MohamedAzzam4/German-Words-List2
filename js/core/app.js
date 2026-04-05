@@ -178,6 +178,8 @@ window.app = {
     markCard(known) {
         engines.flashcard?.mark(known);
         this._save();
+        this._updateStats();
+        this._renderUnitList();
     },
     nextCard() { engines.flashcard?.next(); },
     prevCard() { engines.flashcard?.prev(); },
@@ -381,7 +383,7 @@ window.app = {
 
     _createUnitItem(index, overrideLabel = null) {
         const isActive = index === state.unit;
-        const pct = this._getUnitProgress(index);
+        const prog = this._getUnitProgress(index);
         
         let label = '';
         if (overrideLabel) {
@@ -396,19 +398,23 @@ window.app = {
 
         return `<div class="nav-item ${isActive ? 'active' : ''}" onclick="window.app.switchUnit(${index})" style="padding-left: 30px; font-size: 0.9rem;">
     <span>${label}</span>
-    <span class="unit-progress">${pct}%</span>
+    <span class="unit-progress">${prog.known}/${prog.total} (${prog.pct}%)</span>
   </div>`;
     },
 
     _getUnitProgress(i) {
         const unit = levelConfig?.vocabulary?.[i] || [];
-        if (!unit.length) return 0;
+        if (!unit.length) return { pct: 0, known: 0, total: 0 };
         // Use the live engine Set (always current), fall back to saved array on first load
         const knownSet = engines.flashcard?.knownIds || engines.glossary?.knownIds;
         const known = knownSet
             ? unit.filter(w => knownSet.has(w.id)).length
             : unit.filter(w => state.data?.known?.includes(w.id)).length;
-        return Math.round((known / unit.length) * 100);
+        return {
+            pct: Math.round((known / unit.length) * 100),
+            known: known,
+            total: unit.length
+        };
     },
 
     // Returns { chapter, module } for any unit index, regardless of config type.
@@ -460,15 +466,15 @@ window.app = {
             for (let i = 0; i < vocab.length; i++) {
                 if (!vocab[i] || vocab[i].length === 0) continue;
                 const { chapter, module } = this._resolveUnitLabel(i);
-                const mpct = this._getUnitProgress(i);
+                const prog = this._getUnitProgress(i);
                 html += `<tr>
                     <td>${chapter}</td>
                     <td>${module}</td>
                     <td>
                         <div class="progress-bar-bg" style="width: 100%; height: 6px; margin-bottom: 4px;">
-                            <div class="progress-bar-fill" style="width: ${mpct}%;"></div>
+                            <div class="progress-bar-fill" style="width: ${prog.pct}%;"></div>
                         </div>
-                        <div style="font-size: 0.75rem; text-align: right; color: var(--text-muted);">${mpct}%</div>
+                        <div style="font-size: 0.75rem; text-align: right; color: var(--text-muted);">${prog.known}/${prog.total} (${prog.pct}%)</div>
                     </td>
                 </tr>`;
             }
@@ -486,8 +492,8 @@ window.app = {
         let lowestPct = 101;
         for (let i = 0; i < (levelConfig?.vocabulary?.length || 0); i++) {
             if (levelConfig.vocabulary[i]?.length > 0) {
-                const wpct = this._getUnitProgress(i);
-                if (wpct < lowestPct) { lowestPct = wpct; weakestIdx = i; }
+                const prog = this._getUnitProgress(i);
+                if (prog.pct < lowestPct) { lowestPct = prog.pct; weakestIdx = i; }
             }
         }
         let weakestLabel = '-';

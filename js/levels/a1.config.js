@@ -717,7 +717,7 @@ const RAW_A1_DATA = [
 // 🔧 Parser: Converts raw strings to engine-ready objects
 function parseRawData(rawArray) {
     const units = {};
-    rawArray.forEach(line => {
+    rawArray.forEach((line, index) => {
         if (!line || line.trim() === '') return;
         const [u, type, de, en, deEx, enEx] = line.split('|').map(s => (s || '').trim());
         const unitNum = parseInt(u);
@@ -725,7 +725,7 @@ function parseRawData(rawArray) {
 
         if (!units[unitNum]) units[unitNum] = [];
         units[unitNum].push({
-            id: `a1-${unitNum}-${(de || '').toLowerCase().replace(/[^a-z0-9]/g, '')}-${Math.random().toString(36).substr(2, 5)}`,
+            id: index,
             de: de,
             en: en,
             type: type || 'Vocab',

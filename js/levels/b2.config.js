@@ -2435,7 +2435,7 @@ const RAW_B2_DATA = [
 // 🔧 Parser: Handles B2's empty type field & bilingual examples
 function parseRawB2Data(rawArray) {
     const units = {};
-    rawArray.forEach(line => {
+    rawArray.forEach((line, index) => {
         if (!line || line.trim() === '') return;
         const parts = line.split('|');
         const u = parts[0] ? parts[0].trim() : '';
@@ -2459,7 +2459,7 @@ function parseRawB2Data(rawArray) {
 
         if (!units[unitNum]) units[unitNum] = [];
         units[unitNum].push({
-            id: `b2-${unitNum}-${deMain.toLowerCase().replace(/[^a-z0-9äöüß]/g, '')}-${Math.random().toString(36).substr(2, 5)}`,
+            id: index,
             de: deMain,
             deContext: deContext,
             en: parts[3] ? parts[3].trim() : '',
