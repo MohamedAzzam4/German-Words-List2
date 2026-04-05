@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 let auth, db;
 
@@ -59,5 +59,44 @@ export const getOtherLevelProgress = async (otherAppId, uid) => {
         return snap.exists() ? snap.data() : null;
     } catch {
         return null;
+    }
+};
+
+// ── LEADERBOARD SERVICES ──
+export const updateLeaderboard = async (appId, uid, displayName, photoURL, knownCount) => {
+    try {
+        const ref = doc(db, `leaderboard/${uid}`);
+        const snap = await getDoc(ref);
+        const prev = snap.exists() ? snap.data() : { a1Count: 0, b2Count: 0 };
+        
+        let a1 = prev.a1Count || 0;
+        let b2 = prev.b2Count || 0;
+        
+        if (appId.includes('a1')) a1 = knownCount;
+        if (appId.includes('b2')) b2 = knownCount;
+        
+        const totalWords = a1 + b2;
+        
+        await setDoc(ref, {
+            displayName: displayName || "Anonymous Linguist",
+            photoURL: photoURL || "",
+            a1Count: a1,
+            b2Count: b2,
+            totalWords,
+            lastActive: new Date().toISOString()
+        }, { merge: true });
+    } catch(e) {
+        console.warn("Leaderboard update failed", e);
+    }
+};
+
+export const getLeaderboard = async () => {
+    try {
+        const q = query(collection(db, "leaderboard"), orderBy("totalWords", "desc"), limit(50));
+        const qs = await getDocs(q);
+        return qs.docs.map((d, index) => ({ ...d.data(), rank: index + 1 }));
+    } catch(e) {
+        console.warn("Leaderboard fetch failed", e);
+        return [];
     }
 };

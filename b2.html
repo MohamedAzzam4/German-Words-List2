@@ -33,6 +33,7 @@
             style="text-decoration: none; color: inherit; border-bottom: 2px solid var(--border); background-color: var(--surface-hover);"><span>🏠
                 Back to Levels</span></a>
         <div class="nav-item" onclick="window.app.switchView('dashboard')"><span>📊 Dashboard</span></div>
+        <div class="nav-item" onclick="window.app.switchView('leaderboard')"><span>🌍 Leaderboard</span></div>
         <div class="nav-item" onclick="window.app.switchView('trophies')"><span>🏆 Trophy Shelf</span></div>
         <div class="nav-item" onclick="window.app.switchView('article-quiz')"><span>📝 Article Quiz</span></div>
         <div
@@ -187,6 +188,22 @@
                             </tr>
                         </thead>
                         <tbody id="stats-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="view-leaderboard" class="hidden">
+                <h2 style="margin-bottom: 5px;">🌍 Global Leaderboard</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">See how you rank against all linguists across A1 and B2 combined!</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px; text-align: center;">Rank</th>
+                                <th>Linguist</th>
+                                <th style="text-align: center;">Total Mastered</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody"></tbody>
                     </table>
                 </div>
             </div>
