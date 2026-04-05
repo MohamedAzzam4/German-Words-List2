@@ -403,7 +403,11 @@ window.app = {
     _getUnitProgress(i) {
         const unit = levelConfig?.vocabulary?.[i] || [];
         if (!unit.length) return 0;
-        const known = unit.filter(w => state.data?.known?.includes(w.id)).length;
+        // Use the live engine Set (always current), fall back to saved array on first load
+        const knownSet = engines.flashcard?.knownIds || engines.glossary?.knownIds;
+        const known = knownSet
+            ? unit.filter(w => knownSet.has(w.id)).length
+            : unit.filter(w => state.data?.known?.includes(w.id)).length;
         return Math.round((known / unit.length) * 100);
     },
 
@@ -429,15 +433,17 @@ window.app = {
 
     _updateStats() {
         const all = levelConfig?.vocabulary?.flat() || [];
-        const known = state.data?.known?.length || 0;
-        const pct = all.length ? Math.round((known / all.length) * 100) : 0;
+        // Always use the live engine Set — state.data.known can be stale during a session
+        const knownSet = engines.flashcard?.knownIds || engines.glossary?.knownIds;
+        const knownCount = knownSet ? knownSet.size : (state.data?.known?.length || 0);
+        const pct = all.length ? Math.round((knownCount / all.length) * 100) : 0;
 
         const setEl = (id, val) => {
             const el = document.getElementById(id);
             if (el) el.textContent = val;
         };
 
-        setEl('stat-known', known);
+        setEl('stat-known', knownCount);
         setEl('stat-total', all.length);
         setEl('stat-percent', `${pct}%`);
         setEl('overall-progress-text', `${pct}%`);
@@ -507,8 +513,22 @@ window.app = {
     _save() {
         if (!state.data) state.data = getLocalProgress(appId);
 
+        // ── Sync live engine state back to state.data before saving ──
+        // The engines hold the live in-memory truth (Sets/objects).
+        // state.data is the persistence layer — it must be updated from engines.
+        const knownSet = engines.flashcard?.knownIds || engines.glossary?.knownIds;
+        if (knownSet) {
+            state.data.known = Array.from(knownSet);
+        }
+        if (engines.flashcard?.errors) {
+            state.data.flashcardErrors = { ...engines.flashcard.errors };
+        }
+        if (engines.trophy?.trophyCounts) {
+            state.data.trophyCounts = { ...engines.trophy.trophyCounts };
+        }
+
         const payload = {
-            known: Array.from(new Set(state.data.known || [])),
+            known: state.data.known || [],
             trophyCounts: state.data.trophyCounts || {},
             sessionsCompleted: state.data.sessionsCompleted || 0,
             darkMode: state.data.darkMode || false,
