@@ -143,6 +143,15 @@ window.app = {
         this._applyTheme();
         this._renderAuthUI();
         this._initEngines();
+
+        // Immediately auto-publish progress to the server on load.
+        // This natively solves the "migration" problem: all existing users will be added to the leaderboard
+        // the very next time they simply open the site!
+        if (state.uid && auth) {
+            updateLeaderboard(appId, state.uid, auth.currentUser?.displayName, auth.currentUser?.photoURL, state.data?.known?.length || 0).then(() => {
+                if (state.view === 'leaderboard') this._renderLeaderboard();
+            });
+        }
     },
 
     // ── NAVIGATION ──
