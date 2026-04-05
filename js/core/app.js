@@ -106,12 +106,23 @@ window.app = {
         const prevUid = state.uid;
         state.uid = user?.uid || null;
 
+        if (this._hasBootedAuth === undefined) {
+            this._hasBootedAuth = false;
+        }
+
         if (prevUid !== null && state.uid !== null && prevUid !== state.uid) {
             const { clearLocalProgress } = await import('./storage.js');
             clearLocalProgress(appId);
             window.location.reload();
             return;
         }
+
+        if (this._hasBootedAuth && prevUid === null && state.uid !== null) {
+            window.location.reload();
+            return;
+        }
+
+        this._hasBootedAuth = true;
 
         if (user) {
             console.log('✅ User signed in:', user.email);

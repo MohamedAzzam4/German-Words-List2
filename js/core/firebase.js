@@ -5,8 +5,9 @@ import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/fireb
 let auth, db;
 
 export const initFirebase = (config, appId) => {
-    // Initialize with unique appId to isolate data per level
-    const app = initializeApp(config, appId);
+    // Initialize default app so Firebase Auth is shared seamlessly across the entire domain.
+    // (Passing appId here partitions the Auth databases, breaking cross-level login)
+    const app = initializeApp(config);
     auth = getAuth(app);
     db = getFirestore(app);
     return { auth, db };
