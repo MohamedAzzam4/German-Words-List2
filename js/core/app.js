@@ -273,6 +273,19 @@ window.app = {
         this._updateStats();
         this._renderUnitList();
     },
+    toggleFavorite(id) {
+        if (engines.flashcard && engines.flashcard.favoritesIds) {
+            if (engines.flashcard.favoritesIds.has(id)) {
+                engines.flashcard.favoritesIds.delete(id);
+            } else {
+                engines.flashcard.favoritesIds.add(id);
+            }
+        }
+        // Force synchronous repaint of current view
+        if (state.view === 'glossary' && engines.glossary) engines.glossary.render();
+        if (state.view === 'flashcard' && engines.flashcard) engines.flashcard.render();
+        this._save();
+    },
     nextCard() { engines.flashcard?.next(); },
     prevCard() { engines.flashcard?.prev(); },
     toggleShuffle() { engines.flashcard?.toggleShuffle(); },
@@ -370,10 +383,11 @@ window.app = {
 
         const words = levelConfig.vocabulary[state.unit] || [];
         const known = new Set(state.data?.known || []);
+        const favorites = new Set(state.data?.favorites || []);
 
-        engines.glossary = new GlossaryEngine('glossary-tbody', words, known, (t) => this.speakText(t));
+        engines.glossary = new GlossaryEngine('glossary-tbody', words, known, favorites, (t) => this.speakText(t));
         engines.flashcard = new FlashcardEngine(
-            words, known, state.data?.flashcardErrors || {},
+            words, known, favorites, state.data?.flashcardErrors || {},
             () => this._save(),
             () => {
                 // onSessionComplete: safely increment session counter and record today's date
@@ -615,8 +629,13 @@ window.app = {
         // The engines hold the live in-memory truth (Sets/objects).
         // state.data is the persistence layer — it must be updated from engines.
         const knownSet = engines.flashcard?.knownIds || engines.glossary?.knownIds;
+        const favSet = engines.flashcard?.favoritesIds || engines.glossary?.favoritesIds;
+        
         if (knownSet) {
             state.data.known = Array.from(knownSet);
+        }
+        if (favSet) {
+            state.data.favorites = Array.from(favSet);
         }
         if (engines.flashcard?.errors) {
             state.data.flashcardErrors = { ...engines.flashcard.errors };
@@ -627,6 +646,7 @@ window.app = {
 
         const payload = {
             known: state.data.known || [],
+            favorites: state.data.favorites || [],
             trophyCounts: state.data.trophyCounts || {},
             sessionsCompleted: state.data.sessionsCompleted || 0,
             darkMode: state.data.darkMode || false,

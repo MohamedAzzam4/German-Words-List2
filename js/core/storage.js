@@ -39,6 +39,12 @@ export const mergeProgress = (local, remote) => {
         ...(remote.known || [])
     ]));
 
+    // Deep merge arrays (favorites)
+    merged.favorites = Array.from(new Set([
+        ...(local.favorites || []),
+        ...(remote.favorites || [])
+    ]));
+
     // Merge trophy counts (keep higher)
     merged.trophyCounts = { ...(local.trophyCounts || {}), ...(remote.trophyCounts || {}) };
     for (const k in local.trophyCounts) {
@@ -73,6 +79,7 @@ export const mergeProgress = (local, remote) => {
 
 const getDefaultProgress = () => ({
     known: [],
+    favorites: [],
     trophies: [],
     trophyCounts: {},
     sessionCount: 0,

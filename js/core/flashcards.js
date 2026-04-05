@@ -1,7 +1,8 @@
 export class FlashcardEngine {
-    constructor(words, knownIds, errors, onSave, onSessionComplete) {
+    constructor(words, knownIds, favoritesIds, errors, onSave, onSessionComplete) {
         this.words = words || [];
         this.knownIds = knownIds || new Set();
+        this.favoritesIds = favoritesIds || new Set();
         this.errors = errors || {};
         this.onSave = onSave || (() => { });
         this.onSessionComplete = onSessionComplete || (() => { });
@@ -23,9 +24,10 @@ export class FlashcardEngine {
     }
 
     _buildQueue() {
-        let base = this.words.filter(w => !this.knownIds.has(w.id));
         if (this.filter === 'learning') {
-            this.queue = base;
+            this.queue = this.words.filter(w => !this.knownIds.has(w.id));
+        } else if (this.filter === 'favorites') {
+            this.queue = this.words.filter(w => this.favoritesIds.has(w.id));
         } else {
             this.queue = [...this.words];
         }
@@ -111,11 +113,18 @@ export class FlashcardEngine {
         const counterEl = document.getElementById('fc-counter');
         const filterAllBtn = document.getElementById('filter-all-btn');
         const filterLearnBtn = document.getElementById('filter-learning-btn');
+        const filterFavBtn = document.getElementById('filter-favorites-btn');
         const faceDeBtn = document.getElementById('face-de-btn');
         const faceEnBtn = document.getElementById('face-en-btn');
         const shuffleBtn = document.getElementById('shuffle-btn');
+        const favBadge = document.getElementById('fc-fav-badge');
 
         if (typeEl) typeEl.textContent = w.type || 'Vocab';
+        if (favBadge) {
+            const isFav = this.favoritesIds.has(w.id);
+            favBadge.style.filter = isFav ? 'grayscale(0)' : 'grayscale(100%)';
+            favBadge.style.opacity = isFav ? '1' : '0.3';
+        }
         
         const deHtml = `${w.de} ${w.deContext ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">${w.deContext}</div>` : ''}`;
         
@@ -129,6 +138,7 @@ export class FlashcardEngine {
         // Update filter button states
         if (filterAllBtn) filterAllBtn.classList.toggle('primary', this.filter === 'all');
         if (filterLearnBtn) filterLearnBtn.classList.toggle('primary', this.filter === 'learning');
+        if (filterFavBtn) filterFavBtn.classList.toggle('primary', this.filter === 'favorites');
         if (faceDeBtn) faceDeBtn.classList.toggle('primary', this.face === 'de');
         if (faceEnBtn) faceEnBtn.classList.toggle('primary', this.face === 'en');
         if (shuffleBtn) shuffleBtn.textContent = `🔀 Shuffle: ${this.shuffle ? 'ON' : 'OFF'}`;
