@@ -69,8 +69,8 @@ window.app = {
             return;
         }
         try {
-            const user = await loginWithGoogle();
-            if (user) this._onAuth(user);
+            await loginWithGoogle();
+            window.location.reload();
         } catch (e) {
             console.error('Login failed:', e);
             alert('Login failed: ' + e.message);
