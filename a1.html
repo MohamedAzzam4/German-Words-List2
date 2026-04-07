@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A1 German Mastery</title>
     <link rel="stylesheet" href="css/core.css">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
 </head>
 
 <body>
@@ -28,7 +29,9 @@
                 <button class="btn danger" style="width: 100%; padding: 4px;" onclick="window.app.logout()">Sign
                     Out</button>
             </div>
-            <button class="btn danger" style="width: 100%; margin-top: 10px; background-color: var(--warning); color: #000;" onclick="window.app.resetData()">⚠️ Reset All Data</button>
+            <button class="btn danger"
+                style="width: 100%; margin-top: 10px; background-color: var(--warning); color: #000;"
+                onclick="window.app.resetData()">⚠️ Reset All Data</button>
         </div>
 
         <a href="index.html" class="nav-item"
@@ -155,8 +158,10 @@
                             <div class="flashcard-front">
                                 <span class="type-badge" id="fc-type"
                                     style="position:absolute; top: 15px; left: 15px;"></span>
-                                <span id="fc-fav-badge" onclick="event.stopPropagation(); window.app.toggleFavorite(engines.flashcard.queue[engines.flashcard.index]?.id)" 
-                                      style="position:absolute; top: 12px; left: 80px; font-size: 1.25rem; cursor: pointer; transition: 0.2s; z-index: 10;" title="Toggle Favorite">⭐</span>
+                                <span id="fc-fav-badge"
+                                    onclick="event.stopPropagation(); window.app.toggleFavorite(engines.flashcard.queue[engines.flashcard.index]?.id)"
+                                    style="position:absolute; top: 12px; left: 80px; font-size: 1.25rem; cursor: pointer; transition: 0.2s; z-index: 10;"
+                                    title="Toggle Favorite">⭐</span>
                                 <button class="speak-btn" id="fc-speak"
                                     onclick="event.stopPropagation(); window.app.speakCurrentCard()"
                                     style="position:absolute; top: 10px; right: 10px; font-size: 1.5rem;">🔊</button>
@@ -237,7 +242,8 @@
             <!-- Leaderboard View -->
             <div id="view-leaderboard" class="hidden">
                 <h2 style="margin-bottom: 5px;">🌍 Global Leaderboard</h2>
-                <p style="color: var(--text-muted); margin-bottom: 20px;">See how you rank against all linguists across A1 and B2 combined!</p>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">See how you rank against all linguists across
+                    A1 and B2 combined!</p>
                 <div class="table-container">
                     <table>
                         <thead>
