@@ -74,13 +74,13 @@ export class GlossaryEngine {
             <span onclick="window.app.toggleFavorite(${w.id})" title="Toggle Favorite" style="cursor:pointer; font-size: 1.25rem; filter: grayscale(${isFav ? '0' : '100%'}); opacity: ${isFav ? '1' : '0.25'}; transition: 0.2s;">⭐</span>
             <button class="speak-btn" onclick="event.stopPropagation(); window.app.speakText('${safeDe}')" title="Listen" style="margin-right: 5px;">🔊</button>
             <div style="flex: 1;">
-                <span class="${hideArticle ? 'hidden-word' : ''} hideable">${article ? article + ' ' : ''}</span>
-                <span class="${hideDE ? 'hidden-word' : ''} hideable">${wordOnly}</span>
-                ${w.deContext ? `<div class="de-context hideable ${hideDE ? 'hidden-word' : ''}" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">${w.deContext}</div>` : ''}
+                <span class="${hideArticle ? 'hidden-word' : ''} hideable" style="cursor: pointer;" onclick="this.classList.toggle('hidden-word')" title="Click to reveal/hide">${article ? article + ' ' : ''}</span>
+                <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor: pointer;" onclick="this.classList.toggle('hidden-word')" title="Click to reveal/hide">${wordOnly}</span>
+                ${w.deContext ? `<div class="de-context hideable ${hideDE ? 'hidden-word' : ''}" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; cursor: pointer;" onclick="this.classList.toggle('hidden-word')" title="Click to reveal/hide">${w.deContext}</div>` : ''}
             </div>
           </td>
           <td>
-            <span class="${hideEN ? 'hidden-word' : ''} hideable">${w.en || '-'}</span>
+            <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor: pointer;" onclick="this.classList.toggle('hidden-word')" title="Click to reveal/hide">${w.en || '-'}</span>
             ${isKnown ? '<span style="color:var(--success);margin-left:8px;font-weight:bold;">✅</span>' : ''}
           </td>
           <td><span class="type-badge">${w.type || 'Vocab'}</span></td>
