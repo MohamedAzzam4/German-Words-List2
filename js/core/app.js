@@ -1,10 +1,10 @@
-import { initFirebase, loginWithGoogle, logout, loadProgress, saveProgress, listenAuth, updateLeaderboard, getLeaderboard } from './firebase.js';
-import { getLocalProgress, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js';
-import { GlossaryEngine } from './glossary.js';
-import { FlashcardEngine } from './flashcards.js';
-import { QuizEngine } from './quiz.js';
-import { TrophyEngine } from './trophies.js';
-import { speak, cleanTextForAudio, playChime } from './tts.js';
+import { initFirebase, loginWithGoogle, logout, loadProgress, saveProgress, listenAuth, updateLeaderboard, getLeaderboard } from './firebase.js?v=2';
+import { getLocalProgress, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js?v=2';
+import { GlossaryEngine } from './glossary.js?v=2';
+import { FlashcardEngine } from './flashcards.js?v=2';
+import { QuizEngine } from './quiz.js?v=2';
+import { TrophyEngine } from './trophies.js?v=2';
+import { speak, cleanTextForAudio, playChime } from './tts.js?v=2';
 
 // 1. Load Level Config
 const level = document.querySelector('script[data-level]')?.dataset?.level || 'a1';
