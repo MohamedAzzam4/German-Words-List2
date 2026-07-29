@@ -21,37 +21,58 @@
             transition: width 0.3s ease, padding 0.3s ease;
         }
 
-        /* Collapsible Sidebar Styles */
+        /* Clean & Sleek Collapsed Sidebar */
         body.sidebar-collapsed #sidebar {
             width: 70px;
-            padding: 15px 8px;
+            min-width: 70px;
+            padding: 15px 6px;
+            align-items: center;
+        }
+
+        body.sidebar-collapsed #sidebar .nav-header {
+            padding: 10px 4px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
         }
 
         body.sidebar-collapsed #sidebar .nav-header h2,
         body.sidebar-collapsed #sidebar .nav-header div,
         body.sidebar-collapsed #sidebar .nav-item span,
-        body.sidebar-collapsed #sidebar .nav-section-title {
-            display: none;
+        body.sidebar-collapsed #sidebar .nav-section-title,
+        body.sidebar-collapsed #sidebar #sidebar-close-btn {
+            display: none !important;
+        }
+
+        body.sidebar-collapsed #sidebar .nav-header .header-collapse-container {
+            position: static !important;
+            justify-content: center;
         }
 
         body.sidebar-collapsed #sidebar .nav-item {
             justify-content: center;
-            padding: 12px;
+            padding: 12px 0;
+            text-align: center;
+            width: 100%;
+            border-radius: 10px;
         }
 
         .sidebar-toggle-desktop-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 0.85rem;
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .sidebar-toggle-desktop-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         #main-content {
@@ -63,9 +84,10 @@
             overflow-y: auto;
         }
 
+        /* Wide Content Container (Fits most of page width) */
         #content-area {
-            padding: 24px;
-            max-width: 1150px;
+            padding: 24px 36px;
+            max-width: 96%;
             margin: 0 auto;
             width: 100%;
         }
@@ -101,7 +123,7 @@
 
         .verbs-deck-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 12px;
             max-height: 220px;
             overflow-y: auto;
@@ -184,7 +206,7 @@
             min-width: 240px;
         }
 
-        /* Inline German & English Example Styling */
+        /* Inline Example Styling (Non-italic, Regular Font) */
         .meaning-and-example-cell {
             display: flex;
             flex-direction: column;
@@ -196,7 +218,7 @@
             border-left: 3px solid var(--primary);
             padding: 8px 12px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             margin-top: 4px;
             transition: all 0.2s ease;
         }
@@ -207,7 +229,9 @@
 
         .ex-de-line {
             color: var(--text-main);
-            font-weight: 500;
+            font-weight: 400;
+            font-style: normal !important;
+            line-height: 1.45;
         }
 
         .ex-en-toggle-btn {
@@ -224,9 +248,15 @@
 
         .ex-en-line {
             margin-top: 4px;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
-            line-height: 1.4;
+            font-style: normal !important;
+            line-height: 1.45;
+        }
+
+        /* Table Width Optimization */
+        .table-container table {
+            width: 100%;
         }
 
         /* Flashcard Component Styling */
@@ -410,6 +440,7 @@
             font-size: 0.95rem;
             line-height: 1.5;
             color: var(--text-main);
+            font-style: normal !important;
         }
 
         .accordion-toggles-row {
@@ -518,10 +549,10 @@
 <body>
     <!-- Sidebar Navigation -->
     <nav id="sidebar">
-        <div class="nav-header">
+        <div class="nav-header" style="position: relative;">
             <h2>🔥 Top Verbs</h2>
             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px;">50 Verbs per Deck</div>
-            <div style="display: flex; gap: 6px; position: absolute; right: 15px; top: 20px;">
+            <div class="header-collapse-container" style="display: flex; gap: 6px; position: absolute; right: 12px; top: 18px;">
                 <button class="sidebar-toggle-desktop-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar Collapse">↔️</button>
                 <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
             </div>

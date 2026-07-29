@@ -264,7 +264,7 @@ class VerbsEngineClass {
                             <span data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite" style="cursor:pointer; font-size: 1.25rem; filter: grayscale(${isFav ? '0' : '100%'}); opacity: ${isFav ? '1' : '0.25'}; transition: 0.2s;">⭐</span>
                             <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen">🔊</button>
                             <div style="flex:1;">
-                                <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
+                                <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
                                 <div style="font-size:0.8rem; color:var(--text-muted);">${w.conjugation.present3rd}</div>
                             </div>
                         </div>
@@ -272,20 +272,20 @@ class VerbsEngineClass {
                     <td>
                         <div class="meaning-and-example-cell">
                             <div style="display:flex; align-items:center;">
-                                <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight: 600;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
+                                <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight: 600; font-size: 1.05rem;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
                                 ${isKnown ? '<span style="color:var(--success);margin-left:8px;" title="Known">✓</span>' : ''}
                             </div>
                             
-                            <!-- Inline German Example (Always visible by default right after meaning) -->
+                            <!-- Inline German Example (Normal non-italic text) -->
                             ${exDe ? `
                                 <div class="verb-inline-example-box ${this.hideExamples ? 'hidden-example' : ''}">
-                                    <div class="ex-de-line">💬 <em>${sanitize(exDe)}</em></div>
+                                    <div class="ex-de-line">💬 ${sanitize(exDe)}</div>
                                     ${exEn ? `
                                         <button class="ex-en-toggle-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">
                                             💬 Show EN Translation
                                         </button>
                                         <div class="ex-en-line hidden">
-                                            🇺🇸 <em>${sanitize(exEn)}</em>
+                                            🇺🇸 ${sanitize(exEn)}
                                         </div>
                                     ` : ''}
                                 </div>
