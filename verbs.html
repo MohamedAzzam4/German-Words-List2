@@ -356,30 +356,30 @@
             gap: 10px;
         }
 
-        /* Clean Star Icon Button Styling (Identical to Word List) */
+        /* Outline (Unfavorited ☆) vs Filled Gold (Favorited ⭐) Icon Toggle */
         .fav-icon-btn {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: grayscale(100%);
-            opacity: 0.25;
+            color: var(--text-muted);
+            opacity: 0.6;
             user-select: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 4px;
+            line-height: 1;
         }
 
         .fav-icon-btn.active {
-            filter: grayscale(0%);
             opacity: 1;
-            transform: scale(1.18);
-            drop-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.9));
         }
 
         .fav-icon-btn:hover {
             transform: scale(1.25);
-            opacity: 0.9;
+            opacity: 1;
         }
 
         .verb-center-content {

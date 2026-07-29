@@ -4,7 +4,7 @@
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
  * TTS audio playback for verb examples, 50-verb decks tracker, collapsible sidebar,
- * Flashcard mode with Still Learning queue recycling & sleek star favorite toggles,
+ * Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
  * and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
@@ -262,7 +262,7 @@ class VerbsEngineClass {
                 <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
                     <td>
                         <div style="display:flex; align-items:center; gap: 8px;">
-                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">⭐</span>
+                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
                             <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen to Verb">🔊</button>
                             <div style="flex:1;">
                                 <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
@@ -471,7 +471,7 @@ class VerbsEngineClass {
                         </button>
                         <div class="topbar-right-btns" style="display:flex; align-items:center; gap:12px;">
                             <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</span>
+                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
                         </div>
                     </div>
 
@@ -491,7 +491,7 @@ class VerbsEngineClass {
                         <span class="back-accent-sparkles">✨✨✨✨✨✨✨✨✨✨</span>
                         <div class="topbar-right-btns" style="display:flex; align-items:center; gap:12px;">
                             <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</span>
+                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
                         </div>
                     </div>
 
