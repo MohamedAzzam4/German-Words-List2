@@ -3,8 +3,8 @@
  * Controller for the Top German Verbs Mastery module.
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
- * Sentence-click TTS audio playback, single EN toggle chip per example box, 50-verb decks tracker,
- * collapsible sidebar, Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
+ * Single-line example layout with individual sentence-click TTS pronunciation, single EN toggle chip per box,
+ * 50-verb decks tracker, collapsible sidebar, Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
  * and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
@@ -290,32 +290,31 @@ class VerbsEngineClass {
                                 ${isKnown ? '<span style="color:var(--success);" title="Known">✓</span>' : ''}
                             </div>
                             
-                            <!-- Inline Example Box (Click German sentence to pronounce, Single EN toggle chip) -->
+                            <!-- Inline Example Box (Original single-line layout, Click each sentence to pronounce) -->
                             ${examplePairs.length > 0 ? `
                                 <div class="verb-inline-example-box">
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
-                                        <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">💬 Examples (Click to Listen 🔊):</span>
-                                        ${hasEn ? `
-                                            <button class="ex-en-chip" onclick="event.stopPropagation(); this.closest('.verb-inline-example-box').querySelectorAll('.ex-en-line').forEach(el => el.classList.toggle('hidden'));" title="Toggle English Example Translations">
+                                    <div class="ex-de-line" style="display:flex; align-items:center; gap: 4px; flex-wrap: wrap;">
+                                        💬 ${examplePairs.map((pair, idx) => {
+                                            const safeDe = pair.de.replace(/"/g, '&quot;');
+                                            return `
+                                                <span class="${hideEX ? 'hidden-word' : ''} hideable ex-sentence-span" style="cursor:pointer;" onclick="if(this.classList.contains('hidden-word')){this.classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
+                                                    ${sanitize(pair.de)}
+                                                </span>
+                                                ${idx < examplePairs.length - 1 ? '<span style="color:var(--text-muted); opacity:0.4; margin: 0 4px;">|</span>' : ''}
+                                            `;
+                                        }).join('')}
+                                    </div>
+
+                                    ${hasEn ? `
+                                        <div style="margin-top: 6px;">
+                                            <button class="ex-en-chip" onclick="event.stopPropagation(); this.closest('.verb-inline-example-box').querySelector('.ex-en-line').classList.toggle('hidden');" title="Toggle English Example Translations">
                                                 🇺🇸 EN
                                             </button>
-                                        ` : ''}
-                                    </div>
-                                    ${examplePairs.map(pair => {
-                                        const safeDe = pair.de.replace(/"/g, '&quot;');
-                                        return `
-                                            <div class="ex-de-line" style="margin-bottom: 4px; line-height: 1.45;">
-                                                <span class="${hideEX ? 'hidden-word' : ''} hideable ex-sentence-text" style="cursor:pointer;" onclick="if(this.classList.contains('hidden-word')){this.classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
-                                                    • ${sanitize(pair.de)} 🔊
-                                                </span>
-                                                ${pair.en ? `
-                                                    <div class="ex-en-line hidden ${hideEN ? 'hidden-word' : ''} hideable" style="font-size: 0.82rem; color: var(--text-muted); margin-left: 12px; cursor:pointer;" onclick="this.classList.remove('hidden-word')">
-                                                        (${sanitize(pair.en)})
-                                                    </div>
-                                                ` : ''}
+                                            <div class="ex-en-line hidden ${hideEN ? 'hidden-word' : ''} hideable" style="margin-top: 4px; font-size: 0.82rem; color: var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')">
+                                                (${sanitize(examplePairs.map(p => p.en).filter(Boolean).join(' | '))})
                                             </div>
-                                        `;
-                                    }).join('')}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             ` : ''}
                         </div>
@@ -529,31 +528,29 @@ class VerbsEngineClass {
 
                         ${examplePairs.length > 0 ? `
                             <div class="back-example-box">
-                                <div class="ex-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <span>Example Sentences (Click to Listen 🔊):</span>
-                                    ${hasEn ? `
-                                        <button class="ex-en-chip" onclick="this.closest('.back-example-box').querySelectorAll('.ex-en-line').forEach(el => el.classList.toggle('hidden'));" title="Toggle English Example Translations">
+                                <div class="ex-label" style="margin-bottom: 6px;">Example Sentences:</div>
+                                <div class="ex-text" style="margin: 6px 0; line-height: 1.5;">
+                                    💬 ${examplePairs.map((pair, idx) => {
+                                        const safeDe = pair.de.replace(/"/g, '&quot;');
+                                        return `
+                                            <span class="ex-sentence-span" style="cursor:pointer;" onclick="window.verbsEngine.speakText('${safeDe}')" title="Click sentence to pronounce">
+                                                ${sanitize(pair.de)}
+                                            </span>
+                                            ${idx < examplePairs.length - 1 ? '<span style="color:var(--text-muted); opacity:0.4; margin: 0 4px;">|</span>' : ''}
+                                        `;
+                                    }).join('')}
+                                </div>
+
+                                ${hasEn ? `
+                                    <div style="margin-top: 6px;">
+                                        <button class="ex-en-chip" onclick="this.closest('.back-example-box').querySelector('.ex-en-line').classList.toggle('hidden');" title="Toggle English Example Translations">
                                             🇺🇸 EN
                                         </button>
-                                    ` : ''}
-                                </div>
-                                ${examplePairs.map(pair => {
-                                    const safeDe = pair.de.replace(/"/g, '&quot;');
-                                    return `
-                                        <div class="ex-single-sentence-row" style="margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--border);">
-                                            <div class="ex-text" style="line-height: 1.45;">
-                                                <span class="ex-sentence-text" style="cursor:pointer;" onclick="window.verbsEngine.speakText('${safeDe}')" title="Click sentence to pronounce">
-                                                    🇩🇪 ${sanitize(pair.de)} 🔊
-                                                </span>
-                                            </div>
-                                            ${pair.en ? `
-                                                <div class="ex-en-line hidden" style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px; margin-left: 20px;">
-                                                    (${sanitize(pair.en)})
-                                                </div>
-                                            ` : ''}
+                                        <div class="ex-en-line hidden" style="margin-top: 4px; font-size: 0.88rem; color: var(--text-muted);">
+                                            (${sanitize(examplePairs.map(p => p.en).filter(Boolean).join(' | '))})
                                         </div>
-                                    `;
-                                }).join('')}
+                                    </div>
+                                ` : ''}
                             </div>
                         ` : ''}
 
@@ -796,7 +793,7 @@ class VerbsEngineClass {
             else if (action === 'prev-card') this.prevCard();
             else if (action === 'next-card') this.nextCard();
             else if (action === 'flip') {
-                if (!e.target.closest('button') && !e.target.closest('.accordion-btn') && !e.target.closest('.ex-en-chip') && !e.target.closest('.ex-sentence-text')) {
+                if (!e.target.closest('button') && !e.target.closest('.accordion-btn') && !e.target.closest('.ex-en-chip') && !e.target.closest('.ex-sentence-span')) {
                     this.flipCard();
                 }
             }

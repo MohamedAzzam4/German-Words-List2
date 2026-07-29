@@ -29,7 +29,7 @@ test.describe('Top German Verbs Mastery E2E Suite (Card Recycling & TTS)', () =>
     const viewGlossary = page.locator('#view-glossary');
     await expect(viewGlossary).toBeVisible();
 
-    const exSentenceText = page.locator('.verb-inline-example-box .ex-sentence-text').first();
+    const exSentenceText = page.locator('.verb-inline-example-box .ex-sentence-span').first();
     await expect(exSentenceText).toBeVisible();
     await exSentenceText.click();
   });
