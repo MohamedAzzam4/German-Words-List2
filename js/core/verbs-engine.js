@@ -4,7 +4,8 @@
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
  * TTS audio playback for verb examples, 50-verb decks tracker, collapsible sidebar,
- * Flashcard mode with Still Learning queue recycling, and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
+ * Flashcard mode with Still Learning queue recycling & visual status/favorite badges,
+ * and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
@@ -370,6 +371,10 @@ class VerbsEngineClass {
         const isFav = this.userData.verbFavorites.includes(verb.id);
         const isKnown = this.userData.knownVerbIds.includes(verb.id);
 
+        const statusBadgeHTML = isKnown 
+            ? `<span class="status-chip status-completed" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">✅ Known</span>`
+            : `<span class="status-chip status-progress" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">🔄 Learning</span>`;
+
         const tagsHTML = verb.tags.map(t => `<span class="verb-tag-badge">${t}</span>`).join(' ');
 
         const conj = verb.conjugation;
@@ -469,8 +474,11 @@ class VerbsEngineClass {
                             💡 ${this.showHint ? 'Hide Hint' : 'Get a hint'}
                         </button>
                         <div class="topbar-right-btns">
+                            ${statusBadgeHTML}
                             <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
+                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">
+                                ⭐ ${isFav ? 'Favorited' : 'Favorite'}
+                            </button>
                         </div>
                     </div>
 
@@ -489,8 +497,11 @@ class VerbsEngineClass {
                     <div class="verb-card-topbar">
                         <span class="back-accent-sparkles">✨✨✨✨✨✨✨✨✨✨</span>
                         <div class="topbar-right-btns">
+                            ${statusBadgeHTML}
                             <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
+                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">
+                                ⭐ ${isFav ? 'Favorited' : 'Favorite'}
+                            </button>
                         </div>
                     </div>
 
