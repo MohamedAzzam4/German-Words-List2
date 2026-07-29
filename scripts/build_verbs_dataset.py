@@ -50,24 +50,24 @@ A1_CORE_VERBS = {
 }
 
 HOMONYM_PENALTIES = {
-    'regen': 3.5,     # Noun: der Regen (rain) vs Verb: sich regen (to stir)
-    'rücken': 2.8,    # Noun: der Rücken (back) vs Verb: rücken (to shift/move)
-    'modern': 4.0,    # Adj: modern (modern) vs Verb: modern (to rot/decay)
-    'haaren': 3.5,    # Noun: die Haare (hair) vs Verb: haaren (to shed hair)
-    'regeln': 2.0,    # Noun: die Regeln (rules) vs Verb: regeln (to regulate)
-    'ebnen': 2.5,     # Adj: eben (flat) vs Verb: ebnen (to level)
-    'einen': 3.5,     # Article: einen vs Verb: einen (to unite)
-    'sondern': 3.5,   # Conjunction: sondern vs Verb: sondern (to segregate)
-    'stunden': 3.5,   # Noun: Stunden (hours) vs Verb: stunden (to defer)
-    'tagen': 3.5,     # Noun: Tagen (days) vs Verb: tagen (to convene)
-    'morgen': 3.0,    # Adv/Noun: morgen (tomorrow) vs Verb: morgen
-    'abend': 3.0,     # Noun: Abend (evening) vs Verb: abend
-    'seiten': 3.0,    # Noun: Seiten (pages) vs Verb: seiten
-    'sieben': 2.5,    # Number: sieben (seven) vs Verb: sieben (to sift)
-    'grünen': 2.5,
-    'langer': 2.5,
-    'langen': 2.5,
-    'kurzer': 2.5,
+    'regen': 4.5,     # Noun: der Regen (rain) vs Verb: sich regen (to stir)
+    'rücken': 3.5,    # Noun: der Rücken (back) vs Verb: rücken (to shift/move)
+    'modern': 4.5,    # Adj: modern (modern) vs Verb: modern (to rot/decay)
+    'haaren': 4.0,    # Noun: die Haare (hair) vs Verb: haaren (to shed hair)
+    'regeln': 2.5,    # Noun: die Regeln (rules) vs Verb: regeln (to regulate)
+    'ebnen': 3.0,     # Adj: eben (flat) vs Verb: ebnen (to level)
+    'einen': 5.0,     # Article: einen vs Verb: einen (to unite)
+    'sondern': 4.5,   # Conjunction: sondern vs Verb: sondern (to segregate)
+    'stunden': 4.5,   # Noun: Stunden (hours) vs Verb: stunden (to defer)
+    'tagen': 4.5,     # Noun: Tagen (days) vs Verb: tagen (to convene)
+    'morgen': 3.5,    # Adv/Noun: morgen (tomorrow) vs Verb: morgen
+    'abend': 3.5,     # Noun: Abend (evening) vs Verb: abend
+    'seiten': 3.5,    # Noun: Seiten (pages) vs Verb: seiten
+    'sieben': 3.0,    # Number: sieben (seven) vs Verb: sieben (to sift)
+    'grünen': 3.0,
+    'langer': 3.0,
+    'langen': 3.0,
+    'kurzer': 3.0,
 }
 
 def clean_html(raw_html):
@@ -103,27 +103,38 @@ def detect_prefix_info(infinitive, meaning):
     }
 
 def parse_verb_forms(forms_raw, infinitive):
-    forms_raw = re.sub(r'\[sound:.*?\]', '', forms_raw).strip()
-    infinitive = re.sub(r'\[sound:.*?\]', '', infinitive).strip()
+    forms_clean = re.sub(r'\[sound:.*?\]', '', forms_raw)
+    forms_clean = clean_html(forms_clean).strip()
 
-    pres_3rd = f"er/sie/es {infinitive}t"
-    past_3rd = f"er/sie/es {infinitive}te"
-    participle = f"ge{infinitive}t"
+    parentheses_match = re.search(r'\((.*?)\)', forms_clean)
+    if parentheses_match:
+        forms_clean = parentheses_match.group(1)
+
+    parts = [p.strip() for p in re.split(r'[·,;/]', forms_clean) if p.strip()]
+
+    pres_3rd_form = f"{infinitive}t"
+    past_3rd_form = f"{infinitive}te"
+    participle_form = f"ge{infinitive}t"
     auxiliary = "haben"
 
-    if 'sein' in forms_raw.lower() or 'ist' in forms_raw.lower():
-        auxiliary = "sein"
+    if len(parts) >= 1:
+        pres_3rd_form = parts[0]
+    if len(parts) >= 2:
+        past_3rd_form = parts[1]
+    if len(parts) >= 3:
+        p3_str = parts[2]
+        if 'ist ' in p3_str or 'sein ' in p3_str or p3_str.startswith('ist'):
+            auxiliary = 'sein'
+            p3_str = re.sub(r'^(ist|hat)\s+', '', p3_str)
+        elif 'hat ' in p3_str or p3_str.startswith('hat'):
+            auxiliary = 'haben'
+            p3_str = re.sub(r'^(ist|hat)\s+', '', p3_str)
+        participle_form = p3_str
 
-    matches = re.findall(r'([a-zA-ZäöüÄÖÜß]+)', forms_raw)
-    for m in matches:
-        m_lower = m.lower()
-        if m_lower.startswith('ge') and len(m_lower) > 3:
-            participle = m
-        elif m_lower in ['ist', 'hat']:
-            if m_lower == 'ist':
-                auxiliary = 'sein'
+    pres_3rd = f"er/sie/es {pres_3rd_form}"
+    past_3rd = f"er/sie/es {past_3rd_form}"
 
-    return pres_3rd, past_3rd, participle, auxiliary
+    return pres_3rd, past_3rd, participle_form, auxiliary
 
 def generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary, pref_info):
     base = infinitive
