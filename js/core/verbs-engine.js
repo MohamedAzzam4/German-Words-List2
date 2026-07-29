@@ -438,9 +438,11 @@ class VerbsEngineClass {
         } else if (this.cardDirectionMode === 'audio-to-de') {
             frontMainHTML = `
                 <div class="verb-label">Listening Practice 🔊</div>
-                <button class="btn btn-primary" style="font-size: 1.5rem; padding: 14px 28px; margin: 16px 0; border-radius: 50px;" data-action="speak">
-                    🔊 Listen to Verb
-                </button>
+                <div style="display: flex; justify-content: center; width: 100%; margin: 16px 0;">
+                    <button class="btn btn-primary" style="font-size: 1.3rem; padding: 14px 28px; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;" data-action="speak">
+                        🔊 Listen to Verb
+                    </button>
+                </div>
                 <div class="verb-tags-container">${tagsHTML}</div>
             `;
             frontHintText = `Meaning: ${verb.meaning}`;

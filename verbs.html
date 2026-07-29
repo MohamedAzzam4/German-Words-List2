@@ -265,12 +265,12 @@
             width: 100%;
         }
 
-        /* Fixed 3D Flashcard Flip Mechanics (Never Mirrored) */
+        /* Fixed 3D Flashcard Flip Mechanics & Controls Spacing */
         .verb-flashcard-wrapper {
             perspective: 1200px;
             width: 100%;
             max-width: 680px;
-            margin: 0 auto 24px;
+            margin: 0 auto 36px;
         }
 
         .verb-flashcard {
@@ -281,6 +281,7 @@
             -webkit-transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            margin-bottom: 32px; /* Generous spacing below card */
         }
 
         .verb-flashcard.flipped {
@@ -540,7 +541,8 @@
             display: flex;
             gap: 16px;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-top: 28px; /* Clear spacing between card and action buttons */
+            margin-bottom: 20px;
         }
 
         .verb-card-nav {
