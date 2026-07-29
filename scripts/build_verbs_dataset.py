@@ -4,6 +4,8 @@ import tempfile
 import zipfile
 import re
 import json
+import glob
+from wordfreq import zipf_frequency
 
 apkg_path = r"C:\Users\LOQ\Downloads\2000_Common_verbs_with_pronunciation_and_examples.apkg"
 output_dir = r"d:\Programming\Antigravity-Projects\German-Words-List2-V2\content\generated\verbs"
@@ -30,6 +32,22 @@ PREFIX_MEANINGS = {
     'weg': 'away / off',
     'zurück': 'back / return',
     'zusammen': 'together / joint'
+}
+
+# Homonym adjustments (words that match common articles/nouns/conjunctions in frequency corpora)
+HOMONYM_PENALTIES = {
+    'einen': 2.2,     # article "einen"
+    'sondern': 2.5,   # conjunction "sondern"
+    'stunden': 2.5,   # noun "Stunden"
+    'tagen': 2.2,     # noun "Tagen"
+    'morgen': 2.2,    # noun/adv "morgen"
+    'abend': 2.2,     # noun "Abend"
+    'seiten': 2.2,    # noun "Seiten"
+    'sieben': 1.8,    # number "sieben"
+    'grünen': 2.0,    # noun/adj "Grünen"
+    'langer': 2.0,    # adj "langer"
+    'langen': 2.0,    # adj "langen"
+    'kurzer': 2.0,    # adj "kurzer"
 }
 
 def clean_html(text):
@@ -188,7 +206,21 @@ def parse_examples_structured(raw_back):
         'full': full_str
     }
 
+def load_curriculum_words():
+    words_set = set()
+    pattern = r"d:\Programming\Antigravity-Projects\German-Words-List2-V2\content\generated\**\*.md"
+    for filepath in glob.glob(pattern, recursive=True):
+        with open(filepath, 'r', encoding='utf-8') as f:
+            text = f.read()
+            tokens = re.findall(r'[a-zA-ZäöüÄÖÜß]+', text)
+            for tok in tokens:
+                words_set.add(tok.lower())
+    return words_set
+
 def main():
+    curriculum_words = load_curriculum_words()
+    print(f"Loaded {len(curriculum_words)} curriculum tokens for frequency boosting.")
+
     temp_dir = tempfile.mkdtemp()
     with zipfile.ZipFile(apkg_path, 'r') as zip_ref:
         zip_ref.extractall(temp_dir)
@@ -201,7 +233,7 @@ def main():
     notes = cursor.fetchall()
     print(f"Extracted {len(notes)} raw verb notes from Anki database.")
 
-    verbs = []
+    raw_verbs = []
     for idx, note in enumerate(notes):
         flds = note[2].split('\x1f')
         raw_front = clean_html(flds[0])
@@ -220,6 +252,49 @@ def main():
         pres_3rd, past_3rd, participle, auxiliary = parse_verb_forms(forms_raw, infinitive)
         conj = generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary, pref_info)
 
+        # Frequency scoring using wordfreq Zipf score
+        inf_lower = infinitive.lower()
+        zipf = zipf_frequency(inf_lower, 'de')
+        score = zipf
+
+        if inf_lower in HOMONYM_PENALTIES:
+            score -= HOMONYM_PENALTIES[inf_lower]
+
+        if inf_lower in curriculum_words:
+            score += 1.5
+
+        raw_verbs.append({
+            'infinitive': infinitive,
+            'meaning': meaning,
+            'pres_3rd': pres_3rd,
+            'past_3rd': past_3rd,
+            'participle': participle,
+            'auxiliary': auxiliary,
+            'pref_info': pref_info,
+            'conj': conj,
+            'ex_struct': ex_struct,
+            'zipf': zipf,
+            'score': score
+        })
+
+    # Sort descending by score
+    raw_verbs.sort(key=lambda x: x['score'], reverse=True)
+
+    # Filter out zero/obscure noise items (where zipf < 1.0 and not in curriculum)
+    filtered_verbs = [
+        v for v in raw_verbs 
+        if v['zipf'] >= 1.0 or v['infinitive'].lower() in curriculum_words
+    ]
+    print(f"Filtered {len(raw_verbs)} raw verbs -> {len(filtered_verbs)} high-quality verbs (removed {len(raw_verbs) - len(filtered_verbs)} obscure/rare entries).")
+
+    verbs = []
+    for idx, item in enumerate(filtered_verbs):
+        infinitive = item['infinitive']
+        pref_info = item['pref_info']
+        pres_3rd = item['pres_3rd']
+        past_3rd = item['past_3rd']
+        ex_struct = item['ex_struct']
+
         tags = [f"freq-{(idx+1):03d}"]
         if pref_info['isSeparable']:
             tags.append('separable')
@@ -230,10 +305,10 @@ def main():
             'id': f"v-{(idx+1):04d}-{infinitive}",
             'index': idx + 1,
             'infinitive': infinitive,
-            'meaning': meaning,
+            'meaning': item['meaning'],
             'tags': tags,
             'prefixInfo': pref_info,
-            'conjugation': conj,
+            'conjugation': item['conj'],
             'example': ex_struct['de'] or ex_struct['full'],
             'exampleDe': ex_struct['de'] or ex_struct['full'],
             'exampleEn': ex_struct['en'],
@@ -272,7 +347,7 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(dataset, f, ensure_ascii=False, indent=2)
 
-    print(f"Successfully exported {len(verbs)} clean verbs across {len(decks)} decks to {output_file}!")
+    print(f"Successfully exported {len(verbs)} frequency-ranked verbs across {len(decks)} decks to {output_file}!")
 
 if __name__ == '__main__':
     main()
