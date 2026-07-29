@@ -1,7 +1,7 @@
 {
-  "totalVerbs": 1737,
+  "totalVerbs": 1796,
   "verbsPerDeck": 50,
-  "totalDecks": 35,
+  "totalDecks": 36,
   "decks": [
     {
       "deckId": 1,
@@ -102619,8 +102619,8 @@
     },
     {
       "deckId": 35,
-      "title": "Deck 35 (Verbs 1701–1737)",
-      "count": 37,
+      "title": "Deck 35 (Verbs 1701–1750)",
+      "count": 50,
       "verbs": [
         {
           "id": "v-1701-gleichbleiben",
@@ -104855,6 +104855,3570 @@
             "rootVerb": "auszahlen",
             "rootMeaning": "base verb 'auszahlen'",
             "combinedLogic": "vor- (before / forward / in front) + auszahlen → to pay in advance"
+          }
+        },
+        {
+          "id": "v-1738-verschneien",
+          "index": 1738,
+          "infinitive": "verschneien",
+          "meaning": "to be snowed in/up",
+          "tags": [
+            "freq-1738",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verschneien",
+            "prefixMeaning": "",
+            "rootMeaning": "to be snowed in/up",
+            "combinedLogic": "Base verb 'verschneien' → to be snowed in/up"
+          },
+          "conjugation": {
+            "auxiliary": "sein",
+            "participle": "verschneit",
+            "present3rd": "verschneit",
+            "past3rd": "verschneite",
+            "present": {
+              "ich": "verschneie",
+              "du": "verschneist",
+              "er_sie_es": "verschneit",
+              "wir": "verschneien",
+              "ihr": "verschneit",
+              "sie_Sie": "verschneien"
+            },
+            "past": {
+              "ich": "verschneite",
+              "du": "verschneitest",
+              "er_sie_es": "verschneite",
+              "wir": "verschneiteen",
+              "ihr": "verschneitet",
+              "sie_Sie": "verschneiteen"
+            },
+            "future": {
+              "ich": "werde verschneien",
+              "du": "wirst verschneien",
+              "er_sie_es": "wird verschneien",
+              "wir": "werden verschneien",
+              "ihr": "werdet verschneien",
+              "sie_Sie": "werden verschneien"
+            }
+          },
+          "example": "Die Straße verschneit. | Die Stadt verschneite über Nacht. | Die Berge sind verschneit.",
+          "exampleDe": "Die Straße verschneit. | Die Stadt verschneite über Nacht. | Die Berge sind verschneit.",
+          "exampleEn": "The road is getting snowed in. (Präsens) | The city was snowed in overnight. (Präteritum) | The mountains are snowed in. (Partizip II)",
+          "exampleFull": "• Die Straße verschneit.\nThe road is getting snowed in. (Präsens)\n• Die Stadt verschneite über Nacht.\nThe city was snowed in overnight. (Präteritum)\n• Die Berge sind verschneit.\nThe mountains are snowed in. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verschneien",
+            "rootMeaning": "to be snowed in/up",
+            "combinedLogic": "Base verb 'verschneien' → to be snowed in/up"
+          }
+        },
+        {
+          "id": "v-1739-verschilfen",
+          "index": 1739,
+          "infinitive": "verschilfen",
+          "meaning": "to become covered with reeds",
+          "tags": [
+            "freq-1739",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verschilfen",
+            "prefixMeaning": "",
+            "rootMeaning": "to become covered with reeds",
+            "combinedLogic": "Base verb 'verschilfen' → to become covered with reeds"
+          },
+          "conjugation": {
+            "auxiliary": "sein",
+            "participle": "verschilft",
+            "present3rd": "verschilft",
+            "past3rd": "verschilfte",
+            "present": {
+              "ich": "verschilfe",
+              "du": "verschilfst",
+              "er_sie_es": "verschilft",
+              "wir": "verschilfen",
+              "ihr": "verschilft",
+              "sie_Sie": "verschilfen"
+            },
+            "past": {
+              "ich": "verschilfte",
+              "du": "verschilftest",
+              "er_sie_es": "verschilfte",
+              "wir": "verschilfteen",
+              "ihr": "verschilftet",
+              "sie_Sie": "verschilfteen"
+            },
+            "future": {
+              "ich": "werde verschilfen",
+              "du": "wirst verschilfen",
+              "er_sie_es": "wird verschilfen",
+              "wir": "werden verschilfen",
+              "ihr": "werdet verschilfen",
+              "sie_Sie": "werden verschilfen"
+            }
+          },
+          "example": "Der Teich verschilft. | Das Ufer verschilfte schnell. | Der See ist total verschilft.",
+          "exampleDe": "Der Teich verschilft. | Das Ufer verschilfte schnell. | Der See ist total verschilft.",
+          "exampleEn": "The pond is becoming covered with reeds. (Präsens) | The bank quickly became covered with reeds. (Präteritum) | The lake is totally covered with reeds. (Partizip II)",
+          "exampleFull": "• Der Teich verschilft.\nThe pond is becoming covered with reeds. (Präsens)\n• Das Ufer verschilfte schnell.\nThe bank quickly became covered with reeds. (Präteritum)\n• Der See ist total verschilft.\nThe lake is totally covered with reeds. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verschilfen",
+            "rootMeaning": "to become covered with reeds",
+            "combinedLogic": "Base verb 'verschilfen' → to become covered with reeds"
+          }
+        },
+        {
+          "id": "v-1740-verschähen",
+          "index": 1740,
+          "infinitive": "verschähen",
+          "meaning": "to disdain, to scorn",
+          "tags": [
+            "freq-1740",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verschähen",
+            "prefixMeaning": "",
+            "rootMeaning": "to disdain, to scorn",
+            "combinedLogic": "Base verb 'verschähen' → to disdain, to scorn"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "verschäht",
+            "present3rd": "verschäht",
+            "past3rd": "verschähte",
+            "present": {
+              "ich": "verschähe",
+              "du": "verschähst",
+              "er_sie_es": "verschäht",
+              "wir": "verschähen",
+              "ihr": "verschäht",
+              "sie_Sie": "verschähen"
+            },
+            "past": {
+              "ich": "verschähte",
+              "du": "verschähtest",
+              "er_sie_es": "verschähte",
+              "wir": "verschähteen",
+              "ihr": "verschähtet",
+              "sie_Sie": "verschähteen"
+            },
+            "future": {
+              "ich": "werde verschähen",
+              "du": "wirst verschähen",
+              "er_sie_es": "wird verschähen",
+              "wir": "werden verschähen",
+              "ihr": "werdet verschähen",
+              "sie_Sie": "werden verschähen"
+            }
+          },
+          "example": "Er verschmäht jedes Angebot. | Sie verschmähte seine Hilfe. | Er hat ihre Freundschaft verschmäht.",
+          "exampleDe": "Er verschmäht jedes Angebot. | Sie verschmähte seine Hilfe. | Er hat ihre Freundschaft verschmäht.",
+          "exampleEn": "He disdains every offer. (Präsens) | She scorned his help. (Präteritum) | He has disdained her friendship. (Partizip II)",
+          "exampleFull": "• Er verschmäht jedes Angebot.\nHe disdains every offer. (Präsens)\n• Sie verschmähte seine Hilfe.\nShe scorned his help. (Präteritum)\n• Er hat ihre Freundschaft verschmäht.\nHe has disdained her friendship. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verschähen",
+            "rootMeaning": "to disdain, to scorn",
+            "combinedLogic": "Base verb 'verschähen' → to disdain, to scorn"
+          }
+        },
+        {
+          "id": "v-1741-vorschlafen",
+          "index": 1741,
+          "infinitive": "vorschlafen",
+          "meaning": "to sleep in advance",
+          "tags": [
+            "freq-1741",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "vor-",
+            "isSeparable": true,
+            "rootVerb": "schlafen",
+            "prefixMeaning": "before / forward / in front",
+            "rootMeaning": "base verb 'schlafen'",
+            "combinedLogic": "vor- (before / forward / in front) + schlafen → to sleep in advance"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "vorgeschlafen",
+            "present3rd": "schläft vor",
+            "past3rd": "schlief vor",
+            "present": {
+              "ich": "vorschlafe vor",
+              "du": "schläfst vor",
+              "er_sie_es": "schläft vor",
+              "wir": "vorschlafen",
+              "ihr": "vorschlaft vor",
+              "sie_Sie": "vorschlafen"
+            },
+            "past": {
+              "ich": "schlief vor",
+              "du": "schliefst vor",
+              "er_sie_es": "schlief vor",
+              "wir": "schliefen vor",
+              "ihr": "schlieft vor",
+              "sie_Sie": "schliefen vor"
+            },
+            "future": {
+              "ich": "werde vorschlafen",
+              "du": "wirst vorschlafen",
+              "er_sie_es": "wird vorschlafen",
+              "wir": "werden vorschlafen",
+              "ihr": "werdet vorschlafen",
+              "sie_Sie": "werden vorschlafen"
+            }
+          },
+          "example": "Er schläft vor der Prüfung vor. | Sie schlief am Wochenende vor. | Ich habe schon vorgeschlafen.",
+          "exampleDe": "Er schläft vor der Prüfung vor. | Sie schlief am Wochenende vor. | Ich habe schon vorgeschlafen.",
+          "exampleEn": "He sleeps in advance before the exam. (Präsens) | She slept in advance on the weekend. (Präteritum) | I have already slept in advance. (Partizip II)",
+          "exampleFull": "• Er schläft vor der Prüfung vor.\nHe sleeps in advance before the exam. (Präsens)\n• Sie schlief am Wochenende vor.\nShe slept in advance on the weekend. (Präteritum)\n• Ich habe schon vorgeschlafen.\nI have already slept in advance. (Partizip II)",
+          "origins": {
+            "prefix": "vor-",
+            "prefixMeaning": "before / forward / in front",
+            "rootVerb": "schlafen",
+            "rootMeaning": "base verb 'schlafen'",
+            "combinedLogic": "vor- (before / forward / in front) + schlafen → to sleep in advance"
+          }
+        },
+        {
+          "id": "v-1742-wundernehmen",
+          "index": 1742,
+          "infinitive": "wundernehmen",
+          "meaning": "to surprise (used reflexively: sich wundern)",
+          "tags": [
+            "freq-1742",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "wundernehmen",
+            "prefixMeaning": "",
+            "rootMeaning": "to surprise (used reflexively: sich wundern)",
+            "combinedLogic": "Base verb 'wundernehmen' → to surprise (used reflexively: sich wundern)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "wundergenommen",
+            "present3rd": "nimmt wunder",
+            "past3rd": "nahm wunder",
+            "present": {
+              "ich": "wundernehme",
+              "du": "nimmt wunderst",
+              "er_sie_es": "nimmt wunder",
+              "wir": "wundernehmen",
+              "ihr": "wundernehmt",
+              "sie_Sie": "wundernehmen"
+            },
+            "past": {
+              "ich": "nahm wunder",
+              "du": "nahm wunderst",
+              "er_sie_es": "nahm wunder",
+              "wir": "nahm wunderen",
+              "ihr": "nahm wundert",
+              "sie_Sie": "nahm wunderen"
+            },
+            "future": {
+              "ich": "werde wundernehmen",
+              "du": "wirst wundernehmen",
+              "er_sie_es": "wird wundernehmen",
+              "wir": "werden wundernehmen",
+              "ihr": "werdet wundernehmen",
+              "sie_Sie": "werden wundernehmen"
+            }
+          },
+          "example": "Es nimmt mich wunder, dass... (unusual) | Mich nahm wunder, warum... (unusual) | Er hat sich darüber wundergenommen. (unusual)",
+          "exampleDe": "Es nimmt mich wunder, dass... (unusual) | Mich nahm wunder, warum... (unusual) | Er hat sich darüber wundergenommen. (unusual)",
+          "exampleEn": "It surprises me that... (Präsens) | It surprised me why... (Präteritum) | He has been surprised about that. (Partizip II)",
+          "exampleFull": "• Es nimmt mich wunder, dass... (unusual)\nIt surprises me that... (Präsens)\n• Mich nahm wunder, warum... (unusual)\nIt surprised me why... (Präteritum)\n• Er hat sich darüber wundergenommen. (unusual)\nHe has been surprised about that. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "wundernehmen",
+            "rootMeaning": "to surprise (used reflexively: sich wundern)",
+            "combinedLogic": "Base verb 'wundernehmen' → to surprise (used reflexively: sich wundern)"
+          }
+        },
+        {
+          "id": "v-1743-echoen",
+          "index": 1743,
+          "infinitive": "echoen",
+          "meaning": "to echo",
+          "tags": [
+            "freq-1743",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "echoen",
+            "prefixMeaning": "",
+            "rootMeaning": "to echo",
+            "combinedLogic": "Base verb 'echoen' → to echo"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "geechot",
+            "present3rd": "echot",
+            "past3rd": "echote",
+            "present": {
+              "ich": "echoe",
+              "du": "echost",
+              "er_sie_es": "echot",
+              "wir": "echoen",
+              "ihr": "echot",
+              "sie_Sie": "echoen"
+            },
+            "past": {
+              "ich": "echote",
+              "du": "echotest",
+              "er_sie_es": "echote",
+              "wir": "echoteen",
+              "ihr": "echotet",
+              "sie_Sie": "echoteen"
+            },
+            "future": {
+              "ich": "werde echoen",
+              "du": "wirst echoen",
+              "er_sie_es": "wird echoen",
+              "wir": "werden echoen",
+              "ihr": "werdet echoen",
+              "sie_Sie": "werden echoen"
+            }
+          },
+          "example": "Die Stimme echot in der Höhle. | Der Ruf echote im Tal. | Es hat lange geechot.",
+          "exampleDe": "Die Stimme echot in der Höhle. | Der Ruf echote im Tal. | Es hat lange geechot.",
+          "exampleEn": "The voice echoes in the cave. (Präsens) | The call echoed in the valley. (Präteritum) | It has echoed for a long time. (Partizip II)",
+          "exampleFull": "• Die Stimme echot in der Höhle.\nThe voice echoes in the cave. (Präsens)\n• Der Ruf echote im Tal.\nThe call echoed in the valley. (Präteritum)\n• Es hat lange geechot.\nIt has echoed for a long time. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "echoen",
+            "rootMeaning": "to echo",
+            "combinedLogic": "Base verb 'echoen' → to echo"
+          }
+        },
+        {
+          "id": "v-1744-überschreien",
+          "index": 1744,
+          "infinitive": "überschreien",
+          "meaning": "to outshout, to drown out with shouting",
+          "tags": [
+            "freq-1744",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "überschreien",
+            "prefixMeaning": "",
+            "rootMeaning": "to outshout, to drown out with shouting",
+            "combinedLogic": "Base verb 'überschreien' → to outshout, to drown out with shouting"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "überschrien",
+            "present3rd": "überschreit",
+            "past3rd": "überschrie",
+            "present": {
+              "ich": "überschreie",
+              "du": "überschreist",
+              "er_sie_es": "überschreit",
+              "wir": "überschreien",
+              "ihr": "überschreit",
+              "sie_Sie": "überschreien"
+            },
+            "past": {
+              "ich": "überschrie",
+              "du": "überschriest",
+              "er_sie_es": "überschrie",
+              "wir": "überschrieen",
+              "ihr": "überschriet",
+              "sie_Sie": "überschrieen"
+            },
+            "future": {
+              "ich": "werde überschreien",
+              "du": "wirst überschreien",
+              "er_sie_es": "wird überschreien",
+              "wir": "werden überschreien",
+              "ihr": "werdet überschreien",
+              "sie_Sie": "werden überschreien"
+            }
+          },
+          "example": "Er überschreit mich. | Der Lärm überschrie alles. | Sie haben sich überschrien.",
+          "exampleDe": "Er überschreit mich. | Der Lärm überschrie alles. | Sie haben sich überschrien.",
+          "exampleEn": "He is outshouting me. (Präsens) | The noise drowned out everything. (Präteritum) | They have outshouted each other. (Partizip II - reflexive)",
+          "exampleFull": "• Er überschreit mich.\nHe is outshouting me. (Präsens)\n• Der Lärm überschrie alles.\nThe noise drowned out everything. (Präteritum)\n• Sie haben sich überschrien.\nThey have outshouted each other. (Partizip II - reflexive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "überschreien",
+            "rootMeaning": "to outshout, to drown out with shouting",
+            "combinedLogic": "Base verb 'überschreien' → to outshout, to drown out with shouting"
+          }
+        },
+        {
+          "id": "v-1745-hervorwagen",
+          "index": 1745,
+          "infinitive": "hervorwagen",
+          "meaning": "to venture out, to dare to come forward",
+          "tags": [
+            "freq-1745",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "vorwagen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'vorwagen'",
+            "combinedLogic": "her- (her- prefix) + vorwagen → to venture out, to dare to come forward"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hervorgewagt",
+            "present3rd": "wagt hervor",
+            "past3rd": "wagte hervor",
+            "present": {
+              "ich": "hervorwage",
+              "du": "wagt hervorst",
+              "er_sie_es": "wagt hervor",
+              "wir": "hervorwagen",
+              "ihr": "hervorwagt",
+              "sie_Sie": "hervorwagen"
+            },
+            "past": {
+              "ich": "wagte hervor",
+              "du": "wagte hervorst",
+              "er_sie_es": "wagte hervor",
+              "wir": "wagte hervoren",
+              "ihr": "wagte hervort",
+              "sie_Sie": "wagte hervoren"
+            },
+            "future": {
+              "ich": "werde hervorwagen",
+              "du": "wirst hervorwagen",
+              "er_sie_es": "wird hervorwagen",
+              "wir": "werden hervorwagen",
+              "ihr": "werdet hervorwagen",
+              "sie_Sie": "werden hervorwagen"
+            }
+          },
+          "example": "Er wagt sich hervor. | Sie wagte sich hervor. | Er hat sich nicht hervorgewagt.",
+          "exampleDe": "Er wagt sich hervor. | Sie wagte sich hervor. | Er hat sich nicht hervorgewagt.",
+          "exampleEn": "He ventures out. (Präsens - reflexive) | She dared to come forward. (Präteritum - reflexive) | He has not dared to come forward. (Partizip II - reflexive)",
+          "exampleFull": "• Er wagt sich hervor.\nHe ventures out. (Präsens - reflexive)\n• Sie wagte sich hervor.\nShe dared to come forward. (Präteritum - reflexive)\n• Er hat sich nicht hervorgewagt.\nHe has not dared to come forward. (Partizip II - reflexive)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "vorwagen",
+            "rootMeaning": "base verb 'vorwagen'",
+            "combinedLogic": "her- (her- prefix) + vorwagen → to venture out, to dare to come forward"
+          }
+        },
+        {
+          "id": "v-1746-nachstechen",
+          "index": 1746,
+          "infinitive": "nachstechen",
+          "meaning": "to re-prick (e.g., in tattooing)",
+          "tags": [
+            "freq-1746",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "nach-",
+            "isSeparable": true,
+            "rootVerb": "stechen",
+            "prefixMeaning": "after / behind / emulate",
+            "rootMeaning": "base verb 'stechen'",
+            "combinedLogic": "nach- (after / behind / emulate) + stechen → to re-prick (e.g., in tattooing)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "nachgestochen",
+            "present3rd": "sticht nach",
+            "past3rd": "stach nach",
+            "present": {
+              "ich": "nachsteche nach",
+              "du": "stichst nach",
+              "er_sie_es": "sticht nach",
+              "wir": "nachstechen",
+              "ihr": "nachstecht nach",
+              "sie_Sie": "nachstechen"
+            },
+            "past": {
+              "ich": "stach nach",
+              "du": "stachst nach",
+              "er_sie_es": "stach nach",
+              "wir": "stachen nach",
+              "ihr": "stacht nach",
+              "sie_Sie": "stachen nach"
+            },
+            "future": {
+              "ich": "werde nachstechen",
+              "du": "wirst nachstechen",
+              "er_sie_es": "wird nachstechen",
+              "wir": "werden nachstechen",
+              "ihr": "werdet nachstechen",
+              "sie_Sie": "werden nachstechen"
+            }
+          },
+          "example": "Der Tätowierer sticht nach. | Er stach die Linien nach. | Das Tattoo wurde nachgestochen.",
+          "exampleDe": "Der Tätowierer sticht nach. | Er stach die Linien nach. | Das Tattoo wurde nachgestochen.",
+          "exampleEn": "The tattoo artist is re-pricking. (Präsens) | He re-pricked the lines. (Präteritum) | The tattoo has been re-pricked. (Partizip II - passive)",
+          "exampleFull": "• Der Tätowierer sticht nach.\nThe tattoo artist is re-pricking. (Präsens)\n• Er stach die Linien nach.\nHe re-pricked the lines. (Präteritum)\n• Das Tattoo wurde nachgestochen.\nThe tattoo has been re-pricked. (Partizip II - passive)",
+          "origins": {
+            "prefix": "nach-",
+            "prefixMeaning": "after / behind / emulate",
+            "rootVerb": "stechen",
+            "rootMeaning": "base verb 'stechen'",
+            "combinedLogic": "nach- (after / behind / emulate) + stechen → to re-prick (e.g., in tattooing)"
+          }
+        },
+        {
+          "id": "v-1747-überfragen",
+          "index": 1747,
+          "infinitive": "überfragen",
+          "meaning": "to over-question, to ask too much of",
+          "tags": [
+            "freq-1747",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "überfragen",
+            "prefixMeaning": "",
+            "rootMeaning": "to over-question, to ask too much of",
+            "combinedLogic": "Base verb 'überfragen' → to over-question, to ask too much of"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "überfragt",
+            "present3rd": "überfragt",
+            "past3rd": "überfragte",
+            "present": {
+              "ich": "überfrage",
+              "du": "überfragst",
+              "er_sie_es": "überfragt",
+              "wir": "überfragen",
+              "ihr": "überfragt",
+              "sie_Sie": "überfragen"
+            },
+            "past": {
+              "ich": "überfragte",
+              "du": "überfragtest",
+              "er_sie_es": "überfragte",
+              "wir": "überfragteen",
+              "ihr": "überfragtet",
+              "sie_Sie": "überfragteen"
+            },
+            "future": {
+              "ich": "werde überfragen",
+              "du": "wirst überfragen",
+              "er_sie_es": "wird überfragen",
+              "wir": "werden überfragen",
+              "ihr": "werdet überfragen",
+              "sie_Sie": "werden überfragen"
+            }
+          },
+          "example": "Er überfragt den Schüler. | Sie überfragte ihn mit ihren Fragen. | Ich fühle mich überfragt.",
+          "exampleDe": "Er überfragt den Schüler. | Sie überfragte ihn mit ihren Fragen. | Ich fühle mich überfragt.",
+          "exampleEn": "He is over-questioning the student. (Präsens) | She over-questioned him with her questions. (Präteritum) | I feel over-questioned. (Partizip II - used as adjective)",
+          "exampleFull": "• Er überfragt den Schüler.\nHe is over-questioning the student. (Präsens)\n• Sie überfragte ihn mit ihren Fragen.\nShe over-questioned him with her questions. (Präteritum)\n• Ich fühle mich überfragt.\nI feel over-questioned. (Partizip II - used as adjective)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "überfragen",
+            "rootMeaning": "to over-question, to ask too much of",
+            "combinedLogic": "Base verb 'überfragen' → to over-question, to ask too much of"
+          }
+        },
+        {
+          "id": "v-1748-rübertragen",
+          "index": 1748,
+          "infinitive": "rübertragen",
+          "meaning": "to transfer, to carry over (informal)",
+          "tags": [
+            "freq-1748",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "rübertragen",
+            "prefixMeaning": "",
+            "rootMeaning": "to transfer, to carry over (informal)",
+            "combinedLogic": "Base verb 'rübertragen' → to transfer, to carry over (informal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "rübergetragen",
+            "present3rd": "trägt rüber",
+            "past3rd": "trug rüber",
+            "present": {
+              "ich": "rübertrage",
+              "du": "trägt rüberst",
+              "er_sie_es": "trägt rüber",
+              "wir": "rübertragen",
+              "ihr": "rübertragt",
+              "sie_Sie": "rübertragen"
+            },
+            "past": {
+              "ich": "trug rüber",
+              "du": "trug rüberst",
+              "er_sie_es": "trug rüber",
+              "wir": "trug rüberen",
+              "ihr": "trug rübert",
+              "sie_Sie": "trug rüberen"
+            },
+            "future": {
+              "ich": "werde rübertragen",
+              "du": "wirst rübertragen",
+              "er_sie_es": "wird rübertragen",
+              "wir": "werden rübertragen",
+              "ihr": "werdet rübertragen",
+              "sie_Sie": "werden rübertragen"
+            }
+          },
+          "example": "Er trägt die Kiste rüber. | Sie trug die Nachricht rüber. | Das wurde rübergetragen.",
+          "exampleDe": "Er trägt die Kiste rüber. | Sie trug die Nachricht rüber. | Das wurde rübergetragen.",
+          "exampleEn": "He is carrying the box over. (Präsens - separable) | She carried the message over. (Präteritum - separable) | That has been carried over. (Partizip II - passive, separable)",
+          "exampleFull": "• Er trägt die Kiste rüber.\nHe is carrying the box over. (Präsens - separable)\n• Sie trug die Nachricht rüber.\nShe carried the message over. (Präteritum - separable)\n• Das wurde rübergetragen.\nThat has been carried over. (Partizip II - passive, separable)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "rübertragen",
+            "rootMeaning": "to transfer, to carry over (informal)",
+            "combinedLogic": "Base verb 'rübertragen' → to transfer, to carry over (informal)"
+          }
+        },
+        {
+          "id": "v-1749-heraussagen",
+          "index": 1749,
+          "infinitive": "heraussagen",
+          "meaning": "to say out, to blurt out",
+          "tags": [
+            "freq-1749",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "aussagen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'aussagen'",
+            "combinedLogic": "her- (her- prefix) + aussagen → to say out, to blurt out"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "herausgesagt",
+            "present3rd": "sagt heraus",
+            "past3rd": "sagte heraus",
+            "present": {
+              "ich": "heraussage",
+              "du": "sagt herausst",
+              "er_sie_es": "sagt heraus",
+              "wir": "heraussagen",
+              "ihr": "heraussagt",
+              "sie_Sie": "heraussagen"
+            },
+            "past": {
+              "ich": "sagte heraus",
+              "du": "sagte herausst",
+              "er_sie_es": "sagte heraus",
+              "wir": "sagte herausen",
+              "ihr": "sagte heraust",
+              "sie_Sie": "sagte herausen"
+            },
+            "future": {
+              "ich": "werde heraussagen",
+              "du": "wirst heraussagen",
+              "er_sie_es": "wird heraussagen",
+              "wir": "werden heraussagen",
+              "ihr": "werdet heraussagen",
+              "sie_Sie": "werden heraussagen"
+            }
+          },
+          "example": "Er sagt seine Meinung heraus. | Sie sagte das Geheimnis heraus. | Er hat alles herausgesagt.",
+          "exampleDe": "Er sagt seine Meinung heraus. | Sie sagte das Geheimnis heraus. | Er hat alles herausgesagt.",
+          "exampleEn": "He is saying out his opinion. (Präsens) | She blurted out the secret. (Präteritum) | He has blurted out everything. (Partizip II)",
+          "exampleFull": "• Er sagt seine Meinung heraus.\nHe is saying out his opinion. (Präsens)\n• Sie sagte das Geheimnis heraus.\nShe blurted out the secret. (Präteritum)\n• Er hat alles herausgesagt.\nHe has blurted out everything. (Partizip II)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "aussagen",
+            "rootMeaning": "base verb 'aussagen'",
+            "combinedLogic": "her- (her- prefix) + aussagen → to say out, to blurt out"
+          }
+        },
+        {
+          "id": "v-1750-herauswagen",
+          "index": 1750,
+          "infinitive": "herauswagen",
+          "meaning": "to venture out, to dare to come forward",
+          "tags": [
+            "freq-1750",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "auswagen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'auswagen'",
+            "combinedLogic": "her- (her- prefix) + auswagen → to venture out, to dare to come forward"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "herausgewagt",
+            "present3rd": "wagt heraus",
+            "past3rd": "wagte heraus",
+            "present": {
+              "ich": "herauswage",
+              "du": "wagt herausst",
+              "er_sie_es": "wagt heraus",
+              "wir": "herauswagen",
+              "ihr": "herauswagt",
+              "sie_Sie": "herauswagen"
+            },
+            "past": {
+              "ich": "wagte heraus",
+              "du": "wagte herausst",
+              "er_sie_es": "wagte heraus",
+              "wir": "wagte herausen",
+              "ihr": "wagte heraust",
+              "sie_Sie": "wagte herausen"
+            },
+            "future": {
+              "ich": "werde herauswagen",
+              "du": "wirst herauswagen",
+              "er_sie_es": "wird herauswagen",
+              "wir": "werden herauswagen",
+              "ihr": "werdet herauswagen",
+              "sie_Sie": "werden herauswagen"
+            }
+          },
+          "example": "Er wagt sich heraus. | Sie wagte sich nicht heraus. | Er hat sich nicht herausgewagt.",
+          "exampleDe": "Er wagt sich heraus. | Sie wagte sich nicht heraus. | Er hat sich nicht herausgewagt.",
+          "exampleEn": "He ventures out. (Präsens - reflexive) | She did not dare to come forward. (Präteritum - reflexive) | He has not ventured out. (Partizip II - reflexive)",
+          "exampleFull": "• Er wagt sich heraus.\nHe ventures out. (Präsens - reflexive)\n• Sie wagte sich nicht heraus.\nShe did not dare to come forward. (Präteritum - reflexive)\n• Er hat sich nicht herausgewagt.\nHe has not ventured out. (Partizip II - reflexive)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "auswagen",
+            "rootMeaning": "base verb 'auswagen'",
+            "combinedLogic": "her- (her- prefix) + auswagen → to venture out, to dare to come forward"
+          }
+        }
+      ]
+    },
+    {
+      "deckId": 36,
+      "title": "Deck 36 (Verbs 1751–1796)",
+      "count": 46,
+      "verbs": [
+        {
+          "id": "v-1751-beischreiben",
+          "index": 1751,
+          "infinitive": "beischreiben",
+          "meaning": "to write next to, to add in writing",
+          "tags": [
+            "freq-1751",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "bei-",
+            "isSeparable": true,
+            "rootVerb": "schreiben",
+            "prefixMeaning": "alongside / assist",
+            "rootMeaning": "base verb 'schreiben'",
+            "combinedLogic": "bei- (alongside / assist) + schreiben → to write next to, to add in writing"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "beigeschrieben",
+            "present3rd": "schreibt bei",
+            "past3rd": "schrieb bei",
+            "present": {
+              "ich": "beischreibe bei",
+              "du": "schreibst bei",
+              "er_sie_es": "schreibt bei",
+              "wir": "beischreiben",
+              "ihr": "beischreibt bei",
+              "sie_Sie": "beischreiben"
+            },
+            "past": {
+              "ich": "schrieb bei",
+              "du": "schriebst bei",
+              "er_sie_es": "schrieb bei",
+              "wir": "schrieben bei",
+              "ihr": "schriebt bei",
+              "sie_Sie": "schrieben bei"
+            },
+            "future": {
+              "ich": "werde beischreiben",
+              "du": "wirst beischreiben",
+              "er_sie_es": "wird beischreiben",
+              "wir": "werden beischreiben",
+              "ihr": "werdet beischreiben",
+              "sie_Sie": "werden beischreiben"
+            }
+          },
+          "example": "Er schreibt einen Kommentar bei. | Sie schrieb eine Notiz bei. | Eine Anmerkung wurde beigeschrieben.",
+          "exampleDe": "Er schreibt einen Kommentar bei. | Sie schrieb eine Notiz bei. | Eine Anmerkung wurde beigeschrieben.",
+          "exampleEn": "He writes a comment next to it. (Präsens) | She wrote a note next to it. (Präteritum) | An annotation has been added in writing. (Partizip II - passive)",
+          "exampleFull": "• Er schreibt einen Kommentar bei.\nHe writes a comment next to it. (Präsens)\n• Sie schrieb eine Notiz bei.\nShe wrote a note next to it. (Präteritum)\n• Eine Anmerkung wurde beigeschrieben.\nAn annotation has been added in writing. (Partizip II - passive)",
+          "origins": {
+            "prefix": "bei-",
+            "prefixMeaning": "alongside / assist",
+            "rootVerb": "schreiben",
+            "rootMeaning": "base verb 'schreiben'",
+            "combinedLogic": "bei- (alongside / assist) + schreiben → to write next to, to add in writing"
+          }
+        },
+        {
+          "id": "v-1752-verschüchtern",
+          "index": 1752,
+          "infinitive": "verschüchtern",
+          "meaning": "to intimidate, to scare",
+          "tags": [
+            "freq-1752",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verschüchtern",
+            "prefixMeaning": "",
+            "rootMeaning": "to intimidate, to scare",
+            "combinedLogic": "Base verb 'verschüchtern' → to intimidate, to scare"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "verschüchtert",
+            "present3rd": "verschüchtert",
+            "past3rd": "verschüchterte",
+            "present": {
+              "ich": "verschüchtere",
+              "du": "verschüchterst",
+              "er_sie_es": "verschüchtert",
+              "wir": "verschüchtern",
+              "ihr": "verschüchtert",
+              "sie_Sie": "verschüchtern"
+            },
+            "past": {
+              "ich": "verschüchterte",
+              "du": "verschüchtertest",
+              "er_sie_es": "verschüchterte",
+              "wir": "verschüchterteen",
+              "ihr": "verschüchtertet",
+              "sie_Sie": "verschüchterteen"
+            },
+            "future": {
+              "ich": "werde verschüchtern",
+              "du": "wirst verschüchtern",
+              "er_sie_es": "wird verschüchtern",
+              "wir": "werden verschüchtern",
+              "ihr": "werdet verschüchtern",
+              "sie_Sie": "werden verschüchtern"
+            }
+          },
+          "example": "Das verschüchtert ihn. | Sie verschüchterte das Kind. | Er wurde verschüchtert.",
+          "exampleDe": "Das verschüchtert ihn. | Sie verschüchterte das Kind. | Er wurde verschüchtert.",
+          "exampleEn": "That intimidates him. (Präsens) | She scared the child. (Präteritum) | He has been intimidated. (Partizip II - passive)",
+          "exampleFull": "• Das verschüchtert ihn.\nThat intimidates him. (Präsens)\n• Sie verschüchterte das Kind.\nShe scared the child. (Präteritum)\n• Er wurde verschüchtert.\nHe has been intimidated. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verschüchtern",
+            "rootMeaning": "to intimidate, to scare",
+            "combinedLogic": "Base verb 'verschüchtern' → to intimidate, to scare"
+          }
+        },
+        {
+          "id": "v-1753-vorausgeben",
+          "index": 1753,
+          "infinitive": "vorausgeben",
+          "meaning": "to give in advance, to presuppose (less common)",
+          "tags": [
+            "freq-1753",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "vor-",
+            "isSeparable": true,
+            "rootVerb": "ausgeben",
+            "prefixMeaning": "before / forward / in front",
+            "rootMeaning": "base verb 'ausgeben'",
+            "combinedLogic": "vor- (before / forward / in front) + ausgeben → to give in advance, to presuppose (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "vorausgegeben",
+            "present3rd": "gibt voraus",
+            "past3rd": "gab voraus",
+            "present": {
+              "ich": "vorausgebe",
+              "du": "gibt vorausst",
+              "er_sie_es": "gibt voraus",
+              "wir": "vorausgeben",
+              "ihr": "vorausgebt",
+              "sie_Sie": "vorausgeben"
+            },
+            "past": {
+              "ich": "gab voraus",
+              "du": "gab vorausst",
+              "er_sie_es": "gab voraus",
+              "wir": "gab vorausen",
+              "ihr": "gab voraust",
+              "sie_Sie": "gab vorausen"
+            },
+            "future": {
+              "ich": "werde vorausgeben",
+              "du": "wirst vorausgeben",
+              "er_sie_es": "wird vorausgeben",
+              "wir": "werden vorausgeben",
+              "ihr": "werdet vorausgeben",
+              "sie_Sie": "werden vorausgeben"
+            }
+          },
+          "example": "Er gibt das Geld voraus. | Sie gab das Ergebnis voraus. | Geld wurde vorausgegeben.",
+          "exampleDe": "Er gibt das Geld voraus. | Sie gab das Ergebnis voraus. | Geld wurde vorausgegeben.",
+          "exampleEn": "He gives the money in advance. (Präsens) | She presupposed the result. (Präteritum) | Money has been given in advance. (Partizip II - passive)",
+          "exampleFull": "• Er gibt das Geld voraus.\nHe gives the money in advance. (Präsens)\n• Sie gab das Ergebnis voraus.\nShe presupposed the result. (Präteritum)\n• Geld wurde vorausgegeben.\nMoney has been given in advance. (Partizip II - passive)",
+          "origins": {
+            "prefix": "vor-",
+            "prefixMeaning": "before / forward / in front",
+            "rootVerb": "ausgeben",
+            "rootMeaning": "base verb 'ausgeben'",
+            "combinedLogic": "vor- (before / forward / in front) + ausgeben → to give in advance, to presuppose (less common)"
+          }
+        },
+        {
+          "id": "v-1754-voraufgehen",
+          "index": 1754,
+          "infinitive": "voraufgehen",
+          "meaning": "to go ahead, to precede",
+          "tags": [
+            "freq-1754",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "vor-",
+            "isSeparable": true,
+            "rootVerb": "aufgehen",
+            "prefixMeaning": "before / forward / in front",
+            "rootMeaning": "base verb 'aufgehen'",
+            "combinedLogic": "vor- (before / forward / in front) + aufgehen → to go ahead, to precede"
+          },
+          "conjugation": {
+            "auxiliary": "sein",
+            "participle": "voraufgegangen",
+            "present3rd": "geht vorauf",
+            "past3rd": "ging vorauf",
+            "present": {
+              "ich": "voraufgehe",
+              "du": "geht voraufst",
+              "er_sie_es": "geht vorauf",
+              "wir": "voraufgehen",
+              "ihr": "voraufgeht",
+              "sie_Sie": "voraufgehen"
+            },
+            "past": {
+              "ich": "ging vorauf",
+              "du": "ging voraufst",
+              "er_sie_es": "ging vorauf",
+              "wir": "ging voraufen",
+              "ihr": "ging vorauft",
+              "sie_Sie": "ging voraufen"
+            },
+            "future": {
+              "ich": "werde voraufgehen",
+              "du": "wirst voraufgehen",
+              "er_sie_es": "wird voraufgehen",
+              "wir": "werden voraufgehen",
+              "ihr": "werdet voraufgehen",
+              "sie_Sie": "werden voraufgehen"
+            }
+          },
+          "example": "Er geht vorauf. | Sie ging vorauf. | Er ist voraufgegangen.",
+          "exampleDe": "Er geht vorauf. | Sie ging vorauf. | Er ist voraufgegangen.",
+          "exampleEn": "He is going ahead. (Präsens) | She preceded. (Präteritum) | He has gone ahead. (Partizip II)",
+          "exampleFull": "• Er geht vorauf.\nHe is going ahead. (Präsens)\n• Sie ging vorauf.\nShe preceded. (Präteritum)\n• Er ist voraufgegangen.\nHe has gone ahead. (Partizip II)",
+          "origins": {
+            "prefix": "vor-",
+            "prefixMeaning": "before / forward / in front",
+            "rootVerb": "aufgehen",
+            "rootMeaning": "base verb 'aufgehen'",
+            "combinedLogic": "vor- (before / forward / in front) + aufgehen → to go ahead, to precede"
+          }
+        },
+        {
+          "id": "v-1755-rechtsprechen",
+          "index": 1755,
+          "infinitive": "rechtsprechen",
+          "meaning": "to administer justice, to pass judgment",
+          "tags": [
+            "freq-1755",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "rechtsprechen",
+            "prefixMeaning": "",
+            "rootMeaning": "to administer justice, to pass judgment",
+            "combinedLogic": "Base verb 'rechtsprechen' → to administer justice, to pass judgment"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "rechtgesprochen",
+            "present3rd": "spricht recht",
+            "past3rd": "sprach recht",
+            "present": {
+              "ich": "rechtspreche",
+              "du": "spricht rechst",
+              "er_sie_es": "spricht recht",
+              "wir": "rechtsprechen",
+              "ihr": "rechtsprecht",
+              "sie_Sie": "rechtsprechen"
+            },
+            "past": {
+              "ich": "sprach recht",
+              "du": "sprach rechtst",
+              "er_sie_es": "sprach recht",
+              "wir": "sprach rechten",
+              "ihr": "sprach rechtt",
+              "sie_Sie": "sprach rechten"
+            },
+            "future": {
+              "ich": "werde rechtsprechen",
+              "du": "wirst rechtsprechen",
+              "er_sie_es": "wird rechtsprechen",
+              "wir": "werden rechtsprechen",
+              "ihr": "werdet rechtsprechen",
+              "sie_Sie": "werden rechtsprechen"
+            }
+          },
+          "example": "Er spricht recht. | Sie sprach recht über den Fall. | Über den Angeklagten wurde rechtgesprochen.",
+          "exampleDe": "Er spricht recht. | Sie sprach recht über den Fall. | Über den Angeklagten wurde rechtgesprochen.",
+          "exampleEn": "He administers justice. (Präsens) | She passed judgment on the case. (Präteritum) | Judgment has been passed on the accused. (Partizip II - passive)",
+          "exampleFull": "• Er spricht recht.\nHe administers justice. (Präsens)\n• Sie sprach recht über den Fall.\nShe passed judgment on the case. (Präteritum)\n• Über den Angeklagten wurde rechtgesprochen.\nJudgment has been passed on the accused. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "rechtsprechen",
+            "rootMeaning": "to administer justice, to pass judgment",
+            "combinedLogic": "Base verb 'rechtsprechen' → to administer justice, to pass judgment"
+          }
+        },
+        {
+          "id": "v-1756-verspiegeln",
+          "index": 1756,
+          "infinitive": "verspiegeln",
+          "meaning": "to mirror, to provide with mirrors (usually reflexive: sich verspiegeln)",
+          "tags": [
+            "freq-1756",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verspiegeln",
+            "prefixMeaning": "",
+            "rootMeaning": "to mirror, to provide with mirrors (usually reflexive: sich verspiegeln)",
+            "combinedLogic": "Base verb 'verspiegeln' → to mirror, to provide with mirrors (usually reflexive: sich verspiegeln)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "verspiegelt",
+            "present3rd": "verspiegelt",
+            "past3rd": "verspiegelte",
+            "present": {
+              "ich": "verspiegele",
+              "du": "verspiegelst",
+              "er_sie_es": "verspiegelt",
+              "wir": "verspiegeln",
+              "ihr": "verspiegelt",
+              "sie_Sie": "verspiegeln"
+            },
+            "past": {
+              "ich": "verspiegelte",
+              "du": "verspiegeltest",
+              "er_sie_es": "verspiegelte",
+              "wir": "verspiegelteen",
+              "ihr": "verspiegeltet",
+              "sie_Sie": "verspiegelteen"
+            },
+            "future": {
+              "ich": "werde verspiegeln",
+              "du": "wirst verspiegeln",
+              "er_sie_es": "wird verspiegeln",
+              "wir": "werden verspiegeln",
+              "ihr": "werdet verspiegeln",
+              "sie_Sie": "werden verspiegeln"
+            }
+          },
+          "example": "Er verspiegelt die Wand (less common). | Sie verspiegelte sich im Wasser. | Die Oberfläche ist verspiegelt.",
+          "exampleDe": "Er verspiegelt die Wand (less common). | Sie verspiegelte sich im Wasser. | Die Oberfläche ist verspiegelt.",
+          "exampleEn": "He is mirroring the wall. (Präsens) | She mirrored herself in the water. (Präteritum - reflexive) | The surface is mirrored. (Partizip II - often used as adjective)",
+          "exampleFull": "• Er verspiegelt die Wand (less common).\nHe is mirroring the wall. (Präsens)\n• Sie verspiegelte sich im Wasser.\nShe mirrored herself in the water. (Präteritum - reflexive)\n• Die Oberfläche ist verspiegelt.\nThe surface is mirrored. (Partizip II - often used as adjective)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verspiegeln",
+            "rootMeaning": "to mirror, to provide with mirrors (usually reflexive: sich verspiegeln)",
+            "combinedLogic": "Base verb 'verspiegeln' → to mirror, to provide with mirrors (usually reflexive: sich verspiegeln)"
+          }
+        },
+        {
+          "id": "v-1757-reinwandern",
+          "index": 1757,
+          "infinitive": "reinwandern",
+          "meaning": "to wander in, to immigrate (informal)",
+          "tags": [
+            "freq-1757",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "reinwandern",
+            "prefixMeaning": "",
+            "rootMeaning": "to wander in, to immigrate (informal)",
+            "combinedLogic": "Base verb 'reinwandern' → to wander in, to immigrate (informal)"
+          },
+          "conjugation": {
+            "auxiliary": "sein",
+            "participle": "reingewandert",
+            "present3rd": "wandert rein",
+            "past3rd": "wanderte rein",
+            "present": {
+              "ich": "reinwandere",
+              "du": "wandert reinst",
+              "er_sie_es": "wandert rein",
+              "wir": "reinwandern",
+              "ihr": "reinwandert",
+              "sie_Sie": "reinwandern"
+            },
+            "past": {
+              "ich": "wanderte rein",
+              "du": "wanderte reinst",
+              "er_sie_es": "wanderte rein",
+              "wir": "wanderte reinen",
+              "ihr": "wanderte reint",
+              "sie_Sie": "wanderte reinen"
+            },
+            "future": {
+              "ich": "werde reinwandern",
+              "du": "wirst reinwandern",
+              "er_sie_es": "wird reinwandern",
+              "wir": "werden reinwandern",
+              "ihr": "werdet reinwandern",
+              "sie_Sie": "werden reinwandern"
+            }
+          },
+          "example": "Er wandert einfach so rein. | Sie wanderte ins Land rein. | Er ist reingewandert.",
+          "exampleDe": "Er wandert einfach so rein. | Sie wanderte ins Land rein. | Er ist reingewandert.",
+          "exampleEn": "He just wanders in like that. (Präsens) | She immigrated into the country. (Präteritum) | He has wandered in. (Partizip II)",
+          "exampleFull": "• Er wandert einfach so rein.\nHe just wanders in like that. (Präsens)\n• Sie wanderte ins Land rein.\nShe immigrated into the country. (Präteritum)\n• Er ist reingewandert.\nHe has wandered in. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "reinwandern",
+            "rootMeaning": "to wander in, to immigrate (informal)",
+            "combinedLogic": "Base verb 'reinwandern' → to wander in, to immigrate (informal)"
+          }
+        },
+        {
+          "id": "v-1758-durchmüssen",
+          "index": 1758,
+          "infinitive": "durchmüssen",
+          "meaning": "to have to go through (less common modal compound)",
+          "tags": [
+            "freq-1758",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "durchmüssen",
+            "prefixMeaning": "",
+            "rootMeaning": "to have to go through (less common modal compound)",
+            "combinedLogic": "Base verb 'durchmüssen' → to have to go through (less common modal compound)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "durchgemusst",
+            "present3rd": "muss durch",
+            "past3rd": "musste durch",
+            "present": {
+              "ich": "durchmüsse",
+              "du": "muss durchst",
+              "er_sie_es": "muss durch",
+              "wir": "durchmüssen",
+              "ihr": "durchmüsst",
+              "sie_Sie": "durchmüssen"
+            },
+            "past": {
+              "ich": "musste durch",
+              "du": "musste durchst",
+              "er_sie_es": "musste durch",
+              "wir": "musste durchen",
+              "ihr": "musste durcht",
+              "sie_Sie": "musste durchen"
+            },
+            "future": {
+              "ich": "werde durchmüssen",
+              "du": "wirst durchmüssen",
+              "er_sie_es": "wird durchmüssen",
+              "wir": "werden durchmüssen",
+              "ihr": "werdet durchmüssen",
+              "sie_Sie": "werden durchmüssen"
+            }
+          },
+          "example": "Er muss da durch. | Sie musste durch die Prüfung durch. | Er hat durch die schwierige Zeit durchgemusst.",
+          "exampleDe": "Er muss da durch. | Sie musste durch die Prüfung durch. | Er hat durch die schwierige Zeit durchgemusst.",
+          "exampleEn": "He has to go through there. (Präsens) | She had to go through the exam. (Präteritum) | He has had to go through the difficult time. (Partizip II)",
+          "exampleFull": "• Er muss da durch.\nHe has to go through there. (Präsens)\n• Sie musste durch die Prüfung durch.\nShe had to go through the exam. (Präteritum)\n• Er hat durch die schwierige Zeit durchgemusst.\nHe has had to go through the difficult time. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "durchmüssen",
+            "rootMeaning": "to have to go through (less common modal compound)",
+            "combinedLogic": "Base verb 'durchmüssen' → to have to go through (less common modal compound)"
+          }
+        },
+        {
+          "id": "v-1759-zusammenlassen",
+          "index": 1759,
+          "infinitive": "zusammenlassen",
+          "meaning": "to leave together, to keep together",
+          "tags": [
+            "freq-1759",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "zusammen-",
+            "isSeparable": true,
+            "rootVerb": "lassen",
+            "prefixMeaning": "together / joint",
+            "rootMeaning": "base verb 'lassen'",
+            "combinedLogic": "zusammen- (together / joint) + lassen → to leave together, to keep together"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "zusammenlassen",
+            "present3rd": "lässt zusammen",
+            "past3rd": "ließ zusammen",
+            "present": {
+              "ich": "zusammenlasse zusammen",
+              "du": "lässt zusammen",
+              "er_sie_es": "lässt zusammen",
+              "wir": "zusammenlassen",
+              "ihr": "zusammenlasst zusammen",
+              "sie_Sie": "zusammenlassen"
+            },
+            "past": {
+              "ich": "ließ zusammen",
+              "du": "ließst zusammen",
+              "er_sie_es": "ließ zusammen",
+              "wir": "ließen zusammen",
+              "ihr": "ließt zusammen",
+              "sie_Sie": "ließen zusammen"
+            },
+            "future": {
+              "ich": "werde zusammenlassen",
+              "du": "wirst zusammenlassen",
+              "er_sie_es": "wird zusammenlassen",
+              "wir": "werden zusammenlassen",
+              "ihr": "werdet zusammenlassen",
+              "sie_Sie": "werden zusammenlassen"
+            }
+          },
+          "example": "Er lässt die Kinder zusammen. | Sie ließ die Dokumente zusammen. | Die Gruppe wurde zusammenlassen.",
+          "exampleDe": "Er lässt die Kinder zusammen. | Sie ließ die Dokumente zusammen. | Die Gruppe wurde zusammenlassen.",
+          "exampleEn": "He leaves the children together. (Präsens) | She kept the documents together. (Präteritum) | The group has been left together. (Partizip II - passive)",
+          "exampleFull": "• Er lässt die Kinder zusammen.\nHe leaves the children together. (Präsens)\n• Sie ließ die Dokumente zusammen.\nShe kept the documents together. (Präteritum)\n• Die Gruppe wurde zusammenlassen.\nThe group has been left together. (Partizip II - passive)",
+          "origins": {
+            "prefix": "zusammen-",
+            "prefixMeaning": "together / joint",
+            "rootVerb": "lassen",
+            "rootMeaning": "base verb 'lassen'",
+            "combinedLogic": "zusammen- (together / joint) + lassen → to leave together, to keep together"
+          }
+        },
+        {
+          "id": "v-1760-schwefeln",
+          "index": 1760,
+          "infinitive": "schwefeln",
+          "meaning": "to sulphurize, to fumigate with sulphur",
+          "tags": [
+            "freq-1760",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "schwefeln",
+            "prefixMeaning": "",
+            "rootMeaning": "to sulphurize, to fumigate with sulphur",
+            "combinedLogic": "Base verb 'schwefeln' → to sulphurize, to fumigate with sulphur"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "geschwefelt",
+            "present3rd": "schwefelt",
+            "past3rd": "schwefelte",
+            "present": {
+              "ich": "schwefele",
+              "du": "schwefelst",
+              "er_sie_es": "schwefelt",
+              "wir": "schwefeln",
+              "ihr": "schwefelt",
+              "sie_Sie": "schwefeln"
+            },
+            "past": {
+              "ich": "schwefelte",
+              "du": "schwefeltest",
+              "er_sie_es": "schwefelte",
+              "wir": "schwefelteen",
+              "ihr": "schwefeltet",
+              "sie_Sie": "schwefelteen"
+            },
+            "future": {
+              "ich": "werde schwefeln",
+              "du": "wirst schwefeln",
+              "er_sie_es": "wird schwefeln",
+              "wir": "werden schwefeln",
+              "ihr": "werdet schwefeln",
+              "sie_Sie": "werden schwefeln"
+            }
+          },
+          "example": "Er schwefelt den Wein. | Sie schwefelte den Raum. | Der Keller wurde geschwefelt.",
+          "exampleDe": "Er schwefelt den Wein. | Sie schwefelte den Raum. | Der Keller wurde geschwefelt.",
+          "exampleEn": "He is sulphurizing the wine. (Präsens) | She fumigated the room with sulphur. (Präteritum) | The cellar has been fumigated with sulphur. (Partizip II - passive)",
+          "exampleFull": "• Er schwefelt den Wein.\nHe is sulphurizing the wine. (Präsens)\n• Sie schwefelte den Raum.\nShe fumigated the room with sulphur. (Präteritum)\n• Der Keller wurde geschwefelt.\nThe cellar has been fumigated with sulphur. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "schwefeln",
+            "rootMeaning": "to sulphurize, to fumigate with sulphur",
+            "combinedLogic": "Base verb 'schwefeln' → to sulphurize, to fumigate with sulphur"
+          }
+        },
+        {
+          "id": "v-1761-ratschlagen",
+          "index": 1761,
+          "infinitive": "ratschlagen",
+          "meaning": "to consult, to deliberate (less common than sich beraten)",
+          "tags": [
+            "freq-1761",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "ratschlagen",
+            "prefixMeaning": "",
+            "rootMeaning": "to consult, to deliberate (less common than sich beraten)",
+            "combinedLogic": "Base verb 'ratschlagen' → to consult, to deliberate (less common than sich beraten)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "ratgeschlagen",
+            "present3rd": "schlägt rat",
+            "past3rd": "schlug rat",
+            "present": {
+              "ich": "ratschlage",
+              "du": "schlägt rast",
+              "er_sie_es": "schlägt rat",
+              "wir": "ratschlagen",
+              "ihr": "ratschlagt",
+              "sie_Sie": "ratschlagen"
+            },
+            "past": {
+              "ich": "schlug rat",
+              "du": "schlug ratst",
+              "er_sie_es": "schlug rat",
+              "wir": "schlug raten",
+              "ihr": "schlug ratt",
+              "sie_Sie": "schlug raten"
+            },
+            "future": {
+              "ich": "werde ratschlagen",
+              "du": "wirst ratschlagen",
+              "er_sie_es": "wird ratschlagen",
+              "wir": "werden ratschlagen",
+              "ihr": "werdet ratschlagen",
+              "sie_Sie": "werden ratschlagen"
+            }
+          },
+          "example": "Sie schlagen rat. | Er schlug rat mit Experten. | Es wurde ratgeschlagen.",
+          "exampleDe": "Sie schlagen rat. | Er schlug rat mit Experten. | Es wurde ratgeschlagen.",
+          "exampleEn": "They are consulting. (Präsens) | He consulted with experts. (Präteritum) | Consultation has occurred. (Partizip II - passive)",
+          "exampleFull": "• Sie schlagen rat.\nThey are consulting. (Präsens)\n• Er schlug rat mit Experten.\nHe consulted with experts. (Präteritum)\n• Es wurde ratgeschlagen.\nConsultation has occurred. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "ratschlagen",
+            "rootMeaning": "to consult, to deliberate (less common than sich beraten)",
+            "combinedLogic": "Base verb 'ratschlagen' → to consult, to deliberate (less common than sich beraten)"
+          }
+        },
+        {
+          "id": "v-1762-beschwerdeführen",
+          "index": 1762,
+          "infinitive": "beschwerdeführen",
+          "meaning": "to file a complaint",
+          "tags": [
+            "freq-1762",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "beschwerdeführen",
+            "prefixMeaning": "",
+            "rootMeaning": "to file a complaint",
+            "combinedLogic": "Base verb 'beschwerdeführen' → to file a complaint"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "beschwerdegeführt",
+            "present3rd": "führt beschwerde",
+            "past3rd": "führte beschwerde",
+            "present": {
+              "ich": "beschwerdeführe",
+              "du": "führt beschwerdest",
+              "er_sie_es": "führt beschwerde",
+              "wir": "beschwerdeführen",
+              "ihr": "beschwerdeführt",
+              "sie_Sie": "beschwerdeführen"
+            },
+            "past": {
+              "ich": "führte beschwerde",
+              "du": "führte beschwerdest",
+              "er_sie_es": "führte beschwerde",
+              "wir": "führte beschwerdeen",
+              "ihr": "führte beschwerdet",
+              "sie_Sie": "führte beschwerdeen"
+            },
+            "future": {
+              "ich": "werde beschwerdeführen",
+              "du": "wirst beschwerdeführen",
+              "er_sie_es": "wird beschwerdeführen",
+              "wir": "werden beschwerdeführen",
+              "ihr": "werdet beschwerdeführen",
+              "sie_Sie": "werden beschwerdeführen"
+            }
+          },
+          "example": "Er führt Beschwerde ein. | Sie führte Beschwerde gegen die Entscheidung. | Es wurde Beschwerde geführt.",
+          "exampleDe": "Er führt Beschwerde ein. | Sie führte Beschwerde gegen die Entscheidung. | Es wurde Beschwerde geführt.",
+          "exampleEn": "He is filing a complaint. (Präsens - separable prefix \"ein\") | She filed a complaint against the decision. (Präteritum) | A complaint has been filed. (Partizip II - passive)",
+          "exampleFull": "• Er führt Beschwerde ein.\nHe is filing a complaint. (Präsens - separable prefix \"ein\")\n• Sie führte Beschwerde gegen die Entscheidung.\nShe filed a complaint against the decision. (Präteritum)\n• Es wurde Beschwerde geführt.\nA complaint has been filed. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "beschwerdeführen",
+            "rootMeaning": "to file a complaint",
+            "combinedLogic": "Base verb 'beschwerdeführen' → to file a complaint"
+          }
+        },
+        {
+          "id": "v-1763-hertrauen",
+          "index": 1763,
+          "infinitive": "hertrauen",
+          "meaning": "to dare to come here (less common)",
+          "tags": [
+            "freq-1763",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "trauen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'trauen'",
+            "combinedLogic": "her- (her- prefix) + trauen → to dare to come here (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hergetraut",
+            "present3rd": "traut her",
+            "past3rd": "traute her",
+            "present": {
+              "ich": "hertraue her",
+              "du": "traust her",
+              "er_sie_es": "traut her",
+              "wir": "hertrauen",
+              "ihr": "hertraut her",
+              "sie_Sie": "hertrauen"
+            },
+            "past": {
+              "ich": "traute her",
+              "du": "trautest her",
+              "er_sie_es": "traute her",
+              "wir": "trauteen her",
+              "ihr": "trautet her",
+              "sie_Sie": "trauteen her"
+            },
+            "future": {
+              "ich": "werde hertrauen",
+              "du": "wirst hertrauen",
+              "er_sie_es": "wird hertrauen",
+              "wir": "werden hertrauen",
+              "ihr": "werdet hertrauen",
+              "sie_Sie": "werden hertrauen"
+            }
+          },
+          "example": "Er traut sich nicht her. | Sie traute sich nicht her. | Er hat sich nicht hergetraut.",
+          "exampleDe": "Er traut sich nicht her. | Sie traute sich nicht her. | Er hat sich nicht hergetraut.",
+          "exampleEn": "He does not dare to come here. (Präsens - reflexive) | She did not dare to come here. (Präteritum - reflexive) | He has not dared to come here. (Partizip II - reflexive)",
+          "exampleFull": "• Er traut sich nicht her.\nHe does not dare to come here. (Präsens - reflexive)\n• Sie traute sich nicht her.\nShe did not dare to come here. (Präteritum - reflexive)\n• Er hat sich nicht hergetraut.\nHe has not dared to come here. (Partizip II - reflexive)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "trauen",
+            "rootMeaning": "base verb 'trauen'",
+            "combinedLogic": "her- (her- prefix) + trauen → to dare to come here (less common)"
+          }
+        },
+        {
+          "id": "v-1764-vertrauern",
+          "index": 1764,
+          "infinitive": "vertrauern",
+          "meaning": "to grieve away (time)",
+          "tags": [
+            "freq-1764",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "vertrauern",
+            "prefixMeaning": "",
+            "rootMeaning": "to grieve away (time)",
+            "combinedLogic": "Base verb 'vertrauern' → to grieve away (time)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "vertrauert",
+            "present3rd": "vertrauert",
+            "past3rd": "vertrauerte",
+            "present": {
+              "ich": "vertrauere",
+              "du": "vertrauerst",
+              "er_sie_es": "vertrauert",
+              "wir": "vertrauern",
+              "ihr": "vertrauert",
+              "sie_Sie": "vertrauern"
+            },
+            "past": {
+              "ich": "vertrauerte",
+              "du": "vertrauertest",
+              "er_sie_es": "vertrauerte",
+              "wir": "vertrauerteen",
+              "ihr": "vertrauertet",
+              "sie_Sie": "vertrauerteen"
+            },
+            "future": {
+              "ich": "werde vertrauern",
+              "du": "wirst vertrauern",
+              "er_sie_es": "wird vertrauern",
+              "wir": "werden vertrauern",
+              "ihr": "werdet vertrauern",
+              "sie_Sie": "werden vertrauern"
+            }
+          },
+          "example": "Er vertrauert die Tage. | Sie vertrauerte die Nacht. | Er hat seine Jugend vertrauert.",
+          "exampleDe": "Er vertrauert die Tage. | Sie vertrauerte die Nacht. | Er hat seine Jugend vertrauert.",
+          "exampleEn": "He grieves away the days. (Präsens) | She grieved away the night. (Präteritum) | He has grieved away his youth. (Partizip II)",
+          "exampleFull": "• Er vertrauert die Tage.\nHe grieves away the days. (Präsens)\n• Sie vertrauerte die Nacht.\nShe grieved away the night. (Präteritum)\n• Er hat seine Jugend vertrauert.\nHe has grieved away his youth. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "vertrauern",
+            "rootMeaning": "to grieve away (time)",
+            "combinedLogic": "Base verb 'vertrauern' → to grieve away (time)"
+          }
+        },
+        {
+          "id": "v-1765-rübergreifen",
+          "index": 1765,
+          "infinitive": "rübergreifen",
+          "meaning": "to reach over, to grab over (informal)",
+          "tags": [
+            "freq-1765",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "rübergreifen",
+            "prefixMeaning": "",
+            "rootMeaning": "to reach over, to grab over (informal)",
+            "combinedLogic": "Base verb 'rübergreifen' → to reach over, to grab over (informal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "rübergegriffen",
+            "present3rd": "greift rüber",
+            "past3rd": "griff rüber",
+            "present": {
+              "ich": "rübergreife",
+              "du": "greift rüberst",
+              "er_sie_es": "greift rüber",
+              "wir": "rübergreifen",
+              "ihr": "rübergreift",
+              "sie_Sie": "rübergreifen"
+            },
+            "past": {
+              "ich": "griff rüber",
+              "du": "griff rüberst",
+              "er_sie_es": "griff rüber",
+              "wir": "griff rüberen",
+              "ihr": "griff rübert",
+              "sie_Sie": "griff rüberen"
+            },
+            "future": {
+              "ich": "werde rübergreifen",
+              "du": "wirst rübergreifen",
+              "er_sie_es": "wird rübergreifen",
+              "wir": "werden rübergreifen",
+              "ihr": "werdet rübergreifen",
+              "sie_Sie": "werden rübergreifen"
+            }
+          },
+          "example": "Er greift rüber. | Sie griff rüber und nahm das Buch. | Er hat rübergegriffen.",
+          "exampleDe": "Er greift rüber. | Sie griff rüber und nahm das Buch. | Er hat rübergegriffen.",
+          "exampleEn": "He reaches over. (Präsens) | She reached over and took the book. (Präteritum) | He has reached over. (Partizip II)",
+          "exampleFull": "• Er greift rüber.\nHe reaches over. (Präsens)\n• Sie griff rüber und nahm das Buch.\nShe reached over and took the book. (Präteritum)\n• Er hat rübergegriffen.\nHe has reached over. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "rübergreifen",
+            "rootMeaning": "to reach over, to grab over (informal)",
+            "combinedLogic": "Base verb 'rübergreifen' → to reach over, to grab over (informal)"
+          }
+        },
+        {
+          "id": "v-1766-niederholen",
+          "index": 1766,
+          "infinitive": "niederholen",
+          "meaning": "to pull down, to bring down",
+          "tags": [
+            "freq-1766",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "niederholen",
+            "prefixMeaning": "",
+            "rootMeaning": "to pull down, to bring down",
+            "combinedLogic": "Base verb 'niederholen' → to pull down, to bring down"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "niedergeholt",
+            "present3rd": "holt nieder",
+            "past3rd": "holte nieder",
+            "present": {
+              "ich": "niederhole",
+              "du": "holt niederst",
+              "er_sie_es": "holt nieder",
+              "wir": "niederholen",
+              "ihr": "niederholt",
+              "sie_Sie": "niederholen"
+            },
+            "past": {
+              "ich": "holte nieder",
+              "du": "holte niederst",
+              "er_sie_es": "holte nieder",
+              "wir": "holte niederen",
+              "ihr": "holte niedert",
+              "sie_Sie": "holte niederen"
+            },
+            "future": {
+              "ich": "werde niederholen",
+              "du": "wirst niederholen",
+              "er_sie_es": "wird niederholen",
+              "wir": "werden niederholen",
+              "ihr": "werdet niederholen",
+              "sie_Sie": "werden niederholen"
+            }
+          },
+          "example": "Er holt die Fahne nieder. | Sie holte den Vorhang nieder. | Der Ball wurde niedergeholt.",
+          "exampleDe": "Er holt die Fahne nieder. | Sie holte den Vorhang nieder. | Der Ball wurde niedergeholt.",
+          "exampleEn": "He is pulling down the flag. (Präsens) | She pulled down the curtain. (Präteritum) | The ball has been brought down. (Partizip II - passive)",
+          "exampleFull": "• Er holt die Fahne nieder.\nHe is pulling down the flag. (Präsens)\n• Sie holte den Vorhang nieder.\nShe pulled down the curtain. (Präteritum)\n• Der Ball wurde niedergeholt.\nThe ball has been brought down. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "niederholen",
+            "rootMeaning": "to pull down, to bring down",
+            "combinedLogic": "Base verb 'niederholen' → to pull down, to bring down"
+          }
+        },
+        {
+          "id": "v-1767-remittieren",
+          "index": 1767,
+          "infinitive": "remittieren",
+          "meaning": "to remit, to send back (goods), to pardon (archaic)",
+          "tags": [
+            "freq-1767",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "remittieren",
+            "prefixMeaning": "",
+            "rootMeaning": "to remit, to send back (goods), to pardon (archaic)",
+            "combinedLogic": "Base verb 'remittieren' → to remit, to send back (goods), to pardon (archaic)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "remittiert",
+            "present3rd": "remittiert",
+            "past3rd": "remittierte",
+            "present": {
+              "ich": "remittiere",
+              "du": "remittierst",
+              "er_sie_es": "remittiert",
+              "wir": "remittieren",
+              "ihr": "remittiert",
+              "sie_Sie": "remittieren"
+            },
+            "past": {
+              "ich": "remittierte",
+              "du": "remittiertest",
+              "er_sie_es": "remittierte",
+              "wir": "remittierteen",
+              "ihr": "remittiertet",
+              "sie_Sie": "remittierteen"
+            },
+            "future": {
+              "ich": "werde remittieren",
+              "du": "wirst remittieren",
+              "er_sie_es": "wird remittieren",
+              "wir": "werden remittieren",
+              "ihr": "werdet remittieren",
+              "sie_Sie": "werden remittieren"
+            }
+          },
+          "example": "Er remittiert die Ware. | Sie remittierte die Bücher an den Verlag. | Die Sendung wurde remittiert.",
+          "exampleDe": "Er remittiert die Ware. | Sie remittierte die Bücher an den Verlag. | Die Sendung wurde remittiert.",
+          "exampleEn": "He remits the goods. (Präsens) | She sent the books back to the publisher. (Präteritum) | The shipment has been remitted. (Partizip II - passive)",
+          "exampleFull": "• Er remittiert die Ware.\nHe remits the goods. (Präsens)\n• Sie remittierte die Bücher an den Verlag.\nShe sent the books back to the publisher. (Präteritum)\n• Die Sendung wurde remittiert.\nThe shipment has been remitted. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "remittieren",
+            "rootMeaning": "to remit, to send back (goods), to pardon (archaic)",
+            "combinedLogic": "Base verb 'remittieren' → to remit, to send back (goods), to pardon (archaic)"
+          }
+        },
+        {
+          "id": "v-1768-highlighten",
+          "index": 1768,
+          "infinitive": "highlighten",
+          "meaning": "to highlight",
+          "tags": [
+            "freq-1768",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "highlighten",
+            "prefixMeaning": "",
+            "rootMeaning": "to highlight",
+            "combinedLogic": "Base verb 'highlighten' → to highlight"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "gehighlightet",
+            "present3rd": "highlightet",
+            "past3rd": "highlightete",
+            "present": {
+              "ich": "highlighte",
+              "du": "highlightest",
+              "er_sie_es": "highlightet",
+              "wir": "highlighten",
+              "ihr": "highlightt",
+              "sie_Sie": "highlighten"
+            },
+            "past": {
+              "ich": "highlightete",
+              "du": "highlightetest",
+              "er_sie_es": "highlightete",
+              "wir": "highlighteteen",
+              "ihr": "highlightetet",
+              "sie_Sie": "highlighteteen"
+            },
+            "future": {
+              "ich": "werde highlighten",
+              "du": "wirst highlighten",
+              "er_sie_es": "wird highlighten",
+              "wir": "werden highlighten",
+              "ihr": "werdet highlighten",
+              "sie_Sie": "werden highlighten"
+            }
+          },
+          "example": "Er highlightet den Text. | Sie highlightete die wichtigsten Punkte. | Der Abschnitt wurde gehighlightet.",
+          "exampleDe": "Er highlightet den Text. | Sie highlightete die wichtigsten Punkte. | Der Abschnitt wurde gehighlightet.",
+          "exampleEn": "He is highlighting the text. (Präsens) | She highlighted the most important points. (Präteritum) | The section has been highlighted. (Partizip II - passive)",
+          "exampleFull": "• Er highlightet den Text.\nHe is highlighting the text. (Präsens)\n• Sie highlightete die wichtigsten Punkte.\nShe highlighted the most important points. (Präteritum)\n• Der Abschnitt wurde gehighlightet.\nThe section has been highlighted. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "highlighten",
+            "rootMeaning": "to highlight",
+            "combinedLogic": "Base verb 'highlighten' → to highlight"
+          }
+        },
+        {
+          "id": "v-1769-einhertragen",
+          "index": 1769,
+          "infinitive": "einhertragen",
+          "meaning": "to carry along, to bring with it (formal)",
+          "tags": [
+            "freq-1769",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "ein-",
+            "isSeparable": true,
+            "rootVerb": "hertragen",
+            "prefixMeaning": "in / inside / into",
+            "rootMeaning": "base verb 'hertragen'",
+            "combinedLogic": "ein- (in / inside / into) + hertragen → to carry along, to bring with it (formal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "einhergetragen",
+            "present3rd": "trägt einher",
+            "past3rd": "trug einher",
+            "present": {
+              "ich": "einhertrage",
+              "du": "trägt einherst",
+              "er_sie_es": "trägt einher",
+              "wir": "einhertragen",
+              "ihr": "einhertragt",
+              "sie_Sie": "einhertragen"
+            },
+            "past": {
+              "ich": "trug einher",
+              "du": "trug einherst",
+              "er_sie_es": "trug einher",
+              "wir": "trug einheren",
+              "ihr": "trug einhert",
+              "sie_Sie": "trug einheren"
+            },
+            "future": {
+              "ich": "werde einhertragen",
+              "du": "wirst einhertragen",
+              "er_sie_es": "wird einhertragen",
+              "wir": "werden einhertragen",
+              "ihr": "werdet einhertragen",
+              "sie_Sie": "werden einhertragen"
+            }
+          },
+          "example": "Das trägt Folgen einher (formal). | Die Änderung trug Probleme einher (formal). | Schwierigkeiten wurden einhergetragen (formal).",
+          "exampleDe": "Das trägt Folgen einher (formal). | Die Änderung trug Probleme einher (formal). | Schwierigkeiten wurden einhergetragen (formal).",
+          "exampleEn": "That carries consequences along. (Präsens) | The change brought problems with it. (Präteritum) | Difficulties have been brought along. (Partizip II - passive)",
+          "exampleFull": "• Das trägt Folgen einher (formal).\nThat carries consequences along. (Präsens)\n• Die Änderung trug Probleme einher (formal).\nThe change brought problems with it. (Präteritum)\n• Schwierigkeiten wurden einhergetragen (formal).\nDifficulties have been brought along. (Partizip II - passive)",
+          "origins": {
+            "prefix": "ein-",
+            "prefixMeaning": "in / inside / into",
+            "rootVerb": "hertragen",
+            "rootMeaning": "base verb 'hertragen'",
+            "combinedLogic": "ein- (in / inside / into) + hertragen → to carry along, to bring with it (formal)"
+          }
+        },
+        {
+          "id": "v-1770-exmittieren",
+          "index": 1770,
+          "infinitive": "exmittieren",
+          "meaning": "to evict (less common)",
+          "tags": [
+            "freq-1770",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "exmittieren",
+            "prefixMeaning": "",
+            "rootMeaning": "to evict (less common)",
+            "combinedLogic": "Base verb 'exmittieren' → to evict (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "exmittiert",
+            "present3rd": "exmittiert",
+            "past3rd": "exmittierte",
+            "present": {
+              "ich": "exmittiere",
+              "du": "exmittierst",
+              "er_sie_es": "exmittiert",
+              "wir": "exmittieren",
+              "ihr": "exmittiert",
+              "sie_Sie": "exmittieren"
+            },
+            "past": {
+              "ich": "exmittierte",
+              "du": "exmittiertest",
+              "er_sie_es": "exmittierte",
+              "wir": "exmittierteen",
+              "ihr": "exmittiertet",
+              "sie_Sie": "exmittierteen"
+            },
+            "future": {
+              "ich": "werde exmittieren",
+              "du": "wirst exmittieren",
+              "er_sie_es": "wird exmittieren",
+              "wir": "werden exmittieren",
+              "ihr": "werdet exmittieren",
+              "sie_Sie": "werden exmittieren"
+            }
+          },
+          "example": "Er exmittiert den Mieter (less common). | Sie exmittierte ihn aus der Wohnung (less common). | Er wurde exmittiert (less common).",
+          "exampleDe": "Er exmittiert den Mieter (less common). | Sie exmittierte ihn aus der Wohnung (less common). | Er wurde exmittiert (less common).",
+          "exampleEn": "He evicts the tenant. (Präsens) | She evicted him from the apartment. (Präteritum) | He has been evicted. (Partizip II - passive)",
+          "exampleFull": "• Er exmittiert den Mieter (less common).\nHe evicts the tenant. (Präsens)\n• Sie exmittierte ihn aus der Wohnung (less common).\nShe evicted him from the apartment. (Präteritum)\n• Er wurde exmittiert (less common).\nHe has been evicted. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "exmittieren",
+            "rootMeaning": "to evict (less common)",
+            "combinedLogic": "Base verb 'exmittieren' → to evict (less common)"
+          }
+        },
+        {
+          "id": "v-1771-bongen",
+          "index": 1771,
+          "infinitive": "bongen",
+          "meaning": "to issue a receipt (informal)",
+          "tags": [
+            "freq-1771",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "bongen",
+            "prefixMeaning": "",
+            "rootMeaning": "to issue a receipt (informal)",
+            "combinedLogic": "Base verb 'bongen' → to issue a receipt (informal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "gebongt",
+            "present3rd": "bongt",
+            "past3rd": "bongte",
+            "present": {
+              "ich": "bonge",
+              "du": "bongst",
+              "er_sie_es": "bongt",
+              "wir": "bongen",
+              "ihr": "bongt",
+              "sie_Sie": "bongen"
+            },
+            "past": {
+              "ich": "bongte",
+              "du": "bongtest",
+              "er_sie_es": "bongte",
+              "wir": "bongteen",
+              "ihr": "bongtet",
+              "sie_Sie": "bongteen"
+            },
+            "future": {
+              "ich": "werde bongen",
+              "du": "wirst bongen",
+              "er_sie_es": "wird bongen",
+              "wir": "werden bongen",
+              "ihr": "werdet bongen",
+              "sie_Sie": "werden bongen"
+            }
+          },
+          "example": "Er bongt den Kauf (informal). | Sie bongte die Bestellung (informal). | Der Betrag wurde gebongt (informal).",
+          "exampleDe": "Er bongt den Kauf (informal). | Sie bongte die Bestellung (informal). | Der Betrag wurde gebongt (informal).",
+          "exampleEn": "He is issuing a receipt for the purchase. (Präsens) | She issued a receipt for the order. (Präteritum) | The amount has been receipted. (Partizip II - passive, informal)",
+          "exampleFull": "• Er bongt den Kauf (informal).\nHe is issuing a receipt for the purchase. (Präsens)\n• Sie bongte die Bestellung (informal).\nShe issued a receipt for the order. (Präteritum)\n• Der Betrag wurde gebongt (informal).\nThe amount has been receipted. (Partizip II - passive, informal)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "bongen",
+            "rootMeaning": "to issue a receipt (informal)",
+            "combinedLogic": "Base verb 'bongen' → to issue a receipt (informal)"
+          }
+        },
+        {
+          "id": "v-1772-raufsteigen",
+          "index": 1772,
+          "infinitive": "raufsteigen",
+          "meaning": "to climb up (colloquial)",
+          "tags": [
+            "freq-1772",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "raufsteigen",
+            "prefixMeaning": "",
+            "rootMeaning": "to climb up (colloquial)",
+            "combinedLogic": "Base verb 'raufsteigen' → to climb up (colloquial)"
+          },
+          "conjugation": {
+            "auxiliary": "sein",
+            "participle": "raufgestiegen",
+            "present3rd": "steigt rauf",
+            "past3rd": "stieg rauf",
+            "present": {
+              "ich": "raufsteige",
+              "du": "steigt raufst",
+              "er_sie_es": "steigt rauf",
+              "wir": "raufsteigen",
+              "ihr": "raufsteigt",
+              "sie_Sie": "raufsteigen"
+            },
+            "past": {
+              "ich": "stieg rauf",
+              "du": "stieg raufst",
+              "er_sie_es": "stieg rauf",
+              "wir": "stieg raufen",
+              "ihr": "stieg rauft",
+              "sie_Sie": "stieg raufen"
+            },
+            "future": {
+              "ich": "werde raufsteigen",
+              "du": "wirst raufsteigen",
+              "er_sie_es": "wird raufsteigen",
+              "wir": "werden raufsteigen",
+              "ihr": "werdet raufsteigen",
+              "sie_Sie": "werden raufsteigen"
+            }
+          },
+          "example": "Er steigt rauf. | Sie stieg auf den Berg rauf. | Er ist raufgestiegen.",
+          "exampleDe": "Er steigt rauf. | Sie stieg auf den Berg rauf. | Er ist raufgestiegen.",
+          "exampleEn": "He is climbing up. (Präsens) | She climbed up the mountain. (Präteritum) | He has climbed up. (Partizip II)",
+          "exampleFull": "• Er steigt rauf.\nHe is climbing up. (Präsens)\n• Sie stieg auf den Berg rauf.\nShe climbed up the mountain. (Präteritum)\n• Er ist raufgestiegen.\nHe has climbed up. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "raufsteigen",
+            "rootMeaning": "to climb up (colloquial)",
+            "combinedLogic": "Base verb 'raufsteigen' → to climb up (colloquial)"
+          }
+        },
+        {
+          "id": "v-1773-kören",
+          "index": 1773,
+          "infinitive": "kören",
+          "meaning": "to select, to choose (less common/archaic)",
+          "tags": [
+            "freq-1773",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "kören",
+            "prefixMeaning": "",
+            "rootMeaning": "to select, to choose (less common/archaic)",
+            "combinedLogic": "Base verb 'kören' → to select, to choose (less common/archaic)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "gekört",
+            "present3rd": "kört",
+            "past3rd": "körte",
+            "present": {
+              "ich": "köre",
+              "du": "körst",
+              "er_sie_es": "kört",
+              "wir": "kören",
+              "ihr": "kört",
+              "sie_Sie": "kören"
+            },
+            "past": {
+              "ich": "körte",
+              "du": "körtest",
+              "er_sie_es": "körte",
+              "wir": "körteen",
+              "ihr": "körtet",
+              "sie_Sie": "körteen"
+            },
+            "future": {
+              "ich": "werde kören",
+              "du": "wirst kören",
+              "er_sie_es": "wird kören",
+              "wir": "werden kören",
+              "ihr": "werdet kören",
+              "sie_Sie": "werden kören"
+            }
+          },
+          "example": "Er kört das beste Pferd (less common). | Sie körte den Sieger (less common). | Das Tier wurde gekört (less common).",
+          "exampleDe": "Er kört das beste Pferd (less common). | Sie körte den Sieger (less common). | Das Tier wurde gekört (less common).",
+          "exampleEn": "He selects the best horse. (Präsens) | She chose the winner. (Präteritum) | The animal has been selected. (Partizip II - passive)",
+          "exampleFull": "• Er kört das beste Pferd (less common).\nHe selects the best horse. (Präsens)\n• Sie körte den Sieger (less common).\nShe chose the winner. (Präteritum)\n• Das Tier wurde gekört (less common).\nThe animal has been selected. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "kören",
+            "rootMeaning": "to select, to choose (less common/archaic)",
+            "combinedLogic": "Base verb 'kören' → to select, to choose (less common/archaic)"
+          }
+        },
+        {
+          "id": "v-1774-einschreien",
+          "index": 1774,
+          "infinitive": "einschreien",
+          "meaning": "to scream into (something), to yell into",
+          "tags": [
+            "freq-1774",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "ein-",
+            "isSeparable": true,
+            "rootVerb": "schreien",
+            "prefixMeaning": "in / inside / into",
+            "rootMeaning": "base verb 'schreien'",
+            "combinedLogic": "ein- (in / inside / into) + schreien → to scream into (something), to yell into"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "eingeschrien",
+            "present3rd": "schreit ein",
+            "past3rd": "schrie ein",
+            "present": {
+              "ich": "einschreie ein",
+              "du": "schreist ein",
+              "er_sie_es": "schreit ein",
+              "wir": "einschreien",
+              "ihr": "einschreit ein",
+              "sie_Sie": "einschreien"
+            },
+            "past": {
+              "ich": "schrie ein",
+              "du": "schriest ein",
+              "er_sie_es": "schrie ein",
+              "wir": "schrieen ein",
+              "ihr": "schriet ein",
+              "sie_Sie": "schrieen ein"
+            },
+            "future": {
+              "ich": "werde einschreien",
+              "du": "wirst einschreien",
+              "er_sie_es": "wird einschreien",
+              "wir": "werden einschreien",
+              "ihr": "werdet einschreien",
+              "sie_Sie": "werden einschreien"
+            }
+          },
+          "example": "Er schreit in den Wald ein. | Sie schrie ihren Namen ein. | Es wurde eingeschrien.",
+          "exampleDe": "Er schreit in den Wald ein. | Sie schrie ihren Namen ein. | Es wurde eingeschrien.",
+          "exampleEn": "He screams into the forest. (Präsens) | She yelled her name into it. (Präteritum) | Yelling has occurred into it. (Partizip II - impersonal passive)",
+          "exampleFull": "• Er schreit in den Wald ein.\nHe screams into the forest. (Präsens)\n• Sie schrie ihren Namen ein.\nShe yelled her name into it. (Präteritum)\n• Es wurde eingeschrien.\nYelling has occurred into it. (Partizip II - impersonal passive)",
+          "origins": {
+            "prefix": "ein-",
+            "prefixMeaning": "in / inside / into",
+            "rootVerb": "schreien",
+            "rootMeaning": "base verb 'schreien'",
+            "combinedLogic": "ein- (in / inside / into) + schreien → to scream into (something), to yell into"
+          }
+        },
+        {
+          "id": "v-1775-sandeln",
+          "index": 1775,
+          "infinitive": "sandeln",
+          "meaning": "to play with sand (less common)",
+          "tags": [
+            "freq-1775",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "sandeln",
+            "prefixMeaning": "",
+            "rootMeaning": "to play with sand (less common)",
+            "combinedLogic": "Base verb 'sandeln' → to play with sand (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "gesandelt",
+            "present3rd": "sandelt",
+            "past3rd": "sandelte",
+            "present": {
+              "ich": "sandele",
+              "du": "sandelst",
+              "er_sie_es": "sandelt",
+              "wir": "sandeln",
+              "ihr": "sandelt",
+              "sie_Sie": "sandeln"
+            },
+            "past": {
+              "ich": "sandelte",
+              "du": "sandeltest",
+              "er_sie_es": "sandelte",
+              "wir": "sandelteen",
+              "ihr": "sandeltet",
+              "sie_Sie": "sandelteen"
+            },
+            "future": {
+              "ich": "werde sandeln",
+              "du": "wirst sandeln",
+              "er_sie_es": "wird sandeln",
+              "wir": "werden sandeln",
+              "ihr": "werdet sandeln",
+              "sie_Sie": "werden sandeln"
+            }
+          },
+          "example": "Er sandelt im Sandkasten (less common). | Sie sandelte am Strand (less common). | Die Kinder haben gesandelt (less common).",
+          "exampleDe": "Er sandelt im Sandkasten (less common). | Sie sandelte am Strand (less common). | Die Kinder haben gesandelt (less common).",
+          "exampleEn": "He plays in the sandpit. (Präsens) | She played with sand on the beach. (Präteritum) | The children have played with sand. (Partizip II)",
+          "exampleFull": "• Er sandelt im Sandkasten (less common).\nHe plays in the sandpit. (Präsens)\n• Sie sandelte am Strand (less common).\nShe played with sand on the beach. (Präteritum)\n• Die Kinder haben gesandelt (less common).\nThe children have played with sand. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "sandeln",
+            "rootMeaning": "to play with sand (less common)",
+            "combinedLogic": "Base verb 'sandeln' → to play with sand (less common)"
+          }
+        },
+        {
+          "id": "v-1776-umschießen",
+          "index": 1776,
+          "infinitive": "umschießen",
+          "meaning": "to shoot down, to knock over (by shooting)",
+          "tags": [
+            "freq-1776",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "umschießen",
+            "prefixMeaning": "",
+            "rootMeaning": "to shoot down, to knock over (by shooting)",
+            "combinedLogic": "Base verb 'umschießen' → to shoot down, to knock over (by shooting)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "umgeschossen",
+            "present3rd": "schießt um",
+            "past3rd": "schoss um",
+            "present": {
+              "ich": "umschieße",
+              "du": "schießt umst",
+              "er_sie_es": "schießt um",
+              "wir": "umschießen",
+              "ihr": "umschießt",
+              "sie_Sie": "umschießen"
+            },
+            "past": {
+              "ich": "schoss um",
+              "du": "schoss umst",
+              "er_sie_es": "schoss um",
+              "wir": "schoss umen",
+              "ihr": "schoss umt",
+              "sie_Sie": "schoss umen"
+            },
+            "future": {
+              "ich": "werde umschießen",
+              "du": "wirst umschießen",
+              "er_sie_es": "wird umschießen",
+              "wir": "werden umschießen",
+              "ihr": "werdet umschießen",
+              "sie_Sie": "werden umschießen"
+            }
+          },
+          "example": "Er schießt die Dose um. | Sie schoss den Baum um. | Das Ziel wurde umgeschossen.",
+          "exampleDe": "Er schießt die Dose um. | Sie schoss den Baum um. | Das Ziel wurde umgeschossen.",
+          "exampleEn": "He shoots down the can. (Präsens) | She shot down the tree. (Präteritum) | The target has been shot down. (Partizip II - passive)",
+          "exampleFull": "• Er schießt die Dose um.\nHe shoots down the can. (Präsens)\n• Sie schoss den Baum um.\nShe shot down the tree. (Präteritum)\n• Das Ziel wurde umgeschossen.\nThe target has been shot down. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "umschießen",
+            "rootMeaning": "to shoot down, to knock over (by shooting)",
+            "combinedLogic": "Base verb 'umschießen' → to shoot down, to knock over (by shooting)"
+          }
+        },
+        {
+          "id": "v-1777-verstänkern",
+          "index": 1777,
+          "infinitive": "verstänkern",
+          "meaning": "to make something smell bad",
+          "tags": [
+            "freq-1777",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verstänkern",
+            "prefixMeaning": "",
+            "rootMeaning": "to make something smell bad",
+            "combinedLogic": "Base verb 'verstänkern' → to make something smell bad"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "verstänkert",
+            "present3rd": "verstänkert",
+            "past3rd": "verstänkerte",
+            "present": {
+              "ich": "verstänkere",
+              "du": "verstänkerst",
+              "er_sie_es": "verstänkert",
+              "wir": "verstänkern",
+              "ihr": "verstänkert",
+              "sie_Sie": "verstänkern"
+            },
+            "past": {
+              "ich": "verstänkerte",
+              "du": "verstänkertest",
+              "er_sie_es": "verstänkerte",
+              "wir": "verstänkerteen",
+              "ihr": "verstänkertet",
+              "sie_Sie": "verstänkerteen"
+            },
+            "future": {
+              "ich": "werde verstänkern",
+              "du": "wirst verstänkern",
+              "er_sie_es": "wird verstänkern",
+              "wir": "werden verstänkern",
+              "ihr": "werdet verstänkern",
+              "sie_Sie": "werden verstänkern"
+            }
+          },
+          "example": "Er verstänkert den Raum. | Sie verstänkerte die Luft. | Der Geruch hat alles verstänkert.",
+          "exampleDe": "Er verstänkert den Raum. | Sie verstänkerte die Luft. | Der Geruch hat alles verstänkert.",
+          "exampleEn": "He is making the room smell bad. (Präsens) | She made the air smell bad. (Präteritum) | The smell has made everything smell bad. (Partizip II)",
+          "exampleFull": "• Er verstänkert den Raum.\nHe is making the room smell bad. (Präsens)\n• Sie verstänkerte die Luft.\nShe made the air smell bad. (Präteritum)\n• Der Geruch hat alles verstänkert.\nThe smell has made everything smell bad. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verstänkern",
+            "rootMeaning": "to make something smell bad",
+            "combinedLogic": "Base verb 'verstänkern' → to make something smell bad"
+          }
+        },
+        {
+          "id": "v-1778-übermachen",
+          "index": 1778,
+          "infinitive": "übermachen",
+          "meaning": "to transfer (money), to make over (less common)",
+          "tags": [
+            "freq-1778",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "übermachen",
+            "prefixMeaning": "",
+            "rootMeaning": "to transfer (money), to make over (less common)",
+            "combinedLogic": "Base verb 'übermachen' → to transfer (money), to make over (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "übermacht",
+            "present3rd": "übermacht",
+            "past3rd": "übermachte",
+            "present": {
+              "ich": "übermache",
+              "du": "übermachst",
+              "er_sie_es": "übermacht",
+              "wir": "übermachen",
+              "ihr": "übermacht",
+              "sie_Sie": "übermachen"
+            },
+            "past": {
+              "ich": "übermachte",
+              "du": "übermachtest",
+              "er_sie_es": "übermachte",
+              "wir": "übermachteen",
+              "ihr": "übermachtet",
+              "sie_Sie": "übermachteen"
+            },
+            "future": {
+              "ich": "werde übermachen",
+              "du": "wirst übermachen",
+              "er_sie_es": "wird übermachen",
+              "wir": "werden übermachen",
+              "ihr": "werdet übermachen",
+              "sie_Sie": "werden übermachen"
+            }
+          },
+          "example": "Er übermacht das Geld. | Sie übermachte ihm das Eigentum. | Der Betrag wurde übermacht.",
+          "exampleDe": "Er übermacht das Geld. | Sie übermachte ihm das Eigentum. | Der Betrag wurde übermacht.",
+          "exampleEn": "He transfers the money. (Präsens) | She made over the property to him. (Präteritum) | The amount has been transferred. (Partizip II - passive)",
+          "exampleFull": "• Er übermacht das Geld.\nHe transfers the money. (Präsens)\n• Sie übermachte ihm das Eigentum.\nShe made over the property to him. (Präteritum)\n• Der Betrag wurde übermacht.\nThe amount has been transferred. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "übermachen",
+            "rootMeaning": "to transfer (money), to make over (less common)",
+            "combinedLogic": "Base verb 'übermachen' → to transfer (money), to make over (less common)"
+          }
+        },
+        {
+          "id": "v-1779-hervorsehen",
+          "index": 1779,
+          "infinitive": "hervorsehen",
+          "meaning": "to foresee, to predict (less common)",
+          "tags": [
+            "freq-1779",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "vorsehen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'vorsehen'",
+            "combinedLogic": "her- (her- prefix) + vorsehen → to foresee, to predict (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hervorgesehen",
+            "present3rd": "sieht hervor",
+            "past3rd": "sah hervor",
+            "present": {
+              "ich": "hervorsehe",
+              "du": "sieht hervorst",
+              "er_sie_es": "sieht hervor",
+              "wir": "hervorsehen",
+              "ihr": "hervorseht",
+              "sie_Sie": "hervorsehen"
+            },
+            "past": {
+              "ich": "sah hervor",
+              "du": "sah hervorst",
+              "er_sie_es": "sah hervor",
+              "wir": "sah hervoren",
+              "ihr": "sah hervort",
+              "sie_Sie": "sah hervoren"
+            },
+            "future": {
+              "ich": "werde hervorsehen",
+              "du": "wirst hervorsehen",
+              "er_sie_es": "wird hervorsehen",
+              "wir": "werden hervorsehen",
+              "ihr": "werdet hervorsehen",
+              "sie_Sie": "werden hervorsehen"
+            }
+          },
+          "example": "Er sieht die Gefahr hervor (less common). | Sie sah die Probleme hervor (less common). | Das wurde hervorgesehen (less common).",
+          "exampleDe": "Er sieht die Gefahr hervor (less common). | Sie sah die Probleme hervor (less common). | Das wurde hervorgesehen (less common).",
+          "exampleEn": "He foresees the danger. (Präsens) | She foresaw the problems. (Präteritum) | That has been foreseen. (Partizip II - passive)",
+          "exampleFull": "• Er sieht die Gefahr hervor (less common).\nHe foresees the danger. (Präsens)\n• Sie sah die Probleme hervor (less common).\nShe foresaw the problems. (Präteritum)\n• Das wurde hervorgesehen (less common).\nThat has been foreseen. (Partizip II - passive)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "vorsehen",
+            "rootMeaning": "base verb 'vorsehen'",
+            "combinedLogic": "her- (her- prefix) + vorsehen → to foresee, to predict (less common)"
+          }
+        },
+        {
+          "id": "v-1780-überhasten",
+          "index": 1780,
+          "infinitive": "überhasten",
+          "meaning": "to do something too hastily (usually reflexive: sich überhasten)",
+          "tags": [
+            "freq-1780",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "überhasten",
+            "prefixMeaning": "",
+            "rootMeaning": "to do something too hastily (usually reflexive: sich überhasten)",
+            "combinedLogic": "Base verb 'überhasten' → to do something too hastily (usually reflexive: sich überhasten)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "überhastet",
+            "present3rd": "überhastet",
+            "past3rd": "überhastete",
+            "present": {
+              "ich": "überhaste",
+              "du": "überhastest",
+              "er_sie_es": "überhastet",
+              "wir": "überhasten",
+              "ihr": "überhastt",
+              "sie_Sie": "überhasten"
+            },
+            "past": {
+              "ich": "überhastete",
+              "du": "überhastetest",
+              "er_sie_es": "überhastete",
+              "wir": "überhasteteen",
+              "ihr": "überhastetet",
+              "sie_Sie": "überhasteteen"
+            },
+            "future": {
+              "ich": "werde überhasten",
+              "du": "wirst überhasten",
+              "er_sie_es": "wird überhasten",
+              "wir": "werden überhasten",
+              "ihr": "werdet überhasten",
+              "sie_Sie": "werden überhasten"
+            }
+          },
+          "example": "Er überhastet sich nicht. | Sie überhastete sich bei der Arbeit. | Er hat sich überhastet.",
+          "exampleDe": "Er überhastet sich nicht. | Sie überhastete sich bei der Arbeit. | Er hat sich überhastet.",
+          "exampleEn": "He does not do things too hastily. (Präsens - reflexive) | She did her work too hastily. (Präteritum - reflexive) | He has done things too hastily. (Partizip II - reflexive)",
+          "exampleFull": "• Er überhastet sich nicht.\nHe does not do things too hastily. (Präsens - reflexive)\n• Sie überhastete sich bei der Arbeit.\nShe did her work too hastily. (Präteritum - reflexive)\n• Er hat sich überhastet.\nHe has done things too hastily. (Partizip II - reflexive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "überhasten",
+            "rootMeaning": "to do something too hastily (usually reflexive: sich überhasten)",
+            "combinedLogic": "Base verb 'überhasten' → to do something too hastily (usually reflexive: sich überhasten)"
+          }
+        },
+        {
+          "id": "v-1781-beschildern",
+          "index": 1781,
+          "infinitive": "beschildern",
+          "meaning": "to signpost, to label",
+          "tags": [
+            "freq-1781",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "beschildern",
+            "prefixMeaning": "",
+            "rootMeaning": "to signpost, to label",
+            "combinedLogic": "Base verb 'beschildern' → to signpost, to label"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "beschildert",
+            "present3rd": "beschildert",
+            "past3rd": "beschilderte",
+            "present": {
+              "ich": "beschildere",
+              "du": "beschilderst",
+              "er_sie_es": "beschildert",
+              "wir": "beschildern",
+              "ihr": "beschildert",
+              "sie_Sie": "beschildern"
+            },
+            "past": {
+              "ich": "beschilderte",
+              "du": "beschildertest",
+              "er_sie_es": "beschilderte",
+              "wir": "beschilderteen",
+              "ihr": "beschildertet",
+              "sie_Sie": "beschilderteen"
+            },
+            "future": {
+              "ich": "werde beschildern",
+              "du": "wirst beschildern",
+              "er_sie_es": "wird beschildern",
+              "wir": "werden beschildern",
+              "ihr": "werdet beschildern",
+              "sie_Sie": "werden beschildern"
+            }
+          },
+          "example": "Er beschildert den Weg. | Sie beschilderte die Regale. | Die Straße wurde beschildert.",
+          "exampleDe": "Er beschildert den Weg. | Sie beschilderte die Regale. | Die Straße wurde beschildert.",
+          "exampleEn": "He is signposting the path. (Präsens) | She labeled the shelves. (Präteritum) | The street has been signposted. (Partizip II - passive)",
+          "exampleFull": "• Er beschildert den Weg.\nHe is signposting the path. (Präsens)\n• Sie beschilderte die Regale.\nShe labeled the shelves. (Präteritum)\n• Die Straße wurde beschildert.\nThe street has been signposted. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "beschildern",
+            "rootMeaning": "to signpost, to label",
+            "combinedLogic": "Base verb 'beschildern' → to signpost, to label"
+          }
+        },
+        {
+          "id": "v-1782-verwirtschaften",
+          "index": 1782,
+          "infinitive": "verwirtschaften",
+          "meaning": "to mismanage (finances/property), to waste",
+          "tags": [
+            "freq-1782",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verwirtschaften",
+            "prefixMeaning": "",
+            "rootMeaning": "to mismanage (finances/property), to waste",
+            "combinedLogic": "Base verb 'verwirtschaften' → to mismanage (finances/property), to waste"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "verwirtschaftet",
+            "present3rd": "verwirtschaftet",
+            "past3rd": "verwirtschaftete",
+            "present": {
+              "ich": "verwirtschafte",
+              "du": "verwirtschaftest",
+              "er_sie_es": "verwirtschaftet",
+              "wir": "verwirtschaften",
+              "ihr": "verwirtschaftt",
+              "sie_Sie": "verwirtschaften"
+            },
+            "past": {
+              "ich": "verwirtschaftete",
+              "du": "verwirtschaftetest",
+              "er_sie_es": "verwirtschaftete",
+              "wir": "verwirtschafteteen",
+              "ihr": "verwirtschaftetet",
+              "sie_Sie": "verwirtschafteteen"
+            },
+            "future": {
+              "ich": "werde verwirtschaften",
+              "du": "wirst verwirtschaften",
+              "er_sie_es": "wird verwirtschaften",
+              "wir": "werden verwirtschaften",
+              "ihr": "werdet verwirtschaften",
+              "sie_Sie": "werden verwirtschaften"
+            }
+          },
+          "example": "Er verwirtschaftet das Geld. | Sie verwirtschaftete das Erbe. | Das Vermögen wurde verwirtschaftet.",
+          "exampleDe": "Er verwirtschaftet das Geld. | Sie verwirtschaftete das Erbe. | Das Vermögen wurde verwirtschaftet.",
+          "exampleEn": "He mismanages the money. (Präsens) | She mismanaged the inheritance. (Präteritum) | The fortune has been mismanaged. (Partizip II - passive)",
+          "exampleFull": "• Er verwirtschaftet das Geld.\nHe mismanages the money. (Präsens)\n• Sie verwirtschaftete das Erbe.\nShe mismanaged the inheritance. (Präteritum)\n• Das Vermögen wurde verwirtschaftet.\nThe fortune has been mismanaged. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verwirtschaften",
+            "rootMeaning": "to mismanage (finances/property), to waste",
+            "combinedLogic": "Base verb 'verwirtschaften' → to mismanage (finances/property), to waste"
+          }
+        },
+        {
+          "id": "v-1783-verscheißen",
+          "index": 1783,
+          "infinitive": "verscheißen",
+          "meaning": "to mess up, to screw up (vulgar)",
+          "tags": [
+            "freq-1783",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "verscheißen",
+            "prefixMeaning": "",
+            "rootMeaning": "to mess up, to screw up (vulgar)",
+            "combinedLogic": "Base verb 'verscheißen' → to mess up, to screw up (vulgar)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "verschissen",
+            "present3rd": "verscheißt",
+            "past3rd": "verschiss",
+            "present": {
+              "ich": "verscheiße",
+              "du": "verscheißst",
+              "er_sie_es": "verscheißt",
+              "wir": "verscheißen",
+              "ihr": "verscheißt",
+              "sie_Sie": "verscheißen"
+            },
+            "past": {
+              "ich": "verschiss",
+              "du": "verschissst",
+              "er_sie_es": "verschiss",
+              "wir": "verschissen",
+              "ihr": "verschisst",
+              "sie_Sie": "verschissen"
+            },
+            "future": {
+              "ich": "werde verscheißen",
+              "du": "wirst verscheißen",
+              "er_sie_es": "wird verscheißen",
+              "wir": "werden verscheißen",
+              "ihr": "werdet verscheißen",
+              "sie_Sie": "werden verscheißen"
+            }
+          },
+          "example": "Er verscheißt alles (vulgar). | Sie verschiss die Prüfung (vulgar). | Er hat es verscheißen (vulgar).",
+          "exampleDe": "Er verscheißt alles (vulgar). | Sie verschiss die Prüfung (vulgar). | Er hat es verscheißen (vulgar).",
+          "exampleEn": "He screws up everything. (Präsens) | She messed up the exam. (Präteritum) | He has screwed it up. (Partizip II)",
+          "exampleFull": "• Er verscheißt alles (vulgar).\nHe screws up everything. (Präsens)\n• Sie verschiss die Prüfung (vulgar).\nShe messed up the exam. (Präteritum)\n• Er hat es verscheißen (vulgar).\nHe has screwed it up. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "verscheißen",
+            "rootMeaning": "to mess up, to screw up (vulgar)",
+            "combinedLogic": "Base verb 'verscheißen' → to mess up, to screw up (vulgar)"
+          }
+        },
+        {
+          "id": "v-1784-walgen",
+          "index": 1784,
+          "infinitive": "walgen",
+          "meaning": "to full (cloth), to knead (dough - dialectal)",
+          "tags": [
+            "freq-1784",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "walgen",
+            "prefixMeaning": "",
+            "rootMeaning": "to full (cloth), to knead (dough - dialectal)",
+            "combinedLogic": "Base verb 'walgen' → to full (cloth), to knead (dough - dialectal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "gewalgt",
+            "present3rd": "walgt",
+            "past3rd": "walgte",
+            "present": {
+              "ich": "walge",
+              "du": "walgst",
+              "er_sie_es": "walgt",
+              "wir": "walgen",
+              "ihr": "walgt",
+              "sie_Sie": "walgen"
+            },
+            "past": {
+              "ich": "walgte",
+              "du": "walgtest",
+              "er_sie_es": "walgte",
+              "wir": "walgteen",
+              "ihr": "walgtet",
+              "sie_Sie": "walgteen"
+            },
+            "future": {
+              "ich": "werde walgen",
+              "du": "wirst walgen",
+              "er_sie_es": "wird walgen",
+              "wir": "werden walgen",
+              "ihr": "werdet walgen",
+              "sie_Sie": "werden walgen"
+            }
+          },
+          "example": "Er walgt den Stoff. | Sie walgte den Teig (dialectal). | Der Stoff wurde gewalgt.",
+          "exampleDe": "Er walgt den Stoff. | Sie walgte den Teig (dialectal). | Der Stoff wurde gewalgt.",
+          "exampleEn": "He fulls the fabric. (Präsens) | She kneaded the dough. (Präteritum) | The fabric has been fulled. (Partizip II - passive)",
+          "exampleFull": "• Er walgt den Stoff.\nHe fulls the fabric. (Präsens)\n• Sie walgte den Teig (dialectal).\nShe kneaded the dough. (Präteritum)\n• Der Stoff wurde gewalgt.\nThe fabric has been fulled. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "walgen",
+            "rootMeaning": "to full (cloth), to knead (dough - dialectal)",
+            "combinedLogic": "Base verb 'walgen' → to full (cloth), to knead (dough - dialectal)"
+          }
+        },
+        {
+          "id": "v-1785-kleinschreiben",
+          "index": 1785,
+          "infinitive": "kleinschreiben",
+          "meaning": "to write in lowercase",
+          "tags": [
+            "freq-1785",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "kleinschreiben",
+            "prefixMeaning": "",
+            "rootMeaning": "to write in lowercase",
+            "combinedLogic": "Base verb 'kleinschreiben' → to write in lowercase"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "kleingeschrieben",
+            "present3rd": "schreibt klein",
+            "past3rd": "schrieb klein",
+            "present": {
+              "ich": "kleinschreibe",
+              "du": "schreibt kleinst",
+              "er_sie_es": "schreibt klein",
+              "wir": "kleinschreiben",
+              "ihr": "kleinschreibt",
+              "sie_Sie": "kleinschreiben"
+            },
+            "past": {
+              "ich": "schrieb klein",
+              "du": "schrieb kleinst",
+              "er_sie_es": "schrieb klein",
+              "wir": "schrieb kleinen",
+              "ihr": "schrieb kleint",
+              "sie_Sie": "schrieb kleinen"
+            },
+            "future": {
+              "ich": "werde kleinschreiben",
+              "du": "wirst kleinschreiben",
+              "er_sie_es": "wird kleinschreiben",
+              "wir": "werden kleinschreiben",
+              "ihr": "werdet kleinschreiben",
+              "sie_Sie": "werden kleinschreiben"
+            }
+          },
+          "example": "Er schreibt alles klein. | Sie schrieb den Titel klein. | Das Wort wurde kleingeschrieben.",
+          "exampleDe": "Er schreibt alles klein. | Sie schrieb den Titel klein. | Das Wort wurde kleingeschrieben.",
+          "exampleEn": "He writes everything in lowercase. (Präsens) | She wrote the title in lowercase. (Präteritum) | The word has been written in lowercase. (Partizip II - passive)",
+          "exampleFull": "• Er schreibt alles klein.\nHe writes everything in lowercase. (Präsens)\n• Sie schrieb den Titel klein.\nShe wrote the title in lowercase. (Präteritum)\n• Das Wort wurde kleingeschrieben.\nThe word has been written in lowercase. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "kleinschreiben",
+            "rootMeaning": "to write in lowercase",
+            "combinedLogic": "Base verb 'kleinschreiben' → to write in lowercase"
+          }
+        },
+        {
+          "id": "v-1786-stichhalten",
+          "index": 1786,
+          "infinitive": "stichhalten",
+          "meaning": "to be valid, to hold water (idiomatic)",
+          "tags": [
+            "freq-1786",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "stichhalten",
+            "prefixMeaning": "",
+            "rootMeaning": "to be valid, to hold water (idiomatic)",
+            "combinedLogic": "Base verb 'stichhalten' → to be valid, to hold water (idiomatic)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "stichgehalten",
+            "present3rd": "hält stich",
+            "past3rd": "hielt stich",
+            "present": {
+              "ich": "stichhalte",
+              "du": "hält stichst",
+              "er_sie_es": "hält stich",
+              "wir": "stichhalten",
+              "ihr": "stichhaltt",
+              "sie_Sie": "stichhalten"
+            },
+            "past": {
+              "ich": "hielt stich",
+              "du": "hielt stichst",
+              "er_sie_es": "hielt stich",
+              "wir": "hielt stichen",
+              "ihr": "hielt sticht",
+              "sie_Sie": "hielt stichen"
+            },
+            "future": {
+              "ich": "werde stichhalten",
+              "du": "wirst stichhalten",
+              "er_sie_es": "wird stichhalten",
+              "wir": "werden stichhalten",
+              "ihr": "werdet stichhalten",
+              "sie_Sie": "werden stichhalten"
+            }
+          },
+          "example": "Das Argument hält stich. | Seine Ausrede hielt nicht stich. | Es hat stichgehalten.",
+          "exampleDe": "Das Argument hält stich. | Seine Ausrede hielt nicht stich. | Es hat stichgehalten.",
+          "exampleEn": "The argument is valid. (Präsens) | His excuse did not hold water. (Präteritum) | It has held water. (Partizip II)",
+          "exampleFull": "• Das Argument hält stich.\nThe argument is valid. (Präsens)\n• Seine Ausrede hielt nicht stich.\nHis excuse did not hold water. (Präteritum)\n• Es hat stichgehalten.\nIt has held water. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "stichhalten",
+            "rootMeaning": "to be valid, to hold water (idiomatic)",
+            "combinedLogic": "Base verb 'stichhalten' → to be valid, to hold water (idiomatic)"
+          }
+        },
+        {
+          "id": "v-1787-hinausgeben",
+          "index": 1787,
+          "infinitive": "hinausgeben",
+          "meaning": "to give out, to spend (money - less common)",
+          "tags": [
+            "freq-1787",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "hin-",
+            "isSeparable": true,
+            "rootVerb": "ausgeben",
+            "prefixMeaning": "hin- prefix",
+            "rootMeaning": "base verb 'ausgeben'",
+            "combinedLogic": "hin- (hin- prefix) + ausgeben → to give out, to spend (money - less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hinausgegeben",
+            "present3rd": "gibt hinaus",
+            "past3rd": "gab hinaus",
+            "present": {
+              "ich": "hinausgebe",
+              "du": "gibt hinausst",
+              "er_sie_es": "gibt hinaus",
+              "wir": "hinausgeben",
+              "ihr": "hinausgebt",
+              "sie_Sie": "hinausgeben"
+            },
+            "past": {
+              "ich": "gab hinaus",
+              "du": "gab hinausst",
+              "er_sie_es": "gab hinaus",
+              "wir": "gab hinausen",
+              "ihr": "gab hinaust",
+              "sie_Sie": "gab hinausen"
+            },
+            "future": {
+              "ich": "werde hinausgeben",
+              "du": "wirst hinausgeben",
+              "er_sie_es": "wird hinausgeben",
+              "wir": "werden hinausgeben",
+              "ihr": "werdet hinausgeben",
+              "sie_Sie": "werden hinausgeben"
+            }
+          },
+          "example": "Er gibt das Geld hinaus (less common). | Sie gab die Informationen hinaus.",
+          "exampleDe": "Er gibt das Geld hinaus (less common). | Sie gab die Informationen hinaus.",
+          "exampleEn": "He spends the money. (Präsens) | She gave out the information. (Präteritum)<br;gt;• Geld wurde hinausgegeben (less common).",
+          "exampleFull": "• Er gibt das Geld hinaus (less common).\nHe spends the money. (Präsens)\n• Sie gab die Informationen hinaus.\nShe gave out the information. (Präteritum)<br;gt;• Geld wurde hinausgegeben (less common).\nMoney has been spent. (Partizip II - passive)",
+          "origins": {
+            "prefix": "hin-",
+            "prefixMeaning": "hin- prefix",
+            "rootVerb": "ausgeben",
+            "rootMeaning": "base verb 'ausgeben'",
+            "combinedLogic": "hin- (hin- prefix) + ausgeben → to give out, to spend (money - less common)"
+          }
+        },
+        {
+          "id": "v-1788-roboten",
+          "index": 1788,
+          "infinitive": "roboten",
+          "meaning": "to robot (act like a robot - informal/new)",
+          "tags": [
+            "freq-1788",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "roboten",
+            "prefixMeaning": "",
+            "rootMeaning": "to robot (act like a robot - informal/new)",
+            "combinedLogic": "Base verb 'roboten' → to robot (act like a robot - informal/new)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "gerobotet",
+            "present3rd": "robotet",
+            "past3rd": "robotete",
+            "present": {
+              "ich": "robote",
+              "du": "robotest",
+              "er_sie_es": "robotet",
+              "wir": "roboten",
+              "ihr": "robott",
+              "sie_Sie": "roboten"
+            },
+            "past": {
+              "ich": "robotete",
+              "du": "robotetest",
+              "er_sie_es": "robotete",
+              "wir": "roboteteen",
+              "ihr": "robotetet",
+              "sie_Sie": "roboteteen"
+            },
+            "future": {
+              "ich": "werde roboten",
+              "du": "wirst roboten",
+              "er_sie_es": "wird roboten",
+              "wir": "werden roboten",
+              "ihr": "werdet roboten",
+              "sie_Sie": "werden roboten"
+            }
+          },
+          "example": "Er robotet den ganzen Tag (informal). | Sie robotete vor dem Computer (informal). | Er hat gerobotet (informal).",
+          "exampleDe": "Er robotet den ganzen Tag (informal). | Sie robotete vor dem Computer (informal). | Er hat gerobotet (informal).",
+          "exampleEn": "He acts like a robot all day. (Präsens) | She acted like a robot in front of the computer. (Präteritum) | He has acted like a robot. (Partizip II)",
+          "exampleFull": "• Er robotet den ganzen Tag (informal).\nHe acts like a robot all day. (Präsens)\n• Sie robotete vor dem Computer (informal).\nShe acted like a robot in front of the computer. (Präteritum)\n• Er hat gerobotet (informal).\nHe has acted like a robot. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "roboten",
+            "rootMeaning": "to robot (act like a robot - informal/new)",
+            "combinedLogic": "Base verb 'roboten' → to robot (act like a robot - informal/new)"
+          }
+        },
+        {
+          "id": "v-1789-hereinstellen",
+          "index": 1789,
+          "infinitive": "hereinstellen",
+          "meaning": "to place/put inside/in here",
+          "tags": [
+            "freq-1789",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "einstellen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'einstellen'",
+            "combinedLogic": "her- (her- prefix) + einstellen → to place/put inside/in here"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hereingestellt",
+            "present3rd": "stellt herein",
+            "past3rd": "stellte herein",
+            "present": {
+              "ich": "hereinstelle",
+              "du": "stellt hereinst",
+              "er_sie_es": "stellt herein",
+              "wir": "hereinstellen",
+              "ihr": "hereinstellt",
+              "sie_Sie": "hereinstellen"
+            },
+            "past": {
+              "ich": "stellte herein",
+              "du": "stellte hereinst",
+              "er_sie_es": "stellte herein",
+              "wir": "stellte hereinen",
+              "ihr": "stellte hereint",
+              "sie_Sie": "stellte hereinen"
+            },
+            "future": {
+              "ich": "werde hereinstellen",
+              "du": "wirst hereinstellen",
+              "er_sie_es": "wird hereinstellen",
+              "wir": "werden hereinstellen",
+              "ihr": "werdet hereinstellen",
+              "sie_Sie": "werden hereinstellen"
+            }
+          },
+          "example": "Er stellt den Stuhl herein. | Sie stellte die Tasche herein. | Das Paket wurde hereingestellt.",
+          "exampleDe": "Er stellt den Stuhl herein. | Sie stellte die Tasche herein. | Das Paket wurde hereingestellt.",
+          "exampleEn": "He places the chair in here. (Präsens) | She put the bag in here. (Präteritum) | The package has been placed in here. (Partizip II - passive)",
+          "exampleFull": "• Er stellt den Stuhl herein.\nHe places the chair in here. (Präsens)\n• Sie stellte die Tasche herein.\nShe put the bag in here. (Präteritum)\n• Das Paket wurde hereingestellt.\nThe package has been placed in here. (Partizip II - passive)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "einstellen",
+            "rootMeaning": "base verb 'einstellen'",
+            "combinedLogic": "her- (her- prefix) + einstellen → to place/put inside/in here"
+          }
+        },
+        {
+          "id": "v-1790-seichen",
+          "index": 1790,
+          "infinitive": "seichen",
+          "meaning": "to piss, to urinate (vulgar/dialectal)",
+          "tags": [
+            "freq-1790",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "seichen",
+            "prefixMeaning": "",
+            "rootMeaning": "to piss, to urinate (vulgar/dialectal)",
+            "combinedLogic": "Base verb 'seichen' → to piss, to urinate (vulgar/dialectal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "geseicht",
+            "present3rd": "seicht",
+            "past3rd": "seichte",
+            "present": {
+              "ich": "seiche",
+              "du": "seichst",
+              "er_sie_es": "seicht",
+              "wir": "seichen",
+              "ihr": "seicht",
+              "sie_Sie": "seichen"
+            },
+            "past": {
+              "ich": "seichte",
+              "du": "seichtest",
+              "er_sie_es": "seichte",
+              "wir": "seichteen",
+              "ihr": "seichtet",
+              "sie_Sie": "seichteen"
+            },
+            "future": {
+              "ich": "werde seichen",
+              "du": "wirst seichen",
+              "er_sie_es": "wird seichen",
+              "wir": "werden seichen",
+              "ihr": "werdet seichen",
+              "sie_Sie": "werden seichen"
+            }
+          },
+          "example": "Er seicht (vulgar). | Sie seichte in die Ecke (vulgar). | Er hat geseicht (vulgar).",
+          "exampleDe": "Er seicht (vulgar). | Sie seichte in die Ecke (vulgar). | Er hat geseicht (vulgar).",
+          "exampleEn": "He is pissing. (Präsens) | She pissed in the corner. (Präteritum) | He has pissed. (Partizip II)",
+          "exampleFull": "• Er seicht (vulgar).\nHe is pissing. (Präsens)\n• Sie seichte in die Ecke (vulgar).\nShe pissed in the corner. (Präteritum)\n• Er hat geseicht (vulgar).\nHe has pissed. (Partizip II)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "seichen",
+            "rootMeaning": "to piss, to urinate (vulgar/dialectal)",
+            "combinedLogic": "Base verb 'seichen' → to piss, to urinate (vulgar/dialectal)"
+          }
+        },
+        {
+          "id": "v-1791-herlassen",
+          "index": 1791,
+          "infinitive": "herlassen",
+          "meaning": "to let something come here, to give away (informal)",
+          "tags": [
+            "freq-1791",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "her-",
+            "isSeparable": true,
+            "rootVerb": "lassen",
+            "prefixMeaning": "her- prefix",
+            "rootMeaning": "base verb 'lassen'",
+            "combinedLogic": "her- (her- prefix) + lassen → to let something come here, to give away (informal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hergelassen",
+            "present3rd": "lässt her",
+            "past3rd": "ließ her",
+            "present": {
+              "ich": "herlasse her",
+              "du": "lässt her",
+              "er_sie_es": "lässt her",
+              "wir": "herlassen",
+              "ihr": "herlasst her",
+              "sie_Sie": "herlassen"
+            },
+            "past": {
+              "ich": "ließ her",
+              "du": "ließst her",
+              "er_sie_es": "ließ her",
+              "wir": "ließen her",
+              "ihr": "ließt her",
+              "sie_Sie": "ließen her"
+            },
+            "future": {
+              "ich": "werde herlassen",
+              "du": "wirst herlassen",
+              "er_sie_es": "wird herlassen",
+              "wir": "werden herlassen",
+              "ihr": "werdet herlassen",
+              "sie_Sie": "werden herlassen"
+            }
+          },
+          "example": "Er lässt den Hund nicht her. | Sie ließ das Geheimnis her. | Er hat es hergelassen.",
+          "exampleDe": "Er lässt den Hund nicht her. | Sie ließ das Geheimnis her. | Er hat es hergelassen.",
+          "exampleEn": "He does not let the dog come here. (Präsens) | She gave away the secret. (Präteritum) | He has let it come here/given it away. (Partizip II)",
+          "exampleFull": "• Er lässt den Hund nicht her.\nHe does not let the dog come here. (Präsens)\n• Sie ließ das Geheimnis her.\nShe gave away the secret. (Präteritum)\n• Er hat es hergelassen.\nHe has let it come here/given it away. (Partizip II)",
+          "origins": {
+            "prefix": "her-",
+            "prefixMeaning": "her- prefix",
+            "rootVerb": "lassen",
+            "rootMeaning": "base verb 'lassen'",
+            "combinedLogic": "her- (her- prefix) + lassen → to let something come here, to give away (informal)"
+          }
+        },
+        {
+          "id": "v-1792-hilfeleisten",
+          "index": 1792,
+          "infinitive": "hilfeleisten",
+          "meaning": "to assist, to render aid",
+          "tags": [
+            "freq-1792",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "hilfeleisten",
+            "prefixMeaning": "",
+            "rootMeaning": "to assist, to render aid",
+            "combinedLogic": "Base verb 'hilfeleisten' → to assist, to render aid"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "hilfegeleistet",
+            "present3rd": "leistet hilfe",
+            "past3rd": "leistete hilfe",
+            "present": {
+              "ich": "hilfeleiste",
+              "du": "leistet hilfest",
+              "er_sie_es": "leistet hilfe",
+              "wir": "hilfeleisten",
+              "ihr": "hilfeleistt",
+              "sie_Sie": "hilfeleisten"
+            },
+            "past": {
+              "ich": "leistete hilfe",
+              "du": "leistete hilfest",
+              "er_sie_es": "leistete hilfe",
+              "wir": "leistete hilfeen",
+              "ihr": "leistete hilfet",
+              "sie_Sie": "leistete hilfeen"
+            },
+            "future": {
+              "ich": "werde hilfeleisten",
+              "du": "wirst hilfeleisten",
+              "er_sie_es": "wird hilfeleisten",
+              "wir": "werden hilfeleisten",
+              "ihr": "werdet hilfeleisten",
+              "sie_Sie": "werden hilfeleisten"
+            }
+          },
+          "example": "Er leistet Hilfe. | Sie leistete erste Hilfe. | Es wurde Hilfe geleistet.",
+          "exampleDe": "Er leistet Hilfe. | Sie leistete erste Hilfe. | Es wurde Hilfe geleistet.",
+          "exampleEn": "He provides assistance. (Präsens) | She rendered first aid. (Präteritum) | Aid has been rendered. (Partizip II - impersonal passive)",
+          "exampleFull": "• Er leistet Hilfe.\nHe provides assistance. (Präsens)\n• Sie leistete erste Hilfe.\nShe rendered first aid. (Präteritum)\n• Es wurde Hilfe geleistet.\nAid has been rendered. (Partizip II - impersonal passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "hilfeleisten",
+            "rootMeaning": "to assist, to render aid",
+            "combinedLogic": "Base verb 'hilfeleisten' → to assist, to render aid"
+          }
+        },
+        {
+          "id": "v-1793-behaften",
+          "index": 1793,
+          "infinitive": "behaften",
+          "meaning": "to be afflicted with, to be burdened with (often used with an + Dativ or Partizip II as adjective)",
+          "tags": [
+            "freq-1793",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "behaften",
+            "prefixMeaning": "",
+            "rootMeaning": "to be afflicted with, to be burdened with (often used with an + Dativ or Partizip II as adjective)",
+            "combinedLogic": "Base verb 'behaften' → to be afflicted with, to be burdened with (often used with an + Dativ or Partizip II as adjective)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "behaftet",
+            "present3rd": "behaftet",
+            "past3rd": "behaftete",
+            "present": {
+              "ich": "behafte",
+              "du": "behaftest",
+              "er_sie_es": "behaftet",
+              "wir": "behaften",
+              "ihr": "behaftt",
+              "sie_Sie": "behaften"
+            },
+            "past": {
+              "ich": "behaftete",
+              "du": "behaftetest",
+              "er_sie_es": "behaftete",
+              "wir": "behafteteen",
+              "ihr": "behaftetet",
+              "sie_Sie": "behafteteen"
+            },
+            "future": {
+              "ich": "werde behaften",
+              "du": "wirst behaften",
+              "er_sie_es": "wird behaften",
+              "wir": "werden behaften",
+              "ihr": "werdet behaften",
+              "sie_Sie": "werden behaften"
+            }
+          },
+          "example": "Er ist mit Schulden behaftet. | Sie behaftete ihn mit der Verantwortung. | Er war mit einem Fehler behaftet.",
+          "exampleDe": "Er ist mit Schulden behaftet. | Sie behaftete ihn mit der Verantwortung. | Er war mit einem Fehler behaftet.",
+          "exampleEn": "He is burdened with debts. (Präsens - used as adjective) | She burdened him with the responsibility. (Präteritum) | He was afflicted with a mistake. (Partizip II - often used as adjective)",
+          "exampleFull": "• Er ist mit Schulden behaftet.\nHe is burdened with debts. (Präsens - used as adjective)\n• Sie behaftete ihn mit der Verantwortung.\nShe burdened him with the responsibility. (Präteritum)\n• Er war mit einem Fehler behaftet.\nHe was afflicted with a mistake. (Partizip II - often used as adjective)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "behaften",
+            "rootMeaning": "to be afflicted with, to be burdened with (often used with an + Dativ or Partizip II as adjective)",
+            "combinedLogic": "Base verb 'behaften' → to be afflicted with, to be burdened with (often used with an + Dativ or Partizip II as adjective)"
+          }
+        },
+        {
+          "id": "v-1794-überstechen",
+          "index": 1794,
+          "infinitive": "überstechen",
+          "meaning": "to trump (in cards), to surpass (less common)",
+          "tags": [
+            "freq-1794",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "überstechen",
+            "prefixMeaning": "",
+            "rootMeaning": "to trump (in cards), to surpass (less common)",
+            "combinedLogic": "Base verb 'überstechen' → to trump (in cards), to surpass (less common)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "überstochen",
+            "present3rd": "übersticht",
+            "past3rd": "überstach",
+            "present": {
+              "ich": "übersteche",
+              "du": "überstichst",
+              "er_sie_es": "übersticht",
+              "wir": "überstechen",
+              "ihr": "überstecht",
+              "sie_Sie": "überstechen"
+            },
+            "past": {
+              "ich": "überstach",
+              "du": "überstachst",
+              "er_sie_es": "überstach",
+              "wir": "überstachen",
+              "ihr": "überstacht",
+              "sie_Sie": "überstachen"
+            },
+            "future": {
+              "ich": "werde überstechen",
+              "du": "wirst überstechen",
+              "er_sie_es": "wird überstechen",
+              "wir": "werden überstechen",
+              "ihr": "werdet überstechen",
+              "sie_Sie": "werden überstechen"
+            }
+          },
+          "example": "Er übersticht die Karte. | Sie überstach ihn im Rennen (less common). | Die Karte wurde überstochen.",
+          "exampleDe": "Er übersticht die Karte. | Sie überstach ihn im Rennen (less common). | Die Karte wurde überstochen.",
+          "exampleEn": "He trumps the card. (Präsens) | She surpassed him in the race. (Präteritum) | The card has been trumped. (Partizip II - passive)",
+          "exampleFull": "• Er übersticht die Karte.\nHe trumps the card. (Präsens)\n• Sie überstach ihn im Rennen (less common).\nShe surpassed him in the race. (Präteritum)\n• Die Karte wurde überstochen.\nThe card has been trumped. (Partizip II - passive)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "überstechen",
+            "rootMeaning": "to trump (in cards), to surpass (less common)",
+            "combinedLogic": "Base verb 'überstechen' → to trump (in cards), to surpass (less common)"
+          }
+        },
+        {
+          "id": "v-1795-draufbringen",
+          "index": 1795,
+          "infinitive": "draufbringen",
+          "meaning": "to bring onto/on it (colloquial), to make someone understand (informal)",
+          "tags": [
+            "freq-1795",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": false,
+            "prefix": "",
+            "isSeparable": false,
+            "rootVerb": "draufbringen",
+            "prefixMeaning": "",
+            "rootMeaning": "to bring onto/on it (colloquial), to make someone understand (informal)",
+            "combinedLogic": "Base verb 'draufbringen' → to bring onto/on it (colloquial), to make someone understand (informal)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "draufgebracht",
+            "present3rd": "bringt drauf",
+            "past3rd": "brachte drauf",
+            "present": {
+              "ich": "draufbringe",
+              "du": "bringt draufst",
+              "er_sie_es": "bringt drauf",
+              "wir": "draufbringen",
+              "ihr": "draufbringt",
+              "sie_Sie": "draufbringen"
+            },
+            "past": {
+              "ich": "brachte drauf",
+              "du": "brachte draufst",
+              "er_sie_es": "brachte drauf",
+              "wir": "brachte draufen",
+              "ihr": "brachte drauft",
+              "sie_Sie": "brachte draufen"
+            },
+            "future": {
+              "ich": "werde draufbringen",
+              "du": "wirst draufbringen",
+              "er_sie_es": "wird draufbringen",
+              "wir": "werden draufbringen",
+              "ihr": "werdet draufbringen",
+              "sie_Sie": "werden draufbringen"
+            }
+          },
+          "example": "Er bringt den Deckel drauf. | Sie brachte ihn drauf. | Er hat ihn draufgebracht.",
+          "exampleDe": "Er bringt den Deckel drauf. | Sie brachte ihn drauf. | Er hat ihn draufgebracht.",
+          "exampleEn": "He puts the lid on it. (Präsens) | She made him understand. (Präteritum - informal) | He has made him understand. (Partizip II - informal)",
+          "exampleFull": "• Er bringt den Deckel drauf.\nHe puts the lid on it. (Präsens)\n• Sie brachte ihn drauf.\nShe made him understand. (Präteritum - informal)\n• Er hat ihn draufgebracht.\nHe has made him understand. (Partizip II - informal)",
+          "origins": {
+            "prefix": "",
+            "prefixMeaning": "",
+            "rootVerb": "draufbringen",
+            "rootMeaning": "to bring onto/on it (colloquial), to make someone understand (informal)",
+            "combinedLogic": "Base verb 'draufbringen' → to bring onto/on it (colloquial), to make someone understand (informal)"
+          }
+        },
+        {
+          "id": "v-1796-aufringen",
+          "index": 1796,
+          "infinitive": "aufringen",
+          "meaning": "to force oneself, to manage with difficulty (reflexive: sich aufringen zu)",
+          "tags": [
+            "freq-1796",
+            "separable",
+            "irregular"
+          ],
+          "prefixInfo": {
+            "hasPrefix": true,
+            "prefix": "auf-",
+            "isSeparable": true,
+            "rootVerb": "ringen",
+            "prefixMeaning": "up / open / onto",
+            "rootMeaning": "base verb 'ringen'",
+            "combinedLogic": "auf- (up / open / onto) + ringen → to force oneself, to manage with difficulty (reflexive: sich aufringen zu)"
+          },
+          "conjugation": {
+            "auxiliary": "haben",
+            "participle": "aufgerungen",
+            "present3rd": "ringt auf",
+            "past3rd": "rang auf",
+            "present": {
+              "ich": "aufringe auf",
+              "du": "ringst auf",
+              "er_sie_es": "ringt auf",
+              "wir": "aufringen",
+              "ihr": "aufringt auf",
+              "sie_Sie": "aufringen"
+            },
+            "past": {
+              "ich": "rang auf",
+              "du": "rangst auf",
+              "er_sie_es": "rang auf",
+              "wir": "rangen auf",
+              "ihr": "rangt auf",
+              "sie_Sie": "rangen auf"
+            },
+            "future": {
+              "ich": "werde aufringen",
+              "du": "wirst aufringen",
+              "er_sie_es": "wird aufringen",
+              "wir": "werden aufringen",
+              "ihr": "werdet aufringen",
+              "sie_Sie": "werden aufringen"
+            }
+          },
+          "example": "Er ringt sich dazu auf. | Sie rang sich zu einer Antwort auf. | Er hat sich dazu aufgerungen.",
+          "exampleDe": "Er ringt sich dazu auf. | Sie rang sich zu einer Antwort auf. | Er hat sich dazu aufgerungen.",
+          "exampleEn": "He forces himself to do it. (Präsens - reflexive) | She managed to give an answer with difficulty. (Präteritum - reflexive) | He has forced himself to do it. (Partizip II - reflexive)",
+          "exampleFull": "• Er ringt sich dazu auf.\nHe forces himself to do it. (Präsens - reflexive)\n• Sie rang sich zu einer Antwort auf.\nShe managed to give an answer with difficulty. (Präteritum - reflexive)\n• Er hat sich dazu aufgerungen.\nHe has forced himself to do it. (Partizip II - reflexive)",
+          "origins": {
+            "prefix": "auf-",
+            "prefixMeaning": "up / open / onto",
+            "rootVerb": "ringen",
+            "rootMeaning": "base verb 'ringen'",
+            "combinedLogic": "auf- (up / open / onto) + ringen → to force oneself, to manage with difficulty (reflexive: sich aufringen zu)"
           }
         }
       ]

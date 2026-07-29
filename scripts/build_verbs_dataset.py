@@ -34,7 +34,6 @@ PREFIX_MEANINGS = {
     'zusammen': 'together / joint'
 }
 
-# Homonym adjustments (words that match common articles/nouns/conjunctions in frequency corpora)
 HOMONYM_PENALTIES = {
     'einen': 2.2,     # article "einen"
     'sondern': 2.5,   # conjunction "sondern"
@@ -231,7 +230,7 @@ def main():
 
     cursor.execute("SELECT id, tags, flds FROM notes")
     notes = cursor.fetchall()
-    print(f"Extracted {len(notes)} raw verb notes from Anki database.")
+    print(f"Extracted ALL {len(notes)} raw verb notes from Anki database.")
 
     raw_verbs = []
     for idx, note in enumerate(notes):
@@ -252,7 +251,6 @@ def main():
         pres_3rd, past_3rd, participle, auxiliary = parse_verb_forms(forms_raw, infinitive)
         conj = generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary, pref_info)
 
-        # Frequency scoring using wordfreq Zipf score
         inf_lower = infinitive.lower()
         zipf = zipf_frequency(inf_lower, 'de')
         score = zipf
@@ -277,18 +275,11 @@ def main():
             'score': score
         })
 
-    # Sort descending by score
+    # Sort ALL 1796 verbs descending by score (NO DELETIONS - rare ones go to the very end!)
     raw_verbs.sort(key=lambda x: x['score'], reverse=True)
 
-    # Filter out zero/obscure noise items (where zipf < 1.0 and not in curriculum)
-    filtered_verbs = [
-        v for v in raw_verbs 
-        if v['zipf'] >= 1.0 or v['infinitive'].lower() in curriculum_words
-    ]
-    print(f"Filtered {len(raw_verbs)} raw verbs -> {len(filtered_verbs)} high-quality verbs (removed {len(raw_verbs) - len(filtered_verbs)} obscure/rare entries).")
-
     verbs = []
-    for idx, item in enumerate(filtered_verbs):
+    for idx, item in enumerate(raw_verbs):
         infinitive = item['infinitive']
         pref_info = item['pref_info']
         pres_3rd = item['pres_3rd']
@@ -347,7 +338,7 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(dataset, f, ensure_ascii=False, indent=2)
 
-    print(f"Successfully exported {len(verbs)} frequency-ranked verbs across {len(decks)} decks to {output_file}!")
+    print(f"Successfully exported ALL {len(verbs)} frequency-sorted verbs across {len(decks)} decks to {output_file}!")
 
 if __name__ == '__main__':
     main()
