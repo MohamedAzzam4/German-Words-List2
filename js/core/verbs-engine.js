@@ -2,8 +2,8 @@
  * VerbsEngine
  * Controller for the Top German Verbs Mastery module.
  * Provides full theme parity with level.html, default List/Glossary view,
- * Hide & Guess practice controls (Hide DE/EN/Mix/Reveal), TTS SpeechQueue,
- * 50-verb decks tracker, and Flashcard mode with collapsible conjugations & origins.
+ * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
+ * 50-verb decks tracker, collapsible sidebar, and Flashcard mode.
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
@@ -22,6 +22,8 @@ class VerbsEngineClass {
         this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
         this.isShuffle = false;
         this.hiddenCols = new Set(); // 'de', 'en', 'mixed'
+        this.hideExamples = false; // Toggle all example boxes
+        this.isSidebarCollapsed = false;
         this.typeFilter = 'all'; // 'all', 'fav', 'sep', 'irreg'
         this.appId = 'a1_app_data';
         this.userData = getLocalProgress(this.appId);
@@ -81,8 +83,16 @@ class VerbsEngineClass {
         if (e) e.stopPropagation();
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        if (sidebar) sidebar.classList.toggle('active');
-        if (overlay) overlay.classList.toggle('active');
+        const body = document.body;
+        
+        // On desktop, collapse sidebar width; on mobile toggle drawer
+        if (window.innerWidth > 768) {
+            this.isSidebarCollapsed = !this.isSidebarCollapsed;
+            body.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
+        } else {
+            if (sidebar) sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+        }
     }
 
     updateOverallProgress() {
@@ -202,8 +212,21 @@ class VerbsEngineClass {
         this.renderTable();
     }
 
+    toggleExamples() {
+        this.hideExamples = !this.hideExamples;
+        const btn = document.getElementById('btn-toggle-examples');
+        if (btn) {
+            btn.innerHTML = `${this.hideExamples ? '👁️ Show Examples' : '🙈 Hide Examples'}`;
+        }
+        const boxes = document.querySelectorAll('.verb-inline-example-box');
+        boxes.forEach(b => b.classList.toggle('hidden-example', this.hideExamples));
+    }
+
     revealAllTable() {
         this.hiddenCols.clear();
+        this.hideExamples = false;
+        const btn = document.getElementById('btn-toggle-examples');
+        if (btn) btn.innerHTML = '🙈 Hide Examples';
         this.renderTable();
     }
 
@@ -219,7 +242,7 @@ class VerbsEngineClass {
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">No verbs match your current filter</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No verbs match your current filter</td></tr>`;
             return;
         }
 
@@ -230,6 +253,9 @@ class VerbsEngineClass {
             const isMixed = this.hiddenCols.has('mixed');
             const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
             const hideEN = this.hiddenCols.has('en') || (isMixed && !hideDE);
+
+            const exDe = w.exampleDe || w.example;
+            const exEn = w.exampleEn;
 
             return `
                 <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
@@ -244,19 +270,32 @@ class VerbsEngineClass {
                         </div>
                     </td>
                     <td>
-                        <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
-                        ${isKnown ? '<span style="color:var(--success);margin-left:8px;" title="Known">✓</span>' : ''}
+                        <div class="meaning-and-example-cell">
+                            <div style="display:flex; align-items:center;">
+                                <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight: 600;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
+                                ${isKnown ? '<span style="color:var(--success);margin-left:8px;" title="Known">✓</span>' : ''}
+                            </div>
+                            
+                            <!-- Inline German Example (Always visible by default right after meaning) -->
+                            ${exDe ? `
+                                <div class="verb-inline-example-box ${this.hideExamples ? 'hidden-example' : ''}">
+                                    <div class="ex-de-line">💬 <em>${sanitize(exDe)}</em></div>
+                                    ${exEn ? `
+                                        <button class="ex-en-toggle-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                                            💬 Show EN Translation
+                                        </button>
+                                        <div class="ex-en-line hidden">
+                                            🇺🇸 <em>${sanitize(exEn)}</em>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
                     </td>
                     <td><span class="type-badge">${w.prefixInfo.prefix || 'Base'}</span></td>
                     <td>
                         <div style="font-size:0.85rem;"><strong>Participle:</strong> ${w.conjugation.participle}</div>
                         <div style="font-size:0.8rem; color:var(--text-muted);"><strong>Aux:</strong> ${w.conjugation.auxiliary}</div>
-                    </td>
-                    <td>
-                        ${w.example ? `
-                            <button class="example-toggle" onclick="this.nextElementSibling.classList.toggle('hidden')">Show Example</button>
-                            <div class="example-box hidden">${sanitize(w.example.replace(/\n/g, ' '))}</div>
-                        ` : '<span style="color:var(--text-muted)">-</span>'}
                     </td>
                 </tr>
             `;
@@ -382,6 +421,9 @@ class VerbsEngineClass {
             </div>
         `;
 
+        const exDe = verb.exampleDe || verb.example;
+        const exEn = verb.exampleEn;
+
         const cardHTML = `
             <div class="verb-flashcard ${this.isFlipped ? 'flipped' : ''}" data-action="flip">
                 <div class="verb-card-inner">
@@ -429,10 +471,18 @@ class VerbsEngineClass {
                                 <div class="back-field"><span>Auxiliary:</span> <strong>${conj.auxiliary}</strong></div>
                             </div>
 
-                            ${verb.example ? `
+                            ${exDe ? `
                                 <div class="back-example-box">
-                                    <div class="ex-label">Example Sentence / Phrase:</div>
-                                    <div class="ex-text">${verb.example.replace(/\n/g, '<br>')}</div>
+                                    <div class="ex-label">Example Sentence:</div>
+                                    <div class="ex-text">🇩🇪 ${sanitize(exDe)}</div>
+                                    ${exEn ? `
+                                        <button class="ex-en-toggle-btn" style="margin-top: 8px;" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                                            💬 Show EN Translation
+                                        </button>
+                                        <div class="ex-en-line hidden" style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">
+                                            🇺🇸 ${sanitize(exEn)}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             ` : ''}
 

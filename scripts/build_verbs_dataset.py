@@ -11,7 +11,6 @@ output_file = os.path.join(output_dir, "top_verbs_2000.json")
 
 os.makedirs(output_dir, exist_ok=True)
 
-# List of common separable prefixes
 SEPARABLE_PREFIXES = [
     'ab', 'an', 'auf', 'aus', 'bei', 'ein', 'fest', 'fort', 'her', 'hin',
     'los', 'mit', 'nach', 'vor', 'weg', 'weiter', 'zu', 'zurück', 'zusammen'
@@ -44,9 +43,7 @@ def clean_html(text):
     return text.strip()
 
 def parse_verb_forms(forms_raw, infinitive):
-    # Clean forms string e.g. "(fängt an · fing an · hat angefangen)" or "(wird - wurde - ist geworden)"
     cleaned = clean_html(forms_raw).strip('() ')
-    # Split on dot, dash, slash
     parts = [p.strip() for p in re.split(r'[·\-\/]', cleaned) if p.strip()]
 
     pres_3rd = parts[0] if len(parts) >= 1 else infinitive
@@ -96,7 +93,6 @@ def generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary,
     is_sep = pref_info['isSeparable']
     pref = pref_info['prefix'].rstrip('-') if is_sep else ''
 
-    # Present conjugations
     def build_pres():
         if is_sep and pres_3rd.endswith(' ' + pref):
             base = pres_3rd[:-len(' ' + pref)].strip()
@@ -116,7 +112,6 @@ def generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary,
             "sie_Sie": f"{infinitive}"
         }
 
-    # Past (Präteritum) conjugations
     def build_past():
         if is_sep and past_3rd.endswith(' ' + pref):
             base = past_3rd[:-len(' ' + pref)].strip()
@@ -134,7 +129,6 @@ def generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary,
             "sie_Sie": f"{base}en{tail}"
         }
 
-    # Future (Futur I) conjugations
     def build_future():
         return {
             "ich": f"werde {infinitive}",
@@ -155,6 +149,45 @@ def generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary,
         'future': build_future()
     }
 
+def parse_examples_structured(raw_back):
+    clean_str = clean_html(raw_back)
+    lines = [l.strip() for l in clean_str.split('\n') if l.strip()]
+    if len(lines) <= 1:
+        return {'de': '', 'en': '', 'full': ''}
+
+    ex_lines = []
+    for l in lines[1:]:
+        if l.startswith('Examples:'):
+            continue
+        ex_lines.append(l)
+
+    de_sentences = []
+    en_sentences = []
+
+    for idx, l in enumerate(ex_lines):
+        clean_l = l.lstrip('•- ').strip()
+        if not clean_l:
+            continue
+        if l.startswith('•') or l.startswith('-'):
+            de_sentences.append(clean_l)
+            if idx + 1 < len(ex_lines) and not ex_lines[idx+1].startswith('•') and not ex_lines[idx+1].startswith('-'):
+                en_sentences.append(ex_lines[idx+1].lstrip('•- ').strip())
+
+    if not de_sentences and ex_lines:
+        de_sentences.append(ex_lines[0].lstrip('•- ').strip())
+        if len(ex_lines) > 1:
+            en_sentences.append(ex_lines[1].lstrip('•- ').strip())
+
+    de_str = ' | '.join(de_sentences)
+    en_str = ' | '.join(en_sentences)
+    full_str = '\n'.join(ex_lines)
+
+    return {
+        'de': de_str,
+        'en': en_str,
+        'full': full_str
+    }
+
 def main():
     temp_dir = tempfile.mkdtemp()
     with zipfile.ZipFile(apkg_path, 'r') as zip_ref:
@@ -172,32 +205,21 @@ def main():
     for idx, note in enumerate(notes):
         flds = note[2].split('\x1f')
         raw_front = clean_html(flds[0])
-        raw_back = clean_html(flds[1])
+        raw_back = flds[1]
 
         parts = raw_front.split('\n')
         infinitive = parts[0].strip()
         forms_raw = parts[1].strip() if len(parts) > 1 else ''
 
-        back_lines = [l.strip() for l in raw_back.split('\n') if l.strip()]
+        clean_back = clean_html(raw_back)
+        back_lines = [l.strip() for l in clean_back.split('\n') if l.strip()]
         meaning = back_lines[0] if len(back_lines) > 0 else ''
 
-        # Examples parsing
-        examples_list = []
-        for line in back_lines[1:]:
-            if line.startswith('Examples:'):
-                continue
-            if line.startswith('•') or line.startswith('-'):
-                clean_ex = line.lstrip('•- ').strip()
-                if clean_ex:
-                    examples_list.append(clean_ex)
-
-        example_sentence = '\n'.join(examples_list) if examples_list else (back_lines[1] if len(back_lines) > 1 else '')
-
+        ex_struct = parse_examples_structured(raw_back)
         pref_info = detect_prefix_info(infinitive, meaning)
         pres_3rd, past_3rd, participle, auxiliary = parse_verb_forms(forms_raw, infinitive)
         conj = generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary, pref_info)
 
-        # Build tags
         tags = [f"freq-{(idx+1):03d}"]
         if pref_info['isSeparable']:
             tags.append('separable')
@@ -212,7 +234,10 @@ def main():
             'tags': tags,
             'prefixInfo': pref_info,
             'conjugation': conj,
-            'example': example_sentence,
+            'example': ex_struct['de'] or ex_struct['full'],
+            'exampleDe': ex_struct['de'] or ex_struct['full'],
+            'exampleEn': ex_struct['en'],
+            'exampleFull': ex_struct['full'],
             'origins': {
                 'prefix': pref_info['prefix'],
                 'prefixMeaning': pref_info['prefixMeaning'],
@@ -223,7 +248,6 @@ def main():
         }
         verbs.append(verb_obj)
 
-    # Group into decks of 50 verbs
     deck_size = 50
     decks = []
     for i in range(0, len(verbs), deck_size):

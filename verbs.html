@@ -8,12 +8,50 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="css/core.css">
     <style>
-        /* Page layout & scrolling fix */
+        /* Page layout & scrolling */
         body {
             display: flex;
             min-height: 100vh;
             background-color: var(--bg);
             color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        #sidebar {
+            transition: width 0.3s ease, padding 0.3s ease;
+        }
+
+        /* Collapsible Sidebar Styles */
+        body.sidebar-collapsed #sidebar {
+            width: 70px;
+            padding: 15px 8px;
+        }
+
+        body.sidebar-collapsed #sidebar .nav-header h2,
+        body.sidebar-collapsed #sidebar .nav-header div,
+        body.sidebar-collapsed #sidebar .nav-item span,
+        body.sidebar-collapsed #sidebar .nav-section-title {
+            display: none;
+        }
+
+        body.sidebar-collapsed #sidebar .nav-item {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar-toggle-desktop-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toggle-desktop-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
 
         #main-content {
@@ -27,7 +65,7 @@
 
         #content-area {
             padding: 24px;
-            max-width: 1100px;
+            max-width: 1150px;
             margin: 0 auto;
             width: 100%;
         }
@@ -144,6 +182,51 @@
             color: var(--text-main);
             font-size: 0.95rem;
             min-width: 240px;
+        }
+
+        /* Inline German & English Example Styling */
+        .meaning-and-example-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .verb-inline-example-box {
+            background: var(--bg);
+            border-left: 3px solid var(--primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .verb-inline-example-box.hidden-example {
+            display: none !important;
+        }
+
+        .ex-de-line {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .ex-en-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 4px;
+            text-decoration: underline;
+        }
+
+        .ex-en-line {
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
         }
 
         /* Flashcard Component Styling */
@@ -438,7 +521,10 @@
         <div class="nav-header">
             <h2>🔥 Top Verbs</h2>
             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px;">50 Verbs per Deck</div>
-            <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
+            <div style="display: flex; gap: 6px; position: absolute; right: 15px; top: 20px;">
+                <button class="sidebar-toggle-desktop-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar Collapse">↔️</button>
+                <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
+            </div>
         </div>
 
         <a href="index.html" class="nav-item" style="text-decoration: none; color: inherit; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; background-color: rgba(255,255,255,0.05);">
@@ -450,7 +536,7 @@
         <a href="level.html?level=b2" class="nav-item" style="text-decoration: none; color: inherit; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
             <span>📙 Aspekte B2</span>
         </a>
-        <div style="padding: 10px 20px; font-weight: bold; color: var(--text-muted); border-bottom: 1px solid var(--border);">MODULES</div>
+        <div class="nav-section-title" style="padding: 10px 20px; font-weight: bold; color: var(--text-muted); border-bottom: 1px solid var(--border);">MODULES</div>
         <div class="nav-item active">
             <span>🔥 Top Verbs Mastery</span>
         </div>
@@ -473,6 +559,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar">↔️ Sidebar</button>
                 <button class="topbar-btn" onclick="window.verbsEngine.toggleDarkMode()" id="theme-btn" title="Toggle Theme">🌙</button>
             </div>
         </header>
@@ -518,6 +605,7 @@
                             <button class="btn" onclick="window.verbsEngine.toggleColumn('en')">Hide English</button>
                             <button class="btn" onclick="window.verbsEngine.toggleColumn('de')">Hide German</button>
                             <button class="btn" onclick="window.verbsEngine.toggleColumn('mixed')">Hide Mixed</button>
+                            <button class="btn" id="btn-toggle-examples" onclick="window.verbsEngine.toggleExamples()">🙈 Hide Examples</button>
                             <button class="btn" onclick="window.verbsEngine.revealAllTable()">Reveal All</button>
                         </div>
                     </div>
@@ -541,10 +629,9 @@
                         <thead>
                             <tr>
                                 <th>Verb (Infinitive) <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
-                                <th>Translation (EN)</th>
+                                <th>Translation & Example Sentence</th>
                                 <th>Prefix</th>
                                 <th>Participle & Aux</th>
-                                <th>Example Sentence</th>
                             </tr>
                         </thead>
                         <tbody id="verbs-table-tbody">
