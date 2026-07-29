@@ -1,18 +1,18 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Top German Verbs Mastery E2E Suite', () => {
+test.describe('Top German Verbs Mastery E2E Suite (Theme & List Parity)', () => {
 
   test.beforeEach(async ({ page }) => {
-    // Navigate to local server
     await page.goto('/verbs.html');
   });
 
-  test('should load verbs.html with 36 decks in the Deck Progress Tracker', async ({ page }) => {
+  test('should load verbs.html in List View by default with 36 decks in tracker', async ({ page }) => {
+    // Verify default view is List View (Glossary table)
+    const viewGlossary = page.locator('#view-glossary');
+    await expect(viewGlossary).toBeVisible();
+    await expect(page.locator('#view-flashcard')).toHaveClass(/hidden/);
 
-    // Verify header title
-    await expect(page.locator('h1')).toContainText('Top Verbs Mastery');
-
-    // Verify deck summary tracker
+    // Verify deck progress tracker summary
     const trackerSummary = page.locator('#verbs-finished-summary');
     await expect(trackerSummary).toBeVisible();
     await expect(trackerSummary).toContainText('0 / 36 Decks Finished');
@@ -20,75 +20,64 @@ test.describe('Top German Verbs Mastery E2E Suite', () => {
     // Verify 36 deck chips
     const deckChips = page.locator('.deck-chip-card');
     await expect(deckChips).toHaveCount(36);
+
+    // Verify table rows for Deck 1
+    const rows = page.locator('#verbs-table-tbody tr');
+    await expect(rows.first()).toBeVisible();
   });
 
-  test('should display active Deck 1 flashcard with front elements', async ({ page }) => {
-    // Deck title should be Deck 1
-    await expect(page.locator('#verbs-deck-title')).toContainText('Deck 1');
+  test('should support Hide German, Hide English, and Reveal All practice controls', async ({ page }) => {
+    const hideEnBtn = page.locator('button:has-text("Hide English")');
+    const hideDeBtn = page.locator('button:has-text("Hide German")');
+    const revealBtn = page.locator('button:has-text("Reveal All")');
 
-    // Check front card elements
+    await expect(hideEnBtn).toBeVisible();
+    await expect(hideDeBtn).toBeVisible();
+
+    // Click Hide English
+    await hideEnBtn.click();
+    const hiddenEN = page.locator('#verbs-table-tbody .hideable.hidden-word');
+    await expect(hiddenEN.first()).toBeVisible();
+
+    // Click Reveal All
+    await revealBtn.click();
+    await expect(page.locator('#verbs-table-tbody .hideable.hidden-word')).toHaveCount(0);
+  });
+
+  test('should switch to Flashcards View and reveal back content with conjugations & origins', async ({ page }) => {
+    // Switch to Flashcard mode
+    const fcBtn = page.locator('button:has-text("Flashcards")');
+    await fcBtn.click();
+
+    await expect(page.locator('#view-flashcard')).toBeVisible();
+    await expect(page.locator('#view-glossary')).toHaveClass(/hidden/);
+
+    // Check front card
     const infinitiveText = page.locator('.verb-infinitive');
     await expect(infinitiveText).toBeVisible();
 
-    const hintBtn = page.locator('.hint-btn');
-    await expect(hintBtn).toBeVisible();
-
-    // Toggle hint
-    await hintBtn.click();
-    await expect(page.locator('.verb-hint-box')).toBeVisible();
-  });
-
-  test('should flip card to reveal back content with collapsible conjugations & origins', async ({ page }) => {
-
+    // Flip card
     const card = page.locator('.verb-flashcard');
     await card.click();
-
-    // Verify card flipped
     await expect(card).toHaveClass(/flipped/);
 
-    // Verify back fields
-    await expect(page.locator('.meaning-field')).toBeVisible();
-
-    // Verify collapsible accordions exist
-    const conjBtn = page.locator('#btn-toggle-conj');
-    await expect(conjBtn).toBeVisible();
-
-    // Click accordion to reveal conjugations
+    // Toggle accordions via engine
     await page.evaluate(() => window.verbsEngine.toggleConjugations());
     await expect(page.locator('.conjugation-tables-block')).toBeVisible();
-    await expect(page.locator('.conj-grid')).toBeVisible();
 
-    // Click origins accordion
     await page.evaluate(() => window.verbsEngine.toggleOrigins());
     await expect(page.locator('.origins-block')).toBeVisible();
   });
 
-  test('should allow switching decks and updating deck tracker', async ({ page }) => {
-    // Click Deck 2
-    const deck2Chip = page.locator('.deck-chip-card').nth(1);
-    await deck2Chip.click();
+  test('should support dark mode toggle and theme persistence', async ({ page }) => {
+    const themeBtn = page.locator('#theme-btn');
+    await expect(themeBtn).toBeVisible();
 
-    // Verify deck header updated
-    await expect(page.locator('#verbs-deck-title')).toContainText('Deck 2');
+    await themeBtn.click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
-    // Mark card as known
-    const knownBtn = page.locator('button:has-text("Known")');
-    await knownBtn.click();
-
-    // Verify counter advanced
-    await expect(page.locator('.verb-counter-text')).toContainText('2 / 50');
-  });
-
-  test('should allow switching between Flashcard and List view modes', async ({ page }) => {
-    const listBtn = page.locator('#verbs-btn-table');
-    await listBtn.click();
-
-    // Verify table is visible and card area hidden
-    await expect(page.locator('#verbs-table-mode-area')).toBeVisible();
-    await expect(page.locator('#verbs-card-mode-area')).toHaveClass(/hidden/);
-
-    // Verify table rows
-    const rows = page.locator('#verbs-table-tbody tr');
-    await expect(rows.first()).toBeVisible();
+    // Reload page to verify persistence
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   });
 });

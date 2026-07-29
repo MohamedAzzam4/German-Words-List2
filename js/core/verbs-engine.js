@@ -1,9 +1,13 @@
 /**
  * VerbsEngine
- * Controller for the Top German Verbs Mastery page (50-Verb Decks).
+ * Controller for the Top German Verbs Mastery module.
+ * Provides full theme parity with level.html, default List/Glossary view,
+ * Hide & Guess practice controls (Hide DE/EN/Mix/Reveal), TTS SpeechQueue,
+ * 50-verb decks tracker, and Flashcard mode with collapsible conjugations & origins.
  */
-import { speak, cleanTextForAudio } from './tts.js';
+import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
+import { sanitize } from './utils.js';
 
 class VerbsEngineClass {
     constructor() {
@@ -15,10 +19,13 @@ class VerbsEngineClass {
         this.showHint = false;
         this.showConjugations = false;
         this.showOrigins = false;
-        this.activeMode = 'flashcard';
+        this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
+        this.isShuffle = false;
+        this.hiddenCols = new Set(); // 'de', 'en', 'mixed'
+        this.typeFilter = 'all'; // 'all', 'fav', 'sep', 'irreg'
         this.appId = 'a1_app_data';
         this.userData = getLocalProgress(this.appId);
-        
+
         if (!this.userData.finishedVerbDecks) {
             this.userData.finishedVerbDecks = [];
         }
@@ -32,13 +39,15 @@ class VerbsEngineClass {
 
     async init() {
         try {
+            this._applyTheme();
             const res = await fetch('content/generated/verbs/top_verbs_2000.json');
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             this.dataset = await res.json();
-            
+
             this.renderDeckTracker();
             this.loadDeck(this.currentDeckId);
             this.bindEvents();
+            this.updateOverallProgress();
             console.log(`✅ VerbsEngine initialized with ${this.dataset.totalVerbs} verbs across ${this.dataset.totalDecks} decks.`);
         } catch (e) {
             console.error('VerbsEngine initialization failed:', e);
@@ -53,6 +62,41 @@ class VerbsEngineClass {
         saveLocalProgress(this.appId, this.userData);
     }
 
+    _applyTheme() {
+        const isDark = !!this.userData.darkMode;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        const themeBtn = document.getElementById('theme-btn');
+        if (themeBtn) {
+            themeBtn.textContent = isDark ? '☀️' : '🌙';
+        }
+    }
+
+    toggleDarkMode() {
+        this.userData.darkMode = !this.userData.darkMode;
+        this._save();
+        this._applyTheme();
+    }
+
+    toggleSidebar(e) {
+        if (e) e.stopPropagation();
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (sidebar) sidebar.classList.toggle('active');
+        if (overlay) overlay.classList.toggle('active');
+    }
+
+    updateOverallProgress() {
+        if (!this.dataset) return;
+        const total = this.dataset.totalVerbs;
+        const knownCount = this.userData.knownVerbIds.length;
+        const pct = Math.round((knownCount / total) * 100);
+
+        const fillEl = document.getElementById('overall-progress-fill');
+        const textEl = document.getElementById('overall-progress-text');
+        if (fillEl) fillEl.style.width = `${pct}%`;
+        if (textEl) textEl.textContent = `${knownCount} / ${total} (${pct}%)`;
+    }
+
     loadDeck(deckId) {
         if (!this.dataset) return;
         const deck = this.dataset.decks.find(d => d.deckId === deckId);
@@ -60,6 +104,9 @@ class VerbsEngineClass {
 
         this.currentDeckId = deckId;
         this.queue = [...deck.verbs];
+        if (this.isShuffle) {
+            this._shuffleQueue();
+        }
         this.currentIndex = 0;
         this.isFlipped = false;
         this.showHint = false;
@@ -67,19 +114,31 @@ class VerbsEngineClass {
         this.showOrigins = false;
 
         this.updateDeckHeader(deck);
-        this.renderCard();
         this.renderTable();
+        this.renderCard();
         this.renderDeckTracker();
+    }
+
+    _shuffleQueue() {
+        for (let i = this.queue.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
+        }
+    }
+
+    toggleShuffle() {
+        this.isShuffle = !this.isShuffle;
+        const btn = document.getElementById('shuffle-btn');
+        if (btn) {
+            btn.textContent = `🔀 Shuffle: ${this.isShuffle ? 'ON' : 'OFF'}`;
+        }
+        this.loadDeck(this.currentDeckId);
     }
 
     updateDeckHeader(deck) {
         const titleEl = document.getElementById('verbs-deck-title');
         if (titleEl) {
             titleEl.textContent = deck.title;
-        }
-        const counterEl = document.getElementById('verbs-deck-counter');
-        if (counterEl) {
-            counterEl.textContent = `Deck ${deck.deckId} of ${this.dataset.totalDecks}`;
         }
     }
 
@@ -128,6 +187,139 @@ class VerbsEngineClass {
         }
     }
 
+    // ── GLOSSARY / LIST VIEW ──
+    setFilter(type) {
+        this.typeFilter = type;
+        this.renderTable();
+    }
+
+    toggleColumn(col) {
+        if (this.hiddenCols.has(col)) {
+            this.hiddenCols.delete(col);
+        } else {
+            this.hiddenCols.add(col);
+        }
+        this.renderTable();
+    }
+
+    revealAllTable() {
+        this.hiddenCols.clear();
+        this.renderTable();
+    }
+
+    renderTable() {
+        const tbody = document.getElementById('verbs-table-tbody');
+        if (!tbody || this.queue.length === 0) return;
+
+        const filtered = this.queue.filter(w => {
+            if (this.typeFilter === 'fav') return this.userData.verbFavorites.includes(w.id);
+            if (this.typeFilter === 'sep') return w.prefixInfo.isSeparable;
+            if (this.typeFilter === 'irreg') return w.tags.includes('irregular');
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">No verbs match your current filter</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(w => {
+            const isKnown = this.userData.knownVerbIds.includes(w.id);
+            const isFav = this.userData.verbFavorites.includes(w.id);
+
+            const isMixed = this.hiddenCols.has('mixed');
+            const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
+            const hideEN = this.hiddenCols.has('en') || (isMixed && !hideDE);
+
+            return `
+                <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
+                    <td>
+                        <div style="display:flex; align-items:center; gap: 8px;">
+                            <span data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite" style="cursor:pointer; font-size: 1.25rem; filter: grayscale(${isFav ? '0' : '100%'}); opacity: ${isFav ? '1' : '0.25'}; transition: 0.2s;">⭐</span>
+                            <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen">🔊</button>
+                            <div style="flex:1;">
+                                <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">${w.conjugation.present3rd}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
+                        ${isKnown ? '<span style="color:var(--success);margin-left:8px;" title="Known">✓</span>' : ''}
+                    </td>
+                    <td><span class="type-badge">${w.prefixInfo.prefix || 'Base'}</span></td>
+                    <td>
+                        <div style="font-size:0.85rem;"><strong>Participle:</strong> ${w.conjugation.participle}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);"><strong>Aux:</strong> ${w.conjugation.auxiliary}</div>
+                    </td>
+                    <td>
+                        ${w.example ? `
+                            <button class="example-toggle" onclick="this.nextElementSibling.classList.toggle('hidden')">Show Example</button>
+                            <div class="example-box hidden">${sanitize(w.example.replace(/\n/g, ' '))}</div>
+                        ` : '<span style="color:var(--text-muted)">-</span>'}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // ── AUDIO QUEUE (SpeechQueue Integration) ──
+    playAllVerbsAudio() {
+        if (!this.queue || this.queue.length === 0) return;
+        const btn = document.getElementById('btn-play-all-words');
+        const pauseBtn = document.getElementById('btn-pause-words');
+        if (btn) {
+            btn.classList.add('playing');
+            btn.innerHTML = '<span>🔊</span> Playing...';
+        }
+        if (pauseBtn) {
+            pauseBtn.classList.remove('hidden');
+        }
+
+        const items = this.queue.map(v => ({ id: v.id, de: v.infinitive }));
+
+        SpeechQueue.playAll(
+            items,
+            (idx, item) => {
+                const tr = document.querySelector(`tr[data-id="${item.id}"]`);
+                if (tr) {
+                    tr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    tr.classList.add('highlighted-speech');
+                    setTimeout(() => tr.classList.remove('highlighted-speech'), 1500);
+                }
+            },
+            () => {
+                this.stopAudioQueue();
+            }
+        );
+    }
+
+    togglePauseAudio() {
+        const pauseBtn = document.getElementById('btn-pause-words');
+        if (!pauseBtn) return;
+        if (SpeechQueue.isPlaying) {
+            SpeechQueue.pause();
+            pauseBtn.innerHTML = '<span>▶️</span> Resume';
+        } else {
+            SpeechQueue.resume();
+            pauseBtn.innerHTML = '<span>⏸️</span> Pause';
+        }
+    }
+
+    stopAudioQueue() {
+        SpeechQueue.stop();
+        const btn = document.getElementById('btn-play-all-words');
+        const pauseBtn = document.getElementById('btn-pause-words');
+        if (btn) {
+            btn.classList.remove('playing');
+            btn.innerHTML = '<span>▶️</span> Play All';
+        }
+        if (pauseBtn) {
+            pauseBtn.classList.add('hidden');
+        }
+    }
+
+    // ── FLASHCARD VIEW ──
     renderCard() {
         const cardContainer = document.getElementById('verbs-card-working-area');
         if (!cardContainer || this.queue.length === 0) return;
@@ -281,33 +473,6 @@ class VerbsEngineClass {
         cardContainer.innerHTML = cardHTML;
     }
 
-    renderTable() {
-        const tbody = document.getElementById('verbs-table-tbody');
-        if (!tbody || this.queue.length === 0) return;
-
-        tbody.innerHTML = this.queue.map(verb => {
-            const isFav = this.userData.verbFavorites.includes(verb.id);
-
-            return `
-                <tr data-id="${verb.id}">
-                    <td>
-                        <button class="speak-btn" data-action="speak-text" data-text="${verb.infinitive}" title="Speak">🔊</button>
-                        <strong>${verb.infinitive}</strong>
-                    </td>
-                    <td>${verb.meaning}</td>
-                    <td>${verb.prefixInfo.prefix || '-'}</td>
-                    <td>${verb.conjugation.present3rd}</td>
-                    <td>${verb.conjugation.past3rd}</td>
-                    <td>${verb.conjugation.participle}</td>
-                    <td>${verb.conjugation.auxiliary}</td>
-                    <td>
-                        <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}">⭐</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
     flipCard() {
         this.isFlipped = !this.isFlipped;
         const card = document.querySelector('.verb-flashcard');
@@ -398,6 +563,7 @@ class VerbsEngineClass {
 
         this._save();
         this.renderDeckTracker();
+        this.updateOverallProgress();
 
         if (known && this.currentIndex < this.queue.length - 1) {
             this.nextCard();
@@ -431,21 +597,15 @@ class VerbsEngineClass {
 
     switchMode(mode) {
         this.activeMode = mode;
-        const flashcardArea = document.getElementById('verbs-card-mode-area');
-        const tableArea = document.getElementById('verbs-table-mode-area');
-        const btnFc = document.getElementById('verbs-btn-flashcards');
-        const btnTbl = document.getElementById('verbs-btn-table');
+        const glossaryView = document.getElementById('view-glossary');
+        const flashcardView = document.getElementById('view-flashcard');
 
-        if (mode === 'flashcard') {
-            if (flashcardArea) flashcardArea.classList.remove('hidden');
-            if (tableArea) tableArea.classList.add('hidden');
-            if (btnFc) btnFc.classList.add('primary');
-            if (btnTbl) btnTbl.classList.remove('primary');
+        if (mode === 'glossary') {
+            if (glossaryView) glossaryView.classList.remove('hidden');
+            if (flashcardView) flashcardView.classList.add('hidden');
         } else {
-            if (flashcardArea) flashcardArea.classList.add('hidden');
-            if (tableArea) tableArea.classList.remove('hidden');
-            if (btnFc) btnFc.classList.remove('primary');
-            if (btnTbl) btnTbl.classList.add('primary');
+            if (glossaryView) glossaryView.classList.add('hidden');
+            if (flashcardView) flashcardView.classList.remove('hidden');
         }
     }
 
@@ -470,7 +630,7 @@ class VerbsEngineClass {
             });
         }
 
-        // Global Event Delegation for Cards & Tracker
+        // Global Event Delegation
         document.body.addEventListener('click', (e) => {
             const deckCard = e.target.closest('[data-deck-id]');
             if (deckCard) {

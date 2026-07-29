@@ -8,28 +8,28 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="css/core.css">
     <style>
-        .verbs-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .verbs-header {
+        /* Page layout & scrolling fix */
+        body {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .verbs-title-group h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.2rem;
+            min-height: 100vh;
+            background-color: var(--bg);
             color: var(--text-main);
+        }
+
+        #main-content {
+            flex: 1;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        #content-area {
+            padding: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         /* Deck Progress Tracker Grid */
@@ -38,7 +38,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius-card);
             padding: 20px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow);
         }
 
@@ -47,6 +47,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .tracker-summary-badge {
@@ -61,7 +63,7 @@
 
         .verbs-deck-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
             gap: 12px;
             max-height: 220px;
             overflow-y: auto;
@@ -133,16 +135,7 @@
         .status-progress { background: #FEF3C7; color: #B45309; }
         .status-new { background: #F1F5F9; color: #64748B; }
 
-        /* Top Flashcard Header Controls */
-        .controls-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
+        /* Search input styling */
         .search-input-box {
             padding: 10px 16px;
             border-radius: 12px;
@@ -150,7 +143,7 @@
             background: var(--surface);
             color: var(--text-main);
             font-size: 0.95rem;
-            min-width: 260px;
+            min-width: 240px;
         }
 
         /* Flashcard Component Styling */
@@ -290,7 +283,6 @@
             opacity: 0.7;
         }
 
-        /* Back of Card */
         .back-accent-sparkles {
             font-size: 0.9rem;
             letter-spacing: 2px;
@@ -418,7 +410,6 @@
             font-weight: 600;
         }
 
-        /* Controls */
         .verb-card-controls {
             display: flex;
             gap: 16px;
@@ -442,68 +433,141 @@
 </head>
 
 <body>
-    <div class="verbs-container">
-        <!-- Header -->
-        <header class="verbs-header">
-            <div class="verbs-title-group">
-                <a href="index.html" class="btn" title="Back to Portal">⬅ Home</a>
-                <h1>🔥 Top Verbs Mastery</h1>
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar">
+        <div class="nav-header">
+            <h2>🔥 Top Verbs</h2>
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px;">50 Verbs per Deck</div>
+            <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
+        </div>
+
+        <a href="index.html" class="nav-item" style="text-decoration: none; color: inherit; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; background-color: rgba(255,255,255,0.05);">
+            <span>🏠 Back to Portal</span>
+        </a>
+        <a href="level.html?level=a1" class="nav-item" style="text-decoration: none; color: inherit;">
+            <span>📘 Menschen A1</span>
+        </a>
+        <a href="level.html?level=b2" class="nav-item" style="text-decoration: none; color: inherit; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+            <span>📙 Aspekte B2</span>
+        </a>
+        <div style="padding: 10px 20px; font-weight: bold; color: var(--text-muted); border-bottom: 1px solid var(--border);">MODULES</div>
+        <div class="nav-item active">
+            <span>🔥 Top Verbs Mastery</span>
+        </div>
+    </nav>
+
+    <!-- Mobile Drawer Overlay -->
+    <div id="sidebar-overlay" onclick="window.verbsEngine.toggleSidebar(event)"></div>
+
+    <main id="main-content">
+        <!-- Header Topbar -->
+        <header id="topbar">
+            <button id="mobile-menu-btn" class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)">☰</button>
+            <div class="progress-container">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <span id="progress-label">Overall Verb Progress</span>
+                    <span id="overall-progress-text">0 / 1796 (0%)</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="overall-progress-fill" class="progress-bar-fill"></div>
+                </div>
             </div>
-            <div class="btn-group">
-                <button class="btn primary" id="verbs-btn-flashcards" onclick="window.verbsEngine.switchMode('flashcard')">🃏 Flashcards</button>
-                <button class="btn" id="verbs-btn-table" onclick="window.verbsEngine.switchMode('table')">📋 List View</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="topbar-btn" onclick="window.verbsEngine.toggleDarkMode()" id="theme-btn" title="Toggle Theme">🌙</button>
             </div>
         </header>
 
-        <!-- Deck Progress Tracker -->
-        <section class="deck-tracker-section">
-            <div class="tracker-header-row">
-                <div>
-                    <h3 style="margin:0; font-family:'Poppins',sans-serif;">Deck Progress Tracker (50 Verbs per Deck)</h3>
-                    <span style="font-size:0.85rem; color:var(--text-muted);">Select a deck below to start reviewing</span>
+        <div id="content-area">
+            <!-- VIEW 1: LIST / GLOSSARY VIEW (DEFAULT VIEW) -->
+            <div id="view-glossary">
+                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <h2 id="verbs-deck-title" style="margin: 0;">Deck 1 (Verbs 1–50)</h2>
+                        <input type="text" id="verbs-search-input" class="search-input-box" placeholder="🔍 Search verb or meaning...">
+                    </div>
+                    <div class="btn-group">
+                        <select id="type-filter" class="filter-select" onchange="window.verbsEngine.setFilter(this.value)">
+                            <option value="all">🔍 All Verbs</option>
+                            <option value="fav">⭐ Favourites Only</option>
+                            <option value="sep">🏃‍♂️ Separable Verbs</option>
+                            <option value="irreg">⚡ Irregular Verbs</option>
+                        </select>
+                        <button class="btn primary" onclick="window.verbsEngine.switchMode('flashcard')">🃏 Flashcards</button>
+                    </div>
                 </div>
-                <div class="tracker-summary-badge" id="verbs-finished-summary">0 / 36 Decks Finished</div>
-            </div>
-            <div class="verbs-deck-grid" id="verbs-deck-grid">
-                <!-- Deck chips rendered dynamically -->
-            </div>
-        </section>
 
-        <!-- Flashcards Mode -->
-        <div id="verbs-card-mode-area">
-            <div class="controls-bar">
-                <h3 id="verbs-deck-title" style="margin:0; font-family:'Poppins',sans-serif;">Deck 1 (Verbs 1–50)</h3>
-                <input type="text" id="verbs-search-input" class="search-input-box" placeholder="🔍 Search infinitive or meaning...">
+                <!-- Deck Progress Tracker Grid -->
+                <section class="deck-tracker-section">
+                    <div class="tracker-header-row">
+                        <div>
+                            <h3 style="margin:0; font-family:'Poppins',sans-serif;">Deck Progress Tracker (50 Verbs per Deck)</h3>
+                            <span style="font-size:0.85rem; color:var(--text-muted);">Select a deck chip to load its 50 verbs into the list</span>
+                        </div>
+                        <div class="tracker-summary-badge" id="verbs-finished-summary">0 / 36 Decks Finished</div>
+                    </div>
+                    <div class="verbs-deck-grid" id="verbs-deck-grid">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </section>
+
+                <!-- Practice Controls & Audio Queue -->
+                <div class="controls-row" style="background: var(--surface); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <span style="font-weight: bold; font-size: 0.9rem;">Hide & Guess:</span>
+                        <div class="btn-group">
+                            <button class="btn" onclick="window.verbsEngine.toggleColumn('en')">Hide English</button>
+                            <button class="btn" onclick="window.verbsEngine.toggleColumn('de')">Hide German</button>
+                            <button class="btn" onclick="window.verbsEngine.toggleColumn('mixed')">Hide Mixed</button>
+                            <button class="btn" onclick="window.verbsEngine.revealAllTable()">Reveal All</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn btn-primary" id="btn-play-all-words" onclick="window.verbsEngine.playAllVerbsAudio()" style="display: flex; align-items: center; gap: 8px;">
+                            <span>▶️</span> Play All
+                        </button>
+                        <button class="btn hidden" id="btn-pause-words" onclick="window.verbsEngine.togglePauseAudio()" style="display: flex; align-items: center; gap: 8px;">
+                            <span>⏸️</span> Pause
+                        </button>
+                        <button class="btn" id="btn-stop-words" onclick="window.verbsEngine.stopAudioQueue()" style="display: flex; align-items: center; gap: 8px;">
+                            <span>⏹️</span> Stop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Glossary Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Verb (Infinitive) <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
+                                <th>Translation (EN)</th>
+                                <th>Prefix</th>
+                                <th>Participle & Aux</th>
+                                <th>Example Sentence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verbs-table-tbody">
+                            <!-- Table rows rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="verb-flashcard-wrapper" id="verbs-card-working-area">
-                <!-- Flashcard rendered dynamically -->
+            <!-- VIEW 2: FLASHCARD VIEW -->
+            <div id="view-flashcard" class="hidden">
+                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <button class="btn" onclick="window.verbsEngine.switchMode('glossary')">⬅ Back to List</button>
+                    <h2 style="margin:0; font-family:'Poppins',sans-serif;">Verbs Flashcard Review</h2>
+                    <button class="btn" id="shuffle-btn" onclick="window.verbsEngine.toggleShuffle()">🔀 Shuffle: OFF</button>
+                </div>
+
+                <div class="verb-flashcard-wrapper" id="verbs-card-working-area">
+                    <!-- Flashcard rendered dynamically -->
+                </div>
             </div>
         </div>
-
-        <!-- List View Mode -->
-        <div id="verbs-table-mode-area" class="hidden">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Verb (Infinitive)</th>
-                            <th>Meaning</th>
-                            <th>Prefix</th>
-                            <th>Präsens (3rd)</th>
-                            <th>Präteritum (3rd)</th>
-                            <th>Partizip II</th>
-                            <th>Auxiliary</th>
-                            <th>⭐</th>
-                        </tr>
-                    </thead>
-                    <tbody id="verbs-table-tbody">
-                        <!-- Table rows rendered dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    </main>
 
     <script type="module">
         import { VerbsEngine } from './js/core/verbs-engine.js';
