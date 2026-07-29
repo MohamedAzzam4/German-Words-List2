@@ -15,7 +15,7 @@ class VerbsEngineClass {
         this.showHint = false;
         this.showConjugations = false;
         this.showOrigins = false;
-        this.activeMode = 'flashcard'; // 'flashcard' | 'table'
+        this.activeMode = 'flashcard';
         this.appId = 'a1_app_data';
         this.userData = getLocalProgress(this.appId);
         
@@ -99,7 +99,6 @@ class VerbsEngineClass {
                 const isFinished = this.userData.finishedVerbDecks.includes(deck.deckId);
                 const isActive = deck.deckId === this.currentDeckId;
                 
-                // Count known verbs in this deck
                 const knownInDeck = deck.verbs.filter(v => this.userData.knownVerbIds.includes(v.id)).length;
                 const pct = Math.round((knownInDeck / deck.count) * 100);
 
@@ -114,7 +113,7 @@ class VerbsEngineClass {
                 }
 
                 return `
-                    <div class="deck-chip-card ${isActive ? 'active' : ''}" onclick="window.verbsEngine.loadDeck(${deck.deckId})">
+                    <div class="deck-chip-card ${isActive ? 'active' : ''}" data-deck-id="${deck.deckId}">
                         <div class="deck-chip-header">
                             <span class="deck-chip-num">Deck ${deck.deckId}</span>
                             <span class="status-chip ${badgeClass}">${badgeText}</span>
@@ -137,10 +136,8 @@ class VerbsEngineClass {
         const isFav = this.userData.verbFavorites.includes(verb.id);
         const isKnown = this.userData.knownVerbIds.includes(verb.id);
 
-        // Tags HTML
         const tagsHTML = verb.tags.map(t => `<span class="verb-tag-badge">${t}</span>`).join(' ');
 
-        // Conjugation HTML (collapsible)
         const conj = verb.conjugation;
         const conjTableHTML = `
             <div class="conjugation-tables-block ${this.showConjugations ? '' : 'hidden'}">
@@ -182,7 +179,6 @@ class VerbsEngineClass {
             </div>
         `;
 
-        // Origins HTML (collapsible)
         const orig = verb.origins;
         const originsHTML = `
             <div class="origins-block ${this.showOrigins ? '' : 'hidden'}">
@@ -195,17 +191,17 @@ class VerbsEngineClass {
         `;
 
         const cardHTML = `
-            <div class="verb-flashcard ${this.isFlipped ? 'flipped' : ''}" onclick="window.verbsEngine.flipCard()">
+            <div class="verb-flashcard ${this.isFlipped ? 'flipped' : ''}" data-action="flip">
                 <div class="verb-card-inner">
                     <!-- FRONT OF CARD -->
                     <div class="verb-card-front">
                         <div class="verb-card-topbar">
-                            <button class="hint-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleHint()" title="Get a hint">
+                            <button class="hint-btn" data-action="toggle-hint" title="Get a hint">
                                 💡 ${this.showHint ? 'Hide Hint' : 'Get a hint'}
                             </button>
                             <div class="topbar-right-btns">
-                                <button class="speak-btn" onclick="event.stopPropagation(); window.verbsEngine.speakCurrentCard()" title="Speak Verb">🔊</button>
-                                <button class="fav-btn ${isFav ? 'fav-active' : ''}" onclick="event.stopPropagation(); window.verbsEngine.toggleFavorite('${verb.id}')" title="Toggle Favorite">⭐</button>
+                                <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
+                                <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
                             </div>
                         </div>
 
@@ -214,11 +210,9 @@ class VerbsEngineClass {
                             <h2 class="verb-infinitive">${verb.infinitive}</h2>
                             <div class="verb-tags-container">${tagsHTML}</div>
 
-                            ${this.showHint ? `
-                                <div class="verb-hint-box">
-                                    <span>Hint / Meaning preview:</span> ${verb.meaning}
-                                </div>
-                            ` : ''}
+                            <div class="verb-hint-box ${this.showHint ? '' : 'hidden'}">
+                                <span>Hint / Meaning preview:</span> ${verb.meaning}
+                            </div>
                         </div>
 
                         <div class="verb-tap-hint">Tap card to flip to back 🔄</div>
@@ -229,8 +223,8 @@ class VerbsEngineClass {
                         <div class="verb-card-topbar">
                             <span class="back-accent-sparkles">✨✨✨✨✨✨✨✨✨✨</span>
                             <div class="topbar-right-btns">
-                                <button class="speak-btn" onclick="event.stopPropagation(); window.verbsEngine.speakCurrentCard()" title="Speak Verb">🔊</button>
-                                <button class="fav-btn ${isFav ? 'fav-active' : ''}" onclick="event.stopPropagation(); window.verbsEngine.toggleFavorite('${verb.id}')" title="Toggle Favorite">⭐</button>
+                                <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
+                                <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
                             </div>
                         </div>
 
@@ -252,10 +246,10 @@ class VerbsEngineClass {
 
                             <!-- Accordion Toggles -->
                             <div class="accordion-toggles-row">
-                                <button class="accordion-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleOrigins()">
+                                <button class="accordion-btn" id="btn-toggle-orig" data-action="toggle-orig">
                                     🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}
                                 </button>
-                                <button class="accordion-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleConjugations()">
+                                <button class="accordion-btn" id="btn-toggle-conj" data-action="toggle-conj">
                                     📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}
                                 </button>
                             </div>
@@ -269,18 +263,18 @@ class VerbsEngineClass {
 
             <!-- CARD CONTROLS -->
             <div class="verb-card-controls">
-                <button class="fc-btn btn-learning" onclick="window.verbsEngine.markCard(false)">
+                <button class="fc-btn btn-learning" data-action="mark-learning">
                     ❌ Still Learning
                 </button>
-                <button class="fc-btn btn-known ${isKnown ? 'active' : ''}" onclick="window.verbsEngine.markCard(true)">
+                <button class="fc-btn btn-known ${isKnown ? 'active' : ''}" data-action="mark-known">
                     ✅ Known
                 </button>
             </div>
 
             <div class="verb-card-nav">
-                <button class="btn" onclick="window.verbsEngine.prevCard()" ${this.currentIndex === 0 ? 'disabled' : ''}>◀ Prev</button>
+                <button class="btn" data-action="prev-card" ${this.currentIndex === 0 ? 'disabled' : ''}>◀ Prev</button>
                 <span class="verb-counter-text">${this.currentIndex + 1} / ${this.queue.length}</span>
-                <button class="btn" onclick="window.verbsEngine.nextCard()" ${this.currentIndex === this.queue.length - 1 ? 'disabled' : ''}>Next ▶</button>
+                <button class="btn" data-action="next-card" ${this.currentIndex === this.queue.length - 1 ? 'disabled' : ''}>Next ▶</button>
             </div>
         `;
 
@@ -293,12 +287,11 @@ class VerbsEngineClass {
 
         tbody.innerHTML = this.queue.map(verb => {
             const isFav = this.userData.verbFavorites.includes(verb.id);
-            const isKnown = this.userData.knownVerbIds.includes(verb.id);
 
             return `
                 <tr data-id="${verb.id}">
                     <td>
-                        <button class="speak-btn" onclick="window.verbsEngine.speakText('${verb.infinitive}')" title="Speak">🔊</button>
+                        <button class="speak-btn" data-action="speak-text" data-text="${verb.infinitive}" title="Speak">🔊</button>
                         <strong>${verb.infinitive}</strong>
                     </td>
                     <td>${verb.meaning}</td>
@@ -308,7 +301,7 @@ class VerbsEngineClass {
                     <td>${verb.conjugation.participle}</td>
                     <td>${verb.conjugation.auxiliary}</td>
                     <td>
-                        <button class="fav-btn ${isFav ? 'fav-active' : ''}" onclick="window.verbsEngine.toggleFavorite('${verb.id}')">⭐</button>
+                        <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}">⭐</button>
                     </td>
                 </tr>
             `;
@@ -325,17 +318,38 @@ class VerbsEngineClass {
 
     toggleHint() {
         this.showHint = !this.showHint;
-        this.renderCard();
+        const hintBox = document.querySelector('.verb-hint-box');
+        const hintBtn = document.querySelector('[data-action="toggle-hint"]');
+        if (hintBox) {
+            hintBox.classList.toggle('hidden', !this.showHint);
+        }
+        if (hintBtn) {
+            hintBtn.innerHTML = `💡 ${this.showHint ? 'Hide Hint' : 'Get a hint'}`;
+        }
     }
 
     toggleConjugations() {
         this.showConjugations = !this.showConjugations;
-        this.renderCard();
+        const block = document.querySelector('.conjugation-tables-block');
+        const btn = document.querySelector('#btn-toggle-conj');
+        if (block) {
+            block.classList.toggle('hidden', !this.showConjugations);
+        }
+        if (btn) {
+            btn.innerHTML = `📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}`;
+        }
     }
 
     toggleOrigins() {
         this.showOrigins = !this.showOrigins;
-        this.renderCard();
+        const block = document.querySelector('.origins-block');
+        const btn = document.querySelector('#btn-toggle-orig');
+        if (block) {
+            block.classList.toggle('hidden', !this.showOrigins);
+        }
+        if (btn) {
+            btn.innerHTML = `🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}`;
+        }
     }
 
     nextCard() {
@@ -371,7 +385,6 @@ class VerbsEngineClass {
             }
         }
 
-        // Check if deck is 100% completed
         const deckVerbs = this.queue;
         const allKnown = deckVerbs.every(v => this.userData.knownVerbIds.includes(v.id));
         if (allKnown && !this.userData.finishedVerbDecks.includes(this.currentDeckId)) {
@@ -386,7 +399,6 @@ class VerbsEngineClass {
         this._save();
         this.renderDeckTracker();
 
-        // Advance to next card automatically if known
         if (known && this.currentIndex < this.queue.length - 1) {
             this.nextCard();
         } else {
@@ -446,7 +458,6 @@ class VerbsEngineClass {
                     this.loadDeck(this.currentDeckId);
                     return;
                 }
-                // Global search across all decks
                 const allVerbs = this.dataset.decks.flatMap(d => d.verbs);
                 const filtered = allVerbs.filter(v => 
                     v.infinitive.toLowerCase().includes(q) || 
@@ -458,6 +469,38 @@ class VerbsEngineClass {
                 this.renderTable();
             });
         }
+
+        // Global Event Delegation for Cards & Tracker
+        document.body.addEventListener('click', (e) => {
+            const deckCard = e.target.closest('[data-deck-id]');
+            if (deckCard) {
+                const deckId = parseInt(deckCard.dataset.deckId, 10);
+                this.loadDeck(deckId);
+                return;
+            }
+
+            const actionBtn = e.target.closest('[data-action]');
+            if (!actionBtn) return;
+
+            const action = actionBtn.dataset.action;
+            e.stopPropagation();
+
+            if (action === 'toggle-hint') this.toggleHint();
+            else if (action === 'toggle-conj') this.toggleConjugations();
+            else if (action === 'toggle-orig') this.toggleOrigins();
+            else if (action === 'speak') this.speakCurrentCard();
+            else if (action === 'speak-text') this.speakText(actionBtn.dataset.text);
+            else if (action === 'fav') this.toggleFavorite(actionBtn.dataset.verbId);
+            else if (action === 'mark-known') this.markCard(true);
+            else if (action === 'mark-learning') this.markCard(false);
+            else if (action === 'prev-card') this.prevCard();
+            else if (action === 'next-card') this.nextCard();
+            else if (action === 'flip') {
+                if (!e.target.closest('button') && !e.target.closest('.accordion-btn')) {
+                    this.flipCard();
+                }
+            }
+        });
     }
 }
 

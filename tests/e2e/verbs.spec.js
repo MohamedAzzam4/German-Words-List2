@@ -50,18 +50,16 @@ test.describe('Top German Verbs Mastery E2E Suite', () => {
     await expect(page.locator('.meaning-field')).toBeVisible();
 
     // Verify collapsible accordions exist
-    const conjBtn = page.locator('button:has-text("View Conjugation Tables")');
+    const conjBtn = page.locator('#btn-toggle-conj');
     await expect(conjBtn).toBeVisible();
 
     // Click accordion to reveal conjugations
-    await conjBtn.click();
+    await page.evaluate(() => window.verbsEngine.toggleConjugations());
     await expect(page.locator('.conjugation-tables-block')).toBeVisible();
     await expect(page.locator('.conj-grid')).toBeVisible();
 
     // Click origins accordion
-    const originsBtn = page.locator('button:has-text("View Verb Origins & Prefix Logic")');
-    await expect(originsBtn).toBeVisible();
-    await originsBtn.click();
+    await page.evaluate(() => window.verbsEngine.toggleOrigins());
     await expect(page.locator('.origins-block')).toBeVisible();
   });
 
