@@ -4,7 +4,7 @@
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
  * TTS audio playback for verb examples, 50-verb decks tracker, collapsible sidebar,
- * Flashcard mode with Still Learning queue recycling & visual status/favorite badges,
+ * Flashcard mode with Still Learning queue recycling & sleek star favorite toggles,
  * and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
@@ -262,7 +262,7 @@ class VerbsEngineClass {
                 <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
                     <td>
                         <div style="display:flex; align-items:center; gap: 8px;">
-                            <span data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite" style="cursor:pointer; font-size: 1.25rem; filter: grayscale(${isFav ? '0' : '100%'}); opacity: ${isFav ? '1' : '0.25'}; transition: 0.2s;">⭐</span>
+                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">⭐</span>
                             <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen to Verb">🔊</button>
                             <div style="flex:1;">
                                 <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
@@ -371,10 +371,6 @@ class VerbsEngineClass {
         const isFav = this.userData.verbFavorites.includes(verb.id);
         const isKnown = this.userData.knownVerbIds.includes(verb.id);
 
-        const statusBadgeHTML = isKnown 
-            ? `<span class="status-chip status-completed" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">✅ Known</span>`
-            : `<span class="status-chip status-progress" style="font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">🔄 Learning</span>`;
-
         const tagsHTML = verb.tags.map(t => `<span class="verb-tag-badge">${t}</span>`).join(' ');
 
         const conj = verb.conjugation;
@@ -473,12 +469,9 @@ class VerbsEngineClass {
                         <button class="hint-btn" data-action="toggle-hint" title="Get a hint">
                             💡 ${this.showHint ? 'Hide Hint' : 'Get a hint'}
                         </button>
-                        <div class="topbar-right-btns">
-                            ${statusBadgeHTML}
+                        <div class="topbar-right-btns" style="display:flex; align-items:center; gap:12px;">
                             <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">
-                                ⭐ ${isFav ? 'Favorited' : 'Favorite'}
-                            </button>
+                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</span>
                         </div>
                     </div>
 
@@ -496,12 +489,9 @@ class VerbsEngineClass {
                 <div class="verb-card-back">
                     <div class="verb-card-topbar">
                         <span class="back-accent-sparkles">✨✨✨✨✨✨✨✨✨✨</span>
-                        <div class="topbar-right-btns">
-                            ${statusBadgeHTML}
+                        <div class="topbar-right-btns" style="display:flex; align-items:center; gap:12px;">
                             <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">
-                                ⭐ ${isFav ? 'Favorited' : 'Favorite'}
-                            </button>
+                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</span>
                         </div>
                     </div>
 
