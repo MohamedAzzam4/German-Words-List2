@@ -25,12 +25,12 @@ test.describe('Top German Verbs Mastery E2E Suite (Card Recycling & TTS)', () =>
     expect(nextVerbText).not.toBe(firstVerbText);
   });
 
-  test('should provide TTS speaker buttons for example sentences in List View', async ({ page }) => {
+  test('should pronounce example sentence when clicking on German sentence text in List View', async ({ page }) => {
     const viewGlossary = page.locator('#view-glossary');
     await expect(viewGlossary).toBeVisible();
 
-    const exSpeakBtn = page.locator('.verb-inline-example-box .speak-btn').first();
-    await expect(exSpeakBtn).toBeVisible();
-    await exSpeakBtn.click();
+    const exSentenceText = page.locator('.verb-inline-example-box .ex-sentence-text').first();
+    await expect(exSentenceText).toBeVisible();
+    await exSentenceText.click();
   });
 });
