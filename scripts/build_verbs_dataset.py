@@ -73,7 +73,8 @@ HOMONYM_PENALTIES = {
 def clean_html(raw_html):
     if not raw_html:
         return ""
-    clean = re.sub(r'<style.*?>.*?</style>', '', raw_html, flags=re.DOTALL)
+    clean = re.sub(r'\[sound:.*?\]', '', raw_html)
+    clean = re.sub(r'<style.*?>.*?</style>', '', clean, flags=re.DOTALL)
     clean = re.sub(r'<script.*?>.*?</script>', '', clean, flags=re.DOTALL)
     clean = re.sub(r'<br\s*/?>', '\n', clean)
     clean = re.sub(r'<div>', '\n', clean)
@@ -102,6 +103,9 @@ def detect_prefix_info(infinitive, meaning):
     }
 
 def parse_verb_forms(forms_raw, infinitive):
+    forms_raw = re.sub(r'\[sound:.*?\]', '', forms_raw).strip()
+    infinitive = re.sub(r'\[sound:.*?\]', '', infinitive).strip()
+
     pres_3rd = f"er/sie/es {infinitive}t"
     past_3rd = f"er/sie/es {infinitive}te"
     participle = f"ge{infinitive}t"
@@ -248,8 +252,8 @@ def main():
         raw_back = flds[1]
 
         parts = raw_front.split('\n')
-        infinitive = parts[0].strip()
-        forms_raw = parts[1].strip() if len(parts) > 1 else ''
+        infinitive = clean_html(parts[0]).strip()
+        forms_raw = clean_html(parts[1]).strip() if len(parts) > 1 else ''
 
         clean_back = clean_html(raw_back)
         back_lines = [l.strip() for l in clean_back.split('\n') if l.strip()]
@@ -303,7 +307,9 @@ def main():
         for v_idx in range(start, end):
             item = raw_verbs[v_idx]
             global_rank = v_idx + 1
-            verb_id = f"verb_{global_rank:04d}"
+
+            # Stable ID based on clean infinitive (e.g. v_werden)
+            verb_id = f"v_{item['infinitive'].lower()}"
 
             tags = [f"freq-{global_rank:03d}"]
             if item['pref_info']['isSeparable']:

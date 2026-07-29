@@ -5,6 +5,7 @@
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
  * Single-line example layout with individual sentence-click TTS pronunciation, single EN toggle chip per box,
  * 50-verb decks tracker, collapsible sidebar, Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
+ * stable verb IDs & progress preservation across dataset re-rankings,
  * and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
@@ -103,10 +104,29 @@ class VerbsEngineClass {
         this.renderCard();
     }
 
+    isVerbKnown(w) {
+        if (!w || !this.userData.knownVerbIds) return false;
+        const known = this.userData.knownVerbIds;
+        const inf = (w.infinitive || '').toLowerCase();
+        const id = w.id;
+
+        return known.includes(id) || known.includes(w.infinitive) || known.includes(inf) || known.includes(`v_${inf}`);
+    }
+
+    isVerbFavorite(w) {
+        if (!w || !this.userData.verbFavorites) return false;
+        const favs = this.userData.verbFavorites;
+        const inf = (w.infinitive || '').toLowerCase();
+        const id = w.id;
+
+        return favs.includes(id) || favs.includes(w.infinitive) || favs.includes(inf) || favs.includes(`v_${inf}`);
+    }
+
     updateOverallProgress() {
         if (!this.dataset) return;
-        const total = this.dataset.totalVerbs;
-        const knownCount = this.userData.knownVerbIds.length;
+        const allVerbs = this.dataset.decks.flatMap(d => d.verbs);
+        const total = allVerbs.length;
+        const knownCount = allVerbs.filter(v => this.isVerbKnown(v)).length;
         const pct = Math.round((knownCount / total) * 100);
 
         const fillEl = document.getElementById('overall-progress-fill');
@@ -176,7 +196,7 @@ class VerbsEngineClass {
                 const isFinished = this.userData.finishedVerbDecks.includes(deck.deckId);
                 const isActive = deck.deckId === this.currentDeckId;
                 
-                const knownInDeck = deck.verbs.filter(v => this.userData.knownVerbIds.includes(v.id)).length;
+                const knownInDeck = deck.verbs.filter(v => this.isVerbKnown(v)).length;
                 const pct = Math.round((knownInDeck / deck.count) * 100);
 
                 let badgeClass = 'status-new';
@@ -248,7 +268,7 @@ class VerbsEngineClass {
         if (!tbody || this.queue.length === 0) return;
 
         const filtered = this.queue.filter(w => {
-            if (this.typeFilter === 'fav') return this.userData.verbFavorites.includes(w.id);
+            if (this.typeFilter === 'fav') return this.isVerbFavorite(w);
             if (this.typeFilter === 'sep') return w.prefixInfo.isSeparable;
             if (this.typeFilter === 'irreg') return w.tags.includes('irregular');
             return true;
@@ -260,8 +280,8 @@ class VerbsEngineClass {
         }
 
         tbody.innerHTML = filtered.map(w => {
-            const isKnown = this.userData.knownVerbIds.includes(w.id);
-            const isFav = this.userData.verbFavorites.includes(w.id);
+            const isKnown = this.isVerbKnown(w);
+            const isFav = this.isVerbFavorite(w);
 
             const isMixed = this.hiddenCols.has('mixed');
             const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
@@ -391,8 +411,8 @@ class VerbsEngineClass {
         if (!cardContainer || this.queue.length === 0) return;
 
         const verb = this.queue[this.currentIndex];
-        const isFav = this.userData.verbFavorites.includes(verb.id);
-        const isKnown = this.userData.knownVerbIds.includes(verb.id);
+        const isFav = this.isVerbFavorite(verb);
+        const isKnown = this.isVerbKnown(verb);
 
         const tagsHTML = verb.tags.map(t => `<span class="verb-tag-badge">${t}</span>`).join(' ');
 
@@ -656,16 +676,16 @@ class VerbsEngineClass {
         const verb = this.queue[this.currentIndex];
         if (!verb) return;
 
+        const inf = (verb.infinitive || '').toLowerCase();
+        const id = verb.id;
+
         if (known) {
-            if (!this.userData.knownVerbIds.includes(verb.id)) {
-                this.userData.knownVerbIds.push(verb.id);
-            }
+            if (!this.userData.knownVerbIds.includes(id)) this.userData.knownVerbIds.push(id);
+            if (!this.userData.knownVerbIds.includes(verb.infinitive)) this.userData.knownVerbIds.push(verb.infinitive);
+            if (!this.userData.knownVerbIds.includes(inf)) this.userData.knownVerbIds.push(inf);
         } else {
             // Remove from known if present
-            const idx = this.userData.knownVerbIds.indexOf(verb.id);
-            if (idx > -1) {
-                this.userData.knownVerbIds.splice(idx, 1);
-            }
+            this.userData.knownVerbIds = this.userData.knownVerbIds.filter(x => x !== id && x !== verb.infinitive && x !== inf && x !== `v_${inf}`);
 
             // Recycle unlearned verb to the END of the active queue
             if (this.queue.length > 1) {
@@ -676,7 +696,7 @@ class VerbsEngineClass {
 
         // Check overall deck completion status
         const deckVerbs = this.queue;
-        const allKnown = deckVerbs.every(v => this.userData.knownVerbIds.includes(v.id));
+        const allKnown = deckVerbs.every(v => this.isVerbKnown(v));
         if (allKnown && !this.userData.finishedVerbDecks.includes(this.currentDeckId)) {
             this.userData.finishedVerbDecks.push(this.currentDeckId);
         } else if (!allKnown) {
@@ -710,12 +730,24 @@ class VerbsEngineClass {
     }
 
     toggleFavorite(verbId) {
-        const idx = this.userData.verbFavorites.indexOf(verbId);
-        if (idx > -1) {
-            this.userData.verbFavorites.splice(idx, 1);
-        } else {
-            this.userData.verbFavorites.push(verbId);
+        let verb = this.queue.find(v => v.id === verbId);
+        if (!verb) {
+            const all = this.dataset ? this.dataset.decks.flatMap(d => d.verbs) : [];
+            verb = all.find(v => v.id === verbId);
         }
+
+        const targetId = verb ? verb.id : verbId;
+        const inf = verb ? (verb.infinitive || '').toLowerCase() : '';
+
+        const isFav = verb ? this.isVerbFavorite(verb) : this.userData.verbFavorites.includes(verbId);
+
+        if (isFav) {
+            this.userData.verbFavorites = this.userData.verbFavorites.filter(x => x !== targetId && x !== inf && x !== `v_${inf}`);
+        } else {
+            if (targetId) this.userData.verbFavorites.push(targetId);
+            if (inf && !this.userData.verbFavorites.includes(inf)) this.userData.verbFavorites.push(inf);
+        }
+
         this._save();
         this.renderCard();
         this.renderTable();
