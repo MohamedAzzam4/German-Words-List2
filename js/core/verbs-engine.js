@@ -3,7 +3,8 @@
  * Controller for the Top German Verbs Mastery module.
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
- * 50-verb decks tracker, collapsible sidebar, Flashcard mode, and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
+ * TTS audio playback for verb examples, 50-verb decks tracker, collapsible sidebar,
+ * Flashcard mode, and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
@@ -254,13 +255,14 @@ class VerbsEngineClass {
 
             const exDe = w.exampleDe || w.example;
             const exEn = w.exampleEn;
+            const safeExDe = (exDe || '').replace(/"/g, '&quot;');
 
             return `
                 <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
                     <td>
                         <div style="display:flex; align-items:center; gap: 8px;">
                             <span data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite" style="cursor:pointer; font-size: 1.25rem; filter: grayscale(${isFav ? '0' : '100%'}); opacity: ${isFav ? '1' : '0.25'}; transition: 0.2s;">⭐</span>
-                            <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen">🔊</button>
+                            <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen to Verb">🔊</button>
                             <div style="flex:1;">
                                 <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
                                 <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
@@ -274,10 +276,11 @@ class VerbsEngineClass {
                                 ${isKnown ? '<span style="color:var(--success);" title="Known">✓</span>' : ''}
                             </div>
                             
-                            <!-- Inline Example Row (German sentence + inline compact 🇺🇸 EN chip) -->
+                            <!-- Inline Example Row with TTS Speaker Button -->
                             ${exDe ? `
                                 <div class="verb-inline-example-box">
-                                    <div class="ex-de-line">
+                                    <div class="ex-de-line" style="display:flex; align-items:center; gap: 6px; flex-wrap: wrap;">
+                                        <button class="speak-btn" data-action="speak-text" data-text="${safeExDe}" title="Listen to Example" style="font-size: 0.85rem; padding: 2px 6px;">🔊</button>
                                         💬 <span class="${hideEX ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(exDe)}</span>
                                         ${exEn ? `
                                             <button class="ex-en-chip" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('hidden');" title="Toggle English Example Translation">
@@ -423,6 +426,7 @@ class VerbsEngineClass {
 
         const exDe = verb.exampleDe || verb.example;
         const exEn = verb.exampleEn;
+        const safeExDe = (exDe || '').replace(/"/g, '&quot;');
 
         // Front Card Content based on cardDirectionMode
         let frontMainHTML = '';
@@ -501,7 +505,12 @@ class VerbsEngineClass {
 
                         ${exDe ? `
                             <div class="back-example-box">
-                                <div class="ex-label">Example Sentence:</div>
+                                <div class="ex-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span>Example Sentence:</span>
+                                    <button class="speak-btn" data-action="speak-text" data-text="${safeExDe}" title="Listen to Example" style="font-size: 0.8rem; padding: 2px 8px; gap: 4px; display: inline-flex; align-items: center;">
+                                        🔊 Listen Example
+                                    </button>
+                                </div>
                                 <div class="ex-text">🇩🇪 ${sanitize(exDe)}</div>
                                 ${exEn ? `
                                     <button class="ex-en-chip" style="margin-top: 8px;" onclick="this.nextElementSibling.classList.toggle('hidden')" title="Toggle English Translation">
