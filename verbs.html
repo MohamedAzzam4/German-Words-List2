@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇩🇪 Top German Verbs Mastery (50-Verb Decks)</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="css/core.css">
+    <style>
+        .verbs-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .verbs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .verbs-title-group h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Deck Progress Tracker Grid */
+        .deck-tracker-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .tracker-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .tracker-summary-badge {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: white;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .verbs-deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .deck-chip-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .deck-chip-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .deck-chip-card.active {
+            border: 2px solid var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .deck-chip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .deck-chip-num {
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .deck-chip-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .deck-progress-track {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .deck-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .status-chip {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .status-completed { background: #DCFCE7; color: #15803D; }
+        .status-progress { background: #FEF3C7; color: #B45309; }
+        .status-new { background: #F1F5F9; color: #64748B; }
+
+        /* Top Flashcard Header Controls */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input-box {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            min-width: 260px;
+        }
+
+        /* Flashcard Component Styling */
+        .verb-flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto 24px;
+        }
+
+        .verb-flashcard {
+            width: 100%;
+            min-height: 420px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .verb-flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .verb-card-inner {
+            width: 100%;
+            height: 100%;
+        }
+
+        .verb-card-front, .verb-card-back {
+            position: absolute;
+            width: 100%;
+            min-height: 420px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .verb-card-back {
+            transform: rotateY(180deg);
+        }
+
+        .verb-card-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hint-btn {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hint-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .topbar-right-btns {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verb-center-content {
+            text-align: center;
+            margin: auto 0;
+            padding: 20px 0;
+        }
+
+        .verb-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .verb-infinitive {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 14px;
+        }
+
+        .verb-tags-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .verb-tag-badge {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .verb-hint-box {
+            margin-top: 16px;
+            padding: 12px;
+            background: #FEF3C7;
+            color: #92400E;
+            border-radius: 12px;
+            font-size: 0.95rem;
+        }
+
+        .verb-tap-hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        /* Back of Card */
+        .back-accent-sparkles {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        .back-main-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 12px 0;
+            text-align: left;
+        }
+
+        .back-field {
+            font-size: 1rem;
+        }
+
+        .back-field span {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .back-example-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 12px 0;
+            text-align: left;
+        }
+
+        .ex-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .ex-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .accordion-toggles-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .accordion-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .accordion-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .conj-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+            text-align: left;
+        }
+
+        .conj-section {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .conj-section h4 {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+        }
+
+        .conj-section ul {
+            list-style: none;
+            padding: 0;
+            font-size: 0.8rem;
+        }
+
+        .conj-section li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .origins-block {
+            background: var(--bg);
+            border: 1px dashed var(--primary);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .orig-row {
+            margin-bottom: 4px;
+        }
+
+        .orig-row.logic {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Controls */
+        .verb-card-controls {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .verb-card-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .verb-counter-text {
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="verbs-container">
+        <!-- Header -->
+        <header class="verbs-header">
+            <div class="verbs-title-group">
+                <a href="index.html" class="btn" title="Back to Portal">⬅ Home</a>
+                <h1>🔥 Top Verbs Mastery</h1>
+            </div>
+            <div class="btn-group">
+                <button class="btn primary" id="verbs-btn-flashcards" onclick="window.verbsEngine.switchMode('flashcard')">🃏 Flashcards</button>
+                <button class="btn" id="verbs-btn-table" onclick="window.verbsEngine.switchMode('table')">📋 List View</button>
+            </div>
+        </header>
+
+        <!-- Deck Progress Tracker -->
+        <section class="deck-tracker-section">
+            <div class="tracker-header-row">
+                <div>
+                    <h3 style="margin:0; font-family:'Poppins',sans-serif;">Deck Progress Tracker (50 Verbs per Deck)</h3>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">Select a deck below to start reviewing</span>
+                </div>
+                <div class="tracker-summary-badge" id="verbs-finished-summary">0 / 36 Decks Finished</div>
+            </div>
+            <div class="verbs-deck-grid" id="verbs-deck-grid">
+                <!-- Deck chips rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- Flashcards Mode -->
+        <div id="verbs-card-mode-area">
+            <div class="controls-bar">
+                <h3 id="verbs-deck-title" style="margin:0; font-family:'Poppins',sans-serif;">Deck 1 (Verbs 1–50)</h3>
+                <input type="text" id="verbs-search-input" class="search-input-box" placeholder="🔍 Search infinitive or meaning...">
+            </div>
+
+            <div class="verb-flashcard-wrapper" id="verbs-card-working-area">
+                <!-- Flashcard rendered dynamically -->
+            </div>
+        </div>
+
+        <!-- List View Mode -->
+        <div id="verbs-table-mode-area" class="hidden">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Verb (Infinitive)</th>
+                            <th>Meaning</th>
+                            <th>Prefix</th>
+                            <th>Präsens (3rd)</th>
+                            <th>Präteritum (3rd)</th>
+                            <th>Partizip II</th>
+                            <th>Auxiliary</th>
+                            <th>⭐</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verbs-table-tbody">
+                        <!-- Table rows rendered dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { VerbsEngine } from './js/core/verbs-engine.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            VerbsEngine.init();
+        });
+    </script>
+</body>
+
+</html>
