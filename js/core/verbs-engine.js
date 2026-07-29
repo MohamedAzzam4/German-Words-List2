@@ -3,7 +3,7 @@
  * Controller for the Top German Verbs Mastery module.
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
- * 50-verb decks tracker, collapsible sidebar, and Flashcard mode.
+ * 50-verb decks tracker, collapsible sidebar, Flashcard mode, and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
@@ -20,6 +20,7 @@ class VerbsEngineClass {
         this.showConjugations = false;
         this.showOrigins = false;
         this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
+        this.cardDirectionMode = 'de-to-en'; // 'de-to-en', 'en-to-de', 'audio-to-de'
         this.isShuffle = false;
         this.hiddenCols = new Set(); // 'de', 'en', 'mixed', 'ex'
         this.isSidebarCollapsed = false;
@@ -91,6 +92,13 @@ class VerbsEngineClass {
             if (sidebar) sidebar.classList.toggle('active');
             if (overlay) overlay.classList.toggle('active');
         }
+    }
+
+    setCardDirectionMode(mode) {
+        this.cardDirectionMode = mode;
+        this.isFlipped = false;
+        this.showHint = false;
+        this.renderCard();
     }
 
     updateOverallProgress() {
@@ -416,81 +424,106 @@ class VerbsEngineClass {
         const exDe = verb.exampleDe || verb.example;
         const exEn = verb.exampleEn;
 
+        // Front Card Content based on cardDirectionMode
+        let frontMainHTML = '';
+        let frontHintText = '';
+
+        if (this.cardDirectionMode === 'en-to-de') {
+            frontMainHTML = `
+                <div class="verb-label">Meaning (English)</div>
+                <h2 class="verb-infinitive" style="font-size: 2.2rem; color: var(--primary);">${verb.meaning}</h2>
+                <div class="verb-tags-container">${tagsHTML}</div>
+            `;
+            frontHintText = `Verb Infinitive: ${verb.infinitive.substring(0, 3)}... (${verb.prefixInfo.prefix || 'Base'})`;
+        } else if (this.cardDirectionMode === 'audio-to-de') {
+            frontMainHTML = `
+                <div class="verb-label">Listening Practice 🔊</div>
+                <button class="btn btn-primary" style="font-size: 1.5rem; padding: 14px 28px; margin: 16px 0; border-radius: 50px;" data-action="speak">
+                    🔊 Listen to Verb
+                </button>
+                <div class="verb-tags-container">${tagsHTML}</div>
+            `;
+            frontHintText = `Meaning: ${verb.meaning}`;
+        } else {
+            // Default: 'de-to-en'
+            frontMainHTML = `
+                <div class="verb-label">Verb (German)</div>
+                <h2 class="verb-infinitive">${verb.infinitive}</h2>
+                <div class="verb-tags-container">${tagsHTML}</div>
+            `;
+            frontHintText = verb.meaning;
+        }
+
         const cardHTML = `
             <div class="verb-flashcard ${this.isFlipped ? 'flipped' : ''}" data-action="flip">
-                <div class="verb-card-inner">
-                    <!-- FRONT OF CARD -->
-                    <div class="verb-card-front">
-                        <div class="verb-card-topbar">
-                            <button class="hint-btn" data-action="toggle-hint" title="Get a hint">
-                                💡 ${this.showHint ? 'Hide Hint' : 'Get a hint'}
-                            </button>
-                            <div class="topbar-right-btns">
-                                <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                                <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
-                            </div>
+                <!-- FRONT OF CARD -->
+                <div class="verb-card-front">
+                    <div class="verb-card-topbar">
+                        <button class="hint-btn" data-action="toggle-hint" title="Get a hint">
+                            💡 ${this.showHint ? 'Hide Hint' : 'Get a hint'}
+                        </button>
+                        <div class="topbar-right-btns">
+                            <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
+                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
                         </div>
-
-                        <div class="verb-center-content">
-                            <div class="verb-label">Verb</div>
-                            <h2 class="verb-infinitive">${verb.infinitive}</h2>
-                            <div class="verb-tags-container">${tagsHTML}</div>
-
-                            <div class="verb-hint-box ${this.showHint ? '' : 'hidden'}">
-                                <span>Hint / Meaning preview:</span> ${verb.meaning}
-                            </div>
-                        </div>
-
-                        <div class="verb-tap-hint">Tap card to flip to back 🔄</div>
                     </div>
 
-                    <!-- BACK OF CARD -->
-                    <div class="verb-card-back">
-                        <div class="verb-card-topbar">
-                            <span class="back-accent-sparkles">✨✨✨✨✨✨✨✨✨✨</span>
-                            <div class="topbar-right-btns">
-                                <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
-                                <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
-                            </div>
+                    <div class="verb-center-content">
+                        ${frontMainHTML}
+                        <div class="verb-hint-box ${this.showHint ? '' : 'hidden'}">
+                            <span>Hint:</span> ${frontHintText}
+                        </div>
+                    </div>
+
+                    <div class="verb-tap-hint">Tap card to flip to back 🔄</div>
+                </div>
+
+                <!-- BACK OF CARD -->
+                <div class="verb-card-back">
+                    <div class="verb-card-topbar">
+                        <span class="back-accent-sparkles">✨✨✨✨✨✨✨✨✨✨</span>
+                        <div class="topbar-right-btns">
+                            <button class="speak-btn" data-action="speak" title="Speak Verb">🔊</button>
+                            <button class="fav-btn ${isFav ? 'fav-active' : ''}" data-action="fav" data-verb-id="${verb.id}" title="Toggle Favorite">⭐</button>
+                        </div>
+                    </div>
+
+                    <div class="verb-back-content">
+                        <div class="back-main-row">
+                            <div class="back-field"><span>Infinitive:</span> <strong style="font-size: 1.2rem; color: var(--primary);">${verb.infinitive}</strong></div>
+                            <div class="back-field meaning-field"><span>Meaning:</span> <strong>${verb.meaning}</strong></div>
+                            ${verb.prefixInfo.prefix ? `<div class="back-field"><span>Prefix:</span> <strong>${verb.prefixInfo.prefix}</strong> (separable)</div>` : ''}
+                            <div class="back-field"><span>Participle (Partizip II):</span> <strong>${conj.participle}</strong></div>
+                            <div class="back-field"><span>Auxiliary:</span> <strong>${conj.auxiliary}</strong></div>
                         </div>
 
-                        <div class="verb-back-content">
-                            <div class="back-main-row">
-                                <div class="back-field"><span>Infinitive:</span> <strong>${verb.infinitive}</strong></div>
-                                <div class="back-field meaning-field"><span>Meaning:</span> <strong style="color: var(--primary);">${verb.meaning}</strong></div>
-                                ${verb.prefixInfo.prefix ? `<div class="back-field"><span>Prefix:</span> <strong>${verb.prefixInfo.prefix}</strong> (separable)</div>` : ''}
-                                <div class="back-field"><span>Participle (Partizip II):</span> <strong>${conj.participle}</strong></div>
-                                <div class="back-field"><span>Auxiliary:</span> <strong>${conj.auxiliary}</strong></div>
+                        ${exDe ? `
+                            <div class="back-example-box">
+                                <div class="ex-label">Example Sentence:</div>
+                                <div class="ex-text">🇩🇪 ${sanitize(exDe)}</div>
+                                ${exEn ? `
+                                    <button class="ex-en-chip" style="margin-top: 8px;" onclick="this.nextElementSibling.classList.toggle('hidden')" title="Toggle English Translation">
+                                        🇺🇸 EN
+                                    </button>
+                                    <div class="ex-en-line hidden" style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">
+                                        (${sanitize(exEn)})
+                                    </div>
+                                ` : ''}
                             </div>
+                        ` : ''}
 
-                            ${exDe ? `
-                                <div class="back-example-box">
-                                    <div class="ex-label">Example Sentence:</div>
-                                    <div class="ex-text">🇩🇪 ${sanitize(exDe)}</div>
-                                    ${exEn ? `
-                                        <button class="ex-en-chip" style="margin-top: 8px;" onclick="this.nextElementSibling.classList.toggle('hidden')" title="Toggle English Translation">
-                                            🇺🇸 EN
-                                        </button>
-                                        <div class="ex-en-line hidden" style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">
-                                            (${sanitize(exEn)})
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            ` : ''}
-
-                            <!-- Accordion Toggles -->
-                            <div class="accordion-toggles-row">
-                                <button class="accordion-btn" id="btn-toggle-orig" data-action="toggle-orig">
-                                    🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}
-                                </button>
-                                <button class="accordion-btn" id="btn-toggle-conj" data-action="toggle-conj">
-                                    📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}
-                                </button>
-                            </div>
-
-                            ${originsHTML}
-                            ${conjTableHTML}
+                        <!-- Accordion Toggles -->
+                        <div class="accordion-toggles-row">
+                            <button class="accordion-btn" id="btn-toggle-orig" data-action="toggle-orig">
+                                🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}
+                            </button>
+                            <button class="accordion-btn" id="btn-toggle-conj" data-action="toggle-conj">
+                                📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}
+                            </button>
                         </div>
+
+                        ${originsHTML}
+                        ${conjTableHTML}
                     </div>
                 </div>
             </div>
