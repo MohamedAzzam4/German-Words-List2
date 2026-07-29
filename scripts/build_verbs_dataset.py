@@ -34,109 +34,118 @@ PREFIX_MEANINGS = {
     'zusammen': 'together / joint'
 }
 
-HOMONYM_PENALTIES = {
-    'einen': 2.2,     # article "einen"
-    'sondern': 2.5,   # conjunction "sondern"
-    'stunden': 2.5,   # noun "Stunden"
-    'tagen': 2.2,     # noun "Tagen"
-    'morgen': 2.2,    # noun/adv "morgen"
-    'abend': 2.2,     # noun "Abend"
-    'seiten': 2.2,    # noun "Seiten"
-    'sieben': 1.8,    # number "sieben"
-    'grünen': 2.0,    # noun/adj "Grünen"
-    'langer': 2.0,    # adj "langer"
-    'langen': 2.0,    # adj "langen"
-    'kurzer': 2.0,    # adj "kurzer"
+# Core A1 Verbs that MUST take priority in Decks 1 to 3
+A1_CORE_VERBS = {
+    'sein', 'haben', 'werden', 'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'wissen',
+    'kommen', 'gehen', 'machen', 'sehen', 'sagen', 'geben', 'finden', 'bleiben', 'stehen',
+    'liegen', 'sitzen', 'bringen', 'denken', 'heißen', 'kennen', 'lassen', 'laufen', 'nehmen',
+    'sprechen', 'tragen', 'verstehen', 'ziehen', 'arbeiten', 'essen', 'trinken', 'fahren',
+    'kaufen', 'verkaufen', 'spielen', 'lernen', 'lesen', 'schreiben', 'schlafen', 'wohnen',
+    'fliegen', 'kochen', 'schwimmen', 'duschen', 'waschen', 'putzen', 'ankommen', 'abfahren',
+    'anfangen', 'aufhören', 'anrufen', 'bezahlen', 'kosten', 'suchen', 'brauchen', 'zahlen',
+    'zeigen', 'treffen', 'fragen', 'danken', 'glauben', 'hoffen', 'versuchen', 'nennen',
+    'schicken', 'bekommen', 'verlieren', 'gewinnen', 'fallen', 'halten', 'scheinen', 'beginnen',
+    'vergessen', 'erinnern', 'fühlen', 'freuen', 'hören', 'helfen', 'wünschen', 'passen',
+    'öffnen', 'schließen', 'aussehen', 'mitkommen', 'mitbringen', 'einladen'
 }
 
-def clean_html(text):
-    if not text:
-        return ''
-    text = re.sub(r'\[sound:.*?\]', '', text)
-    text = text.replace('<br>', '\n').replace('<br/>', '\n').replace('<br />', '\n')
-    text = re.sub(r'<.*?>', '', text)
-    text = text.replace('\xa0', ' ').replace('&nbsp;', ' ')
-    text = text.replace('–', '-').replace('—', '-').replace('\x96', '-')
-    return text.strip()
+HOMONYM_PENALTIES = {
+    'regen': 3.5,     # Noun: der Regen (rain) vs Verb: sich regen (to stir)
+    'rücken': 2.8,    # Noun: der Rücken (back) vs Verb: rücken (to shift/move)
+    'modern': 4.0,    # Adj: modern (modern) vs Verb: modern (to rot/decay)
+    'haaren': 3.5,    # Noun: die Haare (hair) vs Verb: haaren (to shed hair)
+    'regeln': 2.0,    # Noun: die Regeln (rules) vs Verb: regeln (to regulate)
+    'ebnen': 2.5,     # Adj: eben (flat) vs Verb: ebnen (to level)
+    'einen': 3.5,     # Article: einen vs Verb: einen (to unite)
+    'sondern': 3.5,   # Conjunction: sondern vs Verb: sondern (to segregate)
+    'stunden': 3.5,   # Noun: Stunden (hours) vs Verb: stunden (to defer)
+    'tagen': 3.5,     # Noun: Tagen (days) vs Verb: tagen (to convene)
+    'morgen': 3.0,    # Adv/Noun: morgen (tomorrow) vs Verb: morgen
+    'abend': 3.0,     # Noun: Abend (evening) vs Verb: abend
+    'seiten': 3.0,    # Noun: Seiten (pages) vs Verb: seiten
+    'sieben': 2.5,    # Number: sieben (seven) vs Verb: sieben (to sift)
+    'grünen': 2.5,
+    'langer': 2.5,
+    'langen': 2.5,
+    'kurzer': 2.5,
+}
 
-def parse_verb_forms(forms_raw, infinitive):
-    cleaned = clean_html(forms_raw).strip('() ')
-    parts = [p.strip() for p in re.split(r'[·\-\/]', cleaned) if p.strip()]
-
-    pres_3rd = parts[0] if len(parts) >= 1 else infinitive
-    past_3rd = parts[1] if len(parts) >= 2 else infinitive
-    
-    auxiliary = 'haben'
-    participle = infinitive
-
-    if len(parts) >= 3:
-        part_full = parts[2]
-        if part_full.startswith('ist '):
-            auxiliary = 'sein'
-            participle = part_full[4:].strip()
-        elif part_full.startswith('hat '):
-            auxiliary = 'haben'
-            participle = part_full[4:].strip()
-        else:
-            participle = part_full
-
-    return pres_3rd, past_3rd, participle, auxiliary
+def clean_html(raw_html):
+    if not raw_html:
+        return ""
+    clean = re.sub(r'<style.*?>.*?</style>', '', raw_html, flags=re.DOTALL)
+    clean = re.sub(r'<script.*?>.*?</script>', '', clean, flags=re.DOTALL)
+    clean = re.sub(r'<br\s*/?>', '\n', clean)
+    clean = re.sub(r'<div>', '\n', clean)
+    clean = re.sub(r'</?.*?>', '', clean)
+    lines = [re.sub(r'\s+', ' ', l).strip() for l in clean.split('\n')]
+    return '\n'.join([l for l in lines if l])
 
 def detect_prefix_info(infinitive, meaning):
     for pref in sorted(SEPARABLE_PREFIXES, key=len, reverse=True):
         if infinitive.startswith(pref) and len(infinitive) > len(pref) + 2:
-            root = infinitive[len(pref):]
-            pref_meaning = PREFIX_MEANINGS.get(pref, f"{pref}- prefix")
             return {
-                'hasPrefix': True,
-                'prefix': f"{pref}-",
                 'isSeparable': True,
-                'rootVerb': root,
-                'prefixMeaning': pref_meaning,
-                'rootMeaning': f"base verb '{root}'",
-                'combinedLogic': f"{pref}- ({pref_meaning}) + {root} → {meaning}"
+                'prefix': pref,
+                'prefixMeaning': PREFIX_MEANINGS.get(pref, 'separable prefix'),
+                'rootVerb': infinitive[len(pref):],
+                'rootMeaning': 'base verb meaning',
+                'combinedLogic': f"Combines prefix '{pref}' ({PREFIX_MEANINGS.get(pref, 'prefix')}) + base '{infinitive[len(pref):]}'."
             }
     return {
-        'hasPrefix': False,
-        'prefix': '',
         'isSeparable': False,
+        'prefix': None,
+        'prefixMeaning': None,
         'rootVerb': infinitive,
-        'prefixMeaning': '',
         'rootMeaning': meaning,
-        'combinedLogic': f"Base verb '{infinitive}' → {meaning}"
+        'combinedLogic': f"Base verb '{infinitive}'."
     }
 
+def parse_verb_forms(forms_raw, infinitive):
+    pres_3rd = f"er/sie/es {infinitive}t"
+    past_3rd = f"er/sie/es {infinitive}te"
+    participle = f"ge{infinitive}t"
+    auxiliary = "haben"
+
+    if 'sein' in forms_raw.lower() or 'ist' in forms_raw.lower():
+        auxiliary = "sein"
+
+    matches = re.findall(r'([a-zA-ZäöüÄÖÜß]+)', forms_raw)
+    for m in matches:
+        m_lower = m.lower()
+        if m_lower.startswith('ge') and len(m_lower) > 3:
+            participle = m
+        elif m_lower in ['ist', 'hat']:
+            if m_lower == 'ist':
+                auxiliary = 'sein'
+
+    return pres_3rd, past_3rd, participle, auxiliary
+
 def generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary, pref_info):
-    is_sep = pref_info['isSeparable']
-    pref = pref_info['prefix'].rstrip('-') if is_sep else ''
+    base = infinitive
+    if base.endswith('en'):
+        base = base[:-2]
+    elif base.endswith('n'):
+        base = base[:-1]
+
+    tail = ""
+    if pref_info['isSeparable'] and pref_info['prefix']:
+        p = pref_info['prefix']
+        if base.startswith(p):
+            base = base[len(p):]
+            tail = f" {p}"
 
     def build_pres():
-        if is_sep and pres_3rd.endswith(' ' + pref):
-            base = pres_3rd[:-len(' ' + pref)].strip()
-            tail = ' ' + pref
-        else:
-            base = pres_3rd
-            tail = ''
-
-        stem = infinitive[:-2] if infinitive.endswith('en') else infinitive[:-1]
-
         return {
-            "ich": f"{stem}e{tail}",
-            "du": f"{base[:-1] if base.endswith('t') else base}st{tail}" if not base.endswith('st') else f"{base}{tail}",
-            "er_sie_es": f"{base}{tail}",
-            "wir": f"{infinitive}",
-            "ihr": f"{stem}t{tail}",
-            "sie_Sie": f"{infinitive}"
+            "ich": f"{base}e{tail}",
+            "du": f"{base}st{tail}",
+            "er_sie_es": f"{pres_3rd}",
+            "wir": f"{base}en{tail}",
+            "ihr": f"{base}t{tail}",
+            "sie_Sie": f"{base}en{tail}"
         }
 
     def build_past():
-        if is_sep and past_3rd.endswith(' ' + pref):
-            base = past_3rd[:-len(' ' + pref)].strip()
-            tail = ' ' + pref
-        else:
-            base = past_3rd
-            tail = ''
-
         return {
             "ich": f"{base}{tail}",
             "du": f"{base}st{tail}",
@@ -258,7 +267,9 @@ def main():
         if inf_lower in HOMONYM_PENALTIES:
             score -= HOMONYM_PENALTIES[inf_lower]
 
-        if inf_lower in curriculum_words:
+        if inf_lower in A1_CORE_VERBS:
+            score += 4.0
+        elif inf_lower in curriculum_words:
             score += 1.5
 
         raw_verbs.append({
@@ -278,67 +289,70 @@ def main():
     # Sort ALL 1796 verbs descending by score (NO DELETIONS - rare ones go to the very end!)
     raw_verbs.sort(key=lambda x: x['score'], reverse=True)
 
-    verbs = []
-    for idx, item in enumerate(raw_verbs):
-        infinitive = item['infinitive']
-        pref_info = item['pref_info']
-        pres_3rd = item['pres_3rd']
-        past_3rd = item['past_3rd']
-        ex_struct = item['ex_struct']
-
-        tags = [f"freq-{(idx+1):03d}"]
-        if pref_info['isSeparable']:
-            tags.append('separable')
-        if pres_3rd != infinitive or past_3rd != infinitive:
-            tags.append('irregular')
-
-        verb_obj = {
-            'id': f"v-{(idx+1):04d}-{infinitive}",
-            'index': idx + 1,
-            'infinitive': infinitive,
-            'meaning': item['meaning'],
-            'tags': tags,
-            'prefixInfo': pref_info,
-            'conjugation': item['conj'],
-            'example': ex_struct['de'] or ex_struct['full'],
-            'exampleDe': ex_struct['de'] or ex_struct['full'],
-            'exampleEn': ex_struct['en'],
-            'exampleFull': ex_struct['full'],
-            'origins': {
-                'prefix': pref_info['prefix'],
-                'prefixMeaning': pref_info['prefixMeaning'],
-                'rootVerb': pref_info['rootVerb'],
-                'rootMeaning': pref_info['rootMeaning'],
-                'combinedLogic': pref_info['combinedLogic']
-            }
-        }
-        verbs.append(verb_obj)
-
-    deck_size = 50
+    # Group into 50-verb decks
+    DECK_SIZE = 50
     decks = []
-    for i in range(0, len(verbs), deck_size):
-        deck_verbs = verbs[i:i + deck_size]
-        deck_num = (i // deck_size) + 1
-        start_idx = i + 1
-        end_idx = min(i + deck_size, len(verbs))
+    total = len(raw_verbs)
+    deck_count = (total + DECK_SIZE - 1) // DECK_SIZE
+
+    for d_idx in range(deck_count):
+        start = d_idx * DECK_SIZE
+        end = min(start + DECK_SIZE, total)
+        deck_verbs = []
+
+        for v_idx in range(start, end):
+            item = raw_verbs[v_idx]
+            global_rank = v_idx + 1
+            verb_id = f"verb_{global_rank:04d}"
+
+            tags = [f"freq-{global_rank:03d}"]
+            if item['pref_info']['isSeparable']:
+                tags.append('separable')
+
+            is_irregular = (item['conj']['present3rd'] != f"er/sie/es {item['infinitive']}t") or \
+                           (item['conj']['past3rd'] != f"er/sie/es {item['infinitive']}te") or \
+                           (not item['participle'].endswith('t'))
+            if is_irregular:
+                tags.append('irregular')
+
+            deck_verbs.append({
+                'id': verb_id,
+                'index': global_rank,
+                'infinitive': item['infinitive'],
+                'meaning': item['meaning'],
+                'prefixInfo': item['pref_info'],
+                'conjugation': item['conj'],
+                'exampleDe': item['ex_struct']['de'],
+                'exampleEn': item['ex_struct']['en'],
+                'exampleFull': item['ex_struct']['full'],
+                'origins': {
+                    'prefix': item['pref_info']['prefix'],
+                    'prefixMeaning': item['pref_info']['prefixMeaning'],
+                    'rootVerb': item['pref_info']['rootVerb'],
+                    'rootMeaning': item['pref_info']['rootMeaning'],
+                    'combinedLogic': item['pref_info']['combinedLogic']
+                },
+                'tags': tags
+            })
+
         decks.append({
-            'deckId': deck_num,
-            'title': f"Deck {deck_num} (Verbs {start_idx}–{end_idx})",
+            'deckId': d_idx + 1,
+            'title': f"Deck {d_idx + 1} (Verbs {start + 1}–{end})",
             'count': len(deck_verbs),
             'verbs': deck_verbs
         })
 
-    dataset = {
-        'totalVerbs': len(verbs),
-        'verbsPerDeck': deck_size,
-        'totalDecks': len(decks),
+    final_payload = {
+        'totalVerbs': total,
+        'totalDecks': deck_count,
+        'deckSize': DECK_SIZE,
         'decks': decks
     }
 
     with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(dataset, f, ensure_ascii=False, indent=2)
+        json.dump(final_payload, f, ensure_ascii=False, indent=2)
 
-    print(f"Successfully exported ALL {len(verbs)} frequency-sorted verbs across {len(decks)} decks to {output_file}!")
+    print(f"SUCCESS: Exported {total} verbs across {deck_count} decks to {output_file}.")
 
 if __name__ == '__main__':
     main()
