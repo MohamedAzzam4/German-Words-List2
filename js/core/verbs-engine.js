@@ -4,7 +4,7 @@
  * Provides full theme parity with level.html, default List/Glossary view,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
  * TTS audio playback for verb examples, 50-verb decks tracker, collapsible sidebar,
- * Flashcard mode, and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
+ * Flashcard mode with Still Learning queue recycling, and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
@@ -630,12 +630,20 @@ class VerbsEngineClass {
                 this.userData.knownVerbIds.push(verb.id);
             }
         } else {
+            // Remove from known if present
             const idx = this.userData.knownVerbIds.indexOf(verb.id);
             if (idx > -1) {
                 this.userData.knownVerbIds.splice(idx, 1);
             }
+
+            // Recycle unlearned verb to the END of the active queue
+            if (this.queue.length > 1) {
+                const [unlearnedVerb] = this.queue.splice(this.currentIndex, 1);
+                this.queue.push(unlearnedVerb);
+            }
         }
 
+        // Check overall deck completion status
         const deckVerbs = this.queue;
         const allKnown = deckVerbs.every(v => this.userData.knownVerbIds.includes(v.id));
         if (allKnown && !this.userData.finishedVerbDecks.includes(this.currentDeckId)) {
@@ -651,9 +659,21 @@ class VerbsEngineClass {
         this.renderDeckTracker();
         this.updateOverallProgress();
 
-        if (known && this.currentIndex < this.queue.length - 1) {
-            this.nextCard();
+        // Always reset flip & hint state when moving to new card
+        this.isFlipped = false;
+        this.showHint = false;
+
+        if (known) {
+            if (this.currentIndex < this.queue.length - 1) {
+                this.nextCard();
+            } else {
+                this.renderCard();
+            }
         } else {
+            // If we recycled the card to the end, the new card at current index is rendered directly
+            if (this.currentIndex >= this.queue.length) {
+                this.currentIndex = Math.max(0, this.queue.length - 1);
+            }
             this.renderCard();
         }
     }
