@@ -206,7 +206,7 @@
             min-width: 240px;
         }
 
-        /* Inline Example Styling (Non-italic, Regular Font) */
+        /* Inline Example Styling (Non-italic, Regular Font, Compact Inline EN Chip) */
         .meaning-and-example-cell {
             display: flex;
             flex-direction: column;
@@ -223,10 +223,6 @@
             transition: all 0.2s ease;
         }
 
-        .verb-inline-example-box.hidden-example {
-            display: none !important;
-        }
-
         .ex-de-line {
             color: var(--text-main);
             font-weight: 400;
@@ -234,24 +230,34 @@
             line-height: 1.45;
         }
 
-        .ex-en-toggle-btn {
-            background: none;
-            border: none;
+        .ex-en-chip {
+            background: rgba(79, 70, 229, 0.1);
             color: var(--primary);
-            font-size: 0.75rem;
+            border: 1px solid rgba(79, 70, 229, 0.25);
+            border-radius: 12px;
+            padding: 1px 8px;
+            font-size: 0.72rem;
             font-weight: 700;
             cursor: pointer;
-            padding: 0;
-            margin-top: 4px;
-            text-decoration: underline;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            transition: all 0.2s ease;
+            vertical-align: middle;
+        }
+
+        .ex-en-chip:hover {
+            background: var(--primary);
+            color: white;
         }
 
         .ex-en-line {
-            margin-top: 4px;
             font-size: 0.82rem;
             color: var(--text-muted);
             font-style: normal !important;
             line-height: 1.45;
+            margin-left: 6px;
         }
 
         /* Table Width Optimization */
@@ -636,7 +642,7 @@
                             <button class="btn" onclick="window.verbsEngine.toggleColumn('en')">Hide English</button>
                             <button class="btn" onclick="window.verbsEngine.toggleColumn('de')">Hide German</button>
                             <button class="btn" onclick="window.verbsEngine.toggleColumn('mixed')">Hide Mixed</button>
-                            <button class="btn" id="btn-toggle-examples" onclick="window.verbsEngine.toggleExamples()">🙈 Hide Examples</button>
+                            <button class="btn" onclick="window.verbsEngine.toggleExamples()">Hide Examples</button>
                             <button class="btn" onclick="window.verbsEngine.revealAllTable()">Reveal All</button>
                         </div>
                     </div>

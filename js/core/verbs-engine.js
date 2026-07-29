@@ -21,8 +21,7 @@ class VerbsEngineClass {
         this.showOrigins = false;
         this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
         this.isShuffle = false;
-        this.hiddenCols = new Set(); // 'de', 'en', 'mixed'
-        this.hideExamples = false; // Toggle all example boxes
+        this.hiddenCols = new Set(); // 'de', 'en', 'mixed', 'ex'
         this.isSidebarCollapsed = false;
         this.typeFilter = 'all'; // 'all', 'fav', 'sep', 'irreg'
         this.appId = 'a1_app_data';
@@ -85,7 +84,6 @@ class VerbsEngineClass {
         const overlay = document.getElementById('sidebar-overlay');
         const body = document.body;
         
-        // On desktop, collapse sidebar width; on mobile toggle drawer
         if (window.innerWidth > 768) {
             this.isSidebarCollapsed = !this.isSidebarCollapsed;
             body.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
@@ -213,20 +211,11 @@ class VerbsEngineClass {
     }
 
     toggleExamples() {
-        this.hideExamples = !this.hideExamples;
-        const btn = document.getElementById('btn-toggle-examples');
-        if (btn) {
-            btn.innerHTML = `${this.hideExamples ? '👁️ Show Examples' : '🙈 Hide Examples'}`;
-        }
-        const boxes = document.querySelectorAll('.verb-inline-example-box');
-        boxes.forEach(b => b.classList.toggle('hidden-example', this.hideExamples));
+        this.toggleColumn('ex');
     }
 
     revealAllTable() {
         this.hiddenCols.clear();
-        this.hideExamples = false;
-        const btn = document.getElementById('btn-toggle-examples');
-        if (btn) btn.innerHTML = '🙈 Hide Examples';
         this.renderTable();
     }
 
@@ -242,7 +231,7 @@ class VerbsEngineClass {
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No verbs match your current filter</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No verbs match your current filter</td></tr>`;
             return;
         }
 
@@ -253,6 +242,7 @@ class VerbsEngineClass {
             const isMixed = this.hiddenCols.has('mixed');
             const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
             const hideEN = this.hiddenCols.has('en') || (isMixed && !hideDE);
+            const hideEX = this.hiddenCols.has('ex');
 
             const exDe = w.exampleDe || w.example;
             const exEn = w.exampleEn;
@@ -265,29 +255,31 @@ class VerbsEngineClass {
                             <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen">🔊</button>
                             <div style="flex:1;">
                                 <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">${w.conjugation.present3rd}</div>
+                                <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="meaning-and-example-cell">
-                            <div style="display:flex; align-items:center;">
+                            <div style="display:flex; align-items:center; gap: 8px;">
                                 <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight: 600; font-size: 1.05rem;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
-                                ${isKnown ? '<span style="color:var(--success);margin-left:8px;" title="Known">✓</span>' : ''}
+                                ${isKnown ? '<span style="color:var(--success);" title="Known">✓</span>' : ''}
                             </div>
                             
-                            <!-- Inline German Example (Normal non-italic text) -->
+                            <!-- Inline Example Row (German sentence + inline compact 🇺🇸 EN chip) -->
                             ${exDe ? `
-                                <div class="verb-inline-example-box ${this.hideExamples ? 'hidden-example' : ''}">
-                                    <div class="ex-de-line">💬 ${sanitize(exDe)}</div>
-                                    ${exEn ? `
-                                        <button class="ex-en-toggle-btn" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                                            💬 Show EN Translation
-                                        </button>
-                                        <div class="ex-en-line hidden">
-                                            🇺🇸 ${sanitize(exEn)}
-                                        </div>
-                                    ` : ''}
+                                <div class="verb-inline-example-box">
+                                    <div class="ex-de-line">
+                                        💬 <span class="${hideEX ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(exDe)}</span>
+                                        ${exEn ? `
+                                            <button class="ex-en-chip" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('hidden');" title="Toggle English Example Translation">
+                                                🇺🇸 EN
+                                            </button>
+                                            <span class="ex-en-line hidden ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">
+                                                (${sanitize(exEn)})
+                                            </span>
+                                        ` : ''}
+                                    </div>
                                 </div>
                             ` : ''}
                         </div>
@@ -476,11 +468,11 @@ class VerbsEngineClass {
                                     <div class="ex-label">Example Sentence:</div>
                                     <div class="ex-text">🇩🇪 ${sanitize(exDe)}</div>
                                     ${exEn ? `
-                                        <button class="ex-en-toggle-btn" style="margin-top: 8px;" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                                            💬 Show EN Translation
+                                        <button class="ex-en-chip" style="margin-top: 8px;" onclick="this.nextElementSibling.classList.toggle('hidden')" title="Toggle English Translation">
+                                            🇺🇸 EN
                                         </button>
                                         <div class="ex-en-line hidden" style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">
-                                            🇺🇸 ${sanitize(exEn)}
+                                            (${sanitize(exEn)})
                                         </div>
                                     ` : ''}
                                 </div>
@@ -706,7 +698,7 @@ class VerbsEngineClass {
             else if (action === 'prev-card') this.prevCard();
             else if (action === 'next-card') this.nextCard();
             else if (action === 'flip') {
-                if (!e.target.closest('button') && !e.target.closest('.accordion-btn')) {
+                if (!e.target.closest('button') && !e.target.closest('.accordion-btn') && !e.target.closest('.ex-en-chip')) {
                     this.flipCard();
                 }
             }

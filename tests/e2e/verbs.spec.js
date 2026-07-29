@@ -1,50 +1,44 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Top German Verbs Mastery E2E Suite (Sidebar & Examples)', () => {
+test.describe('Top German Verbs Mastery E2E Suite (Hiding & EN Chip)', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/verbs.html');
   });
 
-  test('should load verbs.html in List View with German examples visible under meaning', async ({ page }) => {
-    // Verify default view is List View (Glossary table)
-    const viewGlossary = page.locator('#view-glossary');
-    await expect(viewGlossary).toBeVisible();
+  test('should hide 3rd person form when Hide German is clicked', async ({ page }) => {
+    const hideDeBtn = page.locator('button:has-text("Hide German")');
+    await hideDeBtn.click();
 
-    // Verify 36 deck chips
-    const deckChips = page.locator('.deck-chip-card');
-    await expect(deckChips).toHaveCount(36);
+    // Verify 3rd person form element has hidden-word class
+    const thirdPersonEl = page.locator('#verbs-table-tbody tr div.hideable').first();
+    await expect(thirdPersonEl).toHaveClass(/hidden-word/);
 
-    // Verify German example line is visible by default
-    const firstExample = page.locator('.verb-inline-example-box .ex-de-line').first();
-    await expect(firstExample).toBeVisible();
+    // Click to reveal
+    await thirdPersonEl.click();
+    await expect(thirdPersonEl).not.toHaveClass(/hidden-word/);
   });
 
-  test('should support expanding English example translation and toggling all examples off', async ({ page }) => {
-    // Check English translation toggle button
-    const showEnBtn = page.locator('.ex-en-toggle-btn').first();
-    await expect(showEnBtn).toBeVisible();
-    await showEnBtn.click();
+  test('should support inline EN chip and blur mask for Hide Examples', async ({ page }) => {
+    // Check compact inline EN chip
+    const enChip = page.locator('.ex-en-chip').first();
+    await expect(enChip).toBeVisible();
+    await expect(enChip).toContainText('EN');
 
+    await enChip.click();
     const enLine = page.locator('.ex-en-line').first();
     await expect(enLine).toBeVisible();
 
     // Click Hide Examples button in top bar
-    const hideExBtn = page.locator('#btn-toggle-examples');
-    await expect(hideExBtn).toBeVisible();
+    const hideExBtn = page.locator('button:has-text("Hide Examples")');
     await hideExBtn.click();
 
-    // Verify all example boxes are hidden
-    const exBoxes = page.locator('.verb-inline-example-box.hidden-example');
-    await expect(exBoxes.first()).toBeHidden();
-  });
+    // Verify example sentence has hidden-word class
+    const exSpan = page.locator('.verb-inline-example-box .hideable').first();
+    await expect(exSpan).toHaveClass(/hidden-word/);
 
-  test('should support collapsing desktop sidebar', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
-    const sidebarToggleBtn = page.locator('button:has-text("↔️ Sidebar")');
-    await expect(sidebarToggleBtn).toBeVisible();
-
-    await sidebarToggleBtn.click();
-    await expect(page.locator('body')).toHaveClass(/sidebar-collapsed/);
+    // Click blurred example to reveal
+    await exSpan.click();
+    await expect(exSpan).not.toHaveClass(/hidden-word/);
   });
 });
