@@ -6,7 +6,8 @@
  * Single-line example layout with individual sentence-click TTS pronunciation, single EN toggle chip per box,
  * 50-verb decks tracker, collapsible sidebar, Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
  * stable verb IDs & progress preservation across dataset re-rankings,
- * and Card Direction Mode (DE->EN, EN->DE, Audio->DE).
+ * Card Direction Mode (DE->EN, EN->DE, Audio->DE),
+ * and Auto-Play Audio Practice Mode (custom repeat count, examples scope, English TTS translations, start-at-verb selection).
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
 import { getLocalProgress, saveLocalProgress } from './storage.js';
@@ -155,6 +156,16 @@ class VerbsEngineClass {
         this.renderTable();
         this.renderCard();
         this.renderDeckTracker();
+        this.populateStartVerbDropdown();
+    }
+
+    populateStartVerbDropdown() {
+        const select = document.getElementById('auto-start-verb');
+        if (!select || !this.queue) return;
+
+        select.innerHTML = this.queue.map((v, idx) => `
+            <option value="${idx}">#${v.index} ${v.infinitive} (${v.meaning})</option>
+        `).join('');
     }
 
     _shuffleQueue() {
@@ -243,6 +254,7 @@ class VerbsEngineClass {
     setFilter(type) {
         this.typeFilter = type;
         this.renderTable();
+        this.populateStartVerbDropdown();
     }
 
     toggleColumn(col) {
@@ -279,7 +291,7 @@ class VerbsEngineClass {
             return;
         }
 
-        tbody.innerHTML = filtered.map(w => {
+        tbody.innerHTML = filtered.map((w, arrayIdx) => {
             const isKnown = this.isVerbKnown(w);
             const isFav = this.isVerbFavorite(w);
 
@@ -292,11 +304,12 @@ class VerbsEngineClass {
             const hasEn = examplePairs.some(p => p.en);
 
             return `
-                <tr data-id="${w.id}" class="${isKnown ? 'known-row' : ''}">
+                <tr data-id="${w.id}" data-array-idx="${arrayIdx}" class="${isKnown ? 'known-row' : ''}">
                     <td>
                         <div style="display:flex; align-items:center; gap: 8px;">
                             <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
                             <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen to Verb">🔊</button>
+                            <button class="speak-btn" data-action="play-from-row" data-array-idx="${arrayIdx}" title="Start Auto Play from this verb">▶</button>
                             <div style="flex:1;">
                                 <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
                                 <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
@@ -349,29 +362,97 @@ class VerbsEngineClass {
         }).join('');
     }
 
-    // ── AUDIO QUEUE (SpeechQueue Integration) ──
-    playAllVerbsAudio() {
+    // ── ADVANCED AUTO-PLAY AUDIO PRACTICE QUEUE ──
+    playAllVerbsAudio(startIndex = null) {
         if (!this.queue || this.queue.length === 0) return;
+
+        const repeatSelect = document.getElementById('auto-repeat-count');
+        const exampleSelect = document.getElementById('auto-example-mode');
+        const includeEnCheck = document.getElementById('auto-include-en');
+        const startVerbSelect = document.getElementById('auto-start-verb');
+
+        const repeatCount = repeatSelect ? parseInt(repeatSelect.value, 10) || 1 : 1;
+        const exampleMode = exampleSelect ? exampleSelect.value : 'first'; // 'first', 'all', 'none'
+        const includeEn = includeEnCheck ? includeEnCheck.checked : true;
+
+        let startIdx = 0;
+        if (startIndex !== null && typeof startIndex === 'number') {
+            startIdx = Math.max(0, Math.min(startIndex, this.queue.length - 1));
+            if (startVerbSelect) startVerbSelect.value = startIdx;
+        } else if (startVerbSelect && startVerbSelect.value !== '') {
+            startIdx = parseInt(startVerbSelect.value, 10) || 0;
+        }
+
+        const itemsToPlay = [];
+
+        for (let i = startIdx; i < this.queue.length; i++) {
+            const verb = this.queue[i];
+            const exPairs = this._getExamplePairs(verb);
+
+            // Repeat per verb according to repeatCount (1x, 2x, 3x)
+            for (let r = 0; r < repeatCount; r++) {
+                // 1. German Verb Infinitive
+                itemsToPlay.push({
+                    verbId: verb.id,
+                    text: verb.infinitive,
+                    lang: 'de',
+                    label: `Verb (${r+1}/${repeatCount})`
+                });
+
+                // 2. English Meaning (if enabled)
+                if (includeEn && verb.meaning) {
+                    itemsToPlay.push({
+                        verbId: verb.id,
+                        text: verb.meaning,
+                        lang: 'en',
+                        label: `Translation`
+                    });
+                }
+
+                // 3. Example Sentences ('first', 'all', 'none')
+                if (exampleMode !== 'none' && exPairs.length > 0) {
+                    const targetPairs = exampleMode === 'first' ? [exPairs[0]] : exPairs;
+
+                    for (const pair of targetPairs) {
+                        if (pair.de) {
+                            itemsToPlay.push({
+                                verbId: verb.id,
+                                text: pair.de,
+                                lang: 'de',
+                                label: `Example (DE)`
+                            });
+                        }
+                        if (includeEn && pair.en) {
+                            itemsToPlay.push({
+                                verbId: verb.id,
+                                text: pair.en,
+                                lang: 'en',
+                                label: `Example (EN)`
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         const btn = document.getElementById('btn-play-all-words');
         const pauseBtn = document.getElementById('btn-pause-words');
         if (btn) {
             btn.classList.add('playing');
-            btn.innerHTML = '<span>🔊</span> Playing...';
+            btn.innerHTML = '<span>🔊</span> Auto Playing...';
         }
         if (pauseBtn) {
             pauseBtn.classList.remove('hidden');
         }
 
-        const items = this.queue.map(v => ({ id: v.id, de: v.infinitive }));
-
         SpeechQueue.playAll(
-            items,
+            itemsToPlay,
             (idx, item) => {
-                const tr = document.querySelector(`tr[data-id="${item.id}"]`);
+                const tr = document.querySelector(`tr[data-id="${item.verbId}"]`);
                 if (tr) {
                     tr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    document.querySelectorAll('.highlighted-speech').forEach(el => el.classList.remove('highlighted-speech'));
                     tr.classList.add('highlighted-speech');
-                    setTimeout(() => tr.classList.remove('highlighted-speech'), 1500);
                 }
             },
             () => {
@@ -394,11 +475,12 @@ class VerbsEngineClass {
 
     stopAudioQueue() {
         SpeechQueue.stop();
+        document.querySelectorAll('.highlighted-speech').forEach(el => el.classList.remove('highlighted-speech'));
         const btn = document.getElementById('btn-play-all-words');
         const pauseBtn = document.getElementById('btn-pause-words');
         if (btn) {
             btn.classList.remove('playing');
-            btn.innerHTML = '<span>▶️</span> Play All';
+            btn.innerHTML = '<span>▶️</span> Auto Play Audio';
         }
         if (pauseBtn) {
             pauseBtn.classList.add('hidden');
@@ -684,17 +766,14 @@ class VerbsEngineClass {
             if (!this.userData.knownVerbIds.includes(verb.infinitive)) this.userData.knownVerbIds.push(verb.infinitive);
             if (!this.userData.knownVerbIds.includes(inf)) this.userData.knownVerbIds.push(inf);
         } else {
-            // Remove from known if present
             this.userData.knownVerbIds = this.userData.knownVerbIds.filter(x => x !== id && x !== verb.infinitive && x !== inf && x !== `v_${inf}`);
 
-            // Recycle unlearned verb to the END of the active queue
             if (this.queue.length > 1) {
                 const [unlearnedVerb] = this.queue.splice(this.currentIndex, 1);
                 this.queue.push(unlearnedVerb);
             }
         }
 
-        // Check overall deck completion status
         const deckVerbs = this.queue;
         const allKnown = deckVerbs.every(v => this.isVerbKnown(v));
         if (allKnown && !this.userData.finishedVerbDecks.includes(this.currentDeckId)) {
@@ -710,7 +789,6 @@ class VerbsEngineClass {
         this.renderDeckTracker();
         this.updateOverallProgress();
 
-        // Always reset flip & hint state when moving to new card
         this.isFlipped = false;
         this.showHint = false;
 
@@ -721,7 +799,6 @@ class VerbsEngineClass {
                 this.renderCard();
             }
         } else {
-            // If we recycled the card to the end, the new card at current index is rendered directly
             if (this.currentIndex >= this.queue.length) {
                 this.currentIndex = Math.max(0, this.queue.length - 1);
             }
@@ -756,12 +833,12 @@ class VerbsEngineClass {
     speakCurrentCard() {
         const verb = this.queue[this.currentIndex];
         if (verb) {
-            speak(cleanTextForAudio(verb.infinitive));
+            speak(cleanTextForAudio(verb.infinitive), 'de');
         }
     }
 
-    speakText(txt) {
-        speak(cleanTextForAudio(txt));
+    speakText(txt, lang = 'de') {
+        speak(txt, lang);
     }
 
     switchMode(mode) {
@@ -796,6 +873,7 @@ class VerbsEngineClass {
                 this.currentIndex = 0;
                 this.renderCard();
                 this.renderTable();
+                this.populateStartVerbDropdown();
             });
         }
 
@@ -818,7 +896,11 @@ class VerbsEngineClass {
             else if (action === 'toggle-conj') this.toggleConjugations();
             else if (action === 'toggle-orig') this.toggleOrigins();
             else if (action === 'speak') this.speakCurrentCard();
-            else if (action === 'speak-text') this.speakText(actionBtn.dataset.text);
+            else if (action === 'speak-text') this.speakText(actionBtn.dataset.text, 'de');
+            else if (action === 'play-from-row') {
+                const rowIdx = parseInt(actionBtn.dataset.arrayIdx, 10) || 0;
+                this.playAllVerbsAudio(rowIdx);
+            }
             else if (action === 'fav') this.toggleFavorite(actionBtn.dataset.verbId);
             else if (action === 'mark-known') this.markCard(true);
             else if (action === 'mark-learning') this.markCard(false);

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🇩🇪 Top German Verbs Mastery (50-Verb Decks)</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="css/core.css">
@@ -15,6 +15,7 @@
             background-color: var(--bg);
             color: var(--text-main);
             transition: all 0.3s ease;
+            overflow-x: hidden;
         }
 
         #sidebar {
@@ -84,21 +85,22 @@
             overflow-y: auto;
         }
 
-        /* Wide Content Container (Fits most of page width) */
+        /* Wide Content Container (Zero Wasted Space on Mobile) */
         #content-area {
-            padding: 24px 36px;
-            max-width: 96%;
+            padding: 20px 28px;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            box-sizing: border-box;
         }
 
-        /* Deck Progress Tracker Grid */
+        /* Deck Progress Tracker Section */
         .deck-tracker-section {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-card);
-            padding: 20px;
-            margin-bottom: 24px;
+            padding: 16px;
+            margin-bottom: 18px;
             box-shadow: var(--shadow);
         }
 
@@ -106,40 +108,40 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
         }
 
         .tracker-summary-badge {
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
             color: white;
             font-weight: 700;
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
         }
 
         .verbs-deck-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            max-height: 220px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            max-height: 200px;
             overflow-y: auto;
-            padding-right: 6px;
+            padding-right: 4px;
         }
 
         .deck-chip-card {
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 10px;
+            padding: 8px 10px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
 
         .deck-chip-card:hover {
@@ -162,11 +164,11 @@
 
         .deck-chip-num {
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
 
         .deck-chip-sub {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
         }
 
@@ -185,9 +187,9 @@
         }
 
         .status-chip {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 700;
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: 6px;
         }
 
@@ -197,16 +199,17 @@
 
         /* Search input styling */
         .search-input-box {
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-radius: 12px;
             border: 1px solid var(--border);
             background: var(--surface);
             color: var(--text-main);
-            font-size: 0.95rem;
-            min-width: 240px;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 280px;
         }
 
-        /* Inline Example Styling (Non-italic, Regular Font, Compact Inline EN Chip) */
+        /* Inline Example Styling */
         .meaning-and-example-cell {
             display: flex;
             flex-direction: column;
@@ -216,9 +219,9 @@
         .verb-inline-example-box {
             background: var(--bg);
             border-left: 3px solid var(--primary);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             margin-top: 4px;
             transition: all 0.2s ease;
         }
@@ -235,11 +238,11 @@
             color: var(--primary);
             border: 1px solid rgba(79, 70, 229, 0.25);
             border-radius: 12px;
-            padding: 1px 8px;
-            font-size: 0.72rem;
+            padding: 1px 7px;
+            font-size: 0.7rem;
             font-weight: 700;
             cursor: pointer;
-            margin-left: 6px;
+            margin-left: 4px;
             display: inline-flex;
             align-items: center;
             gap: 2px;
@@ -253,35 +256,68 @@
         }
 
         .ex-en-line {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             font-style: normal !important;
             line-height: 1.45;
-            margin-left: 6px;
+            margin-left: 4px;
         }
 
-        /* Table Width Optimization */
+        /* Table Width Optimization & Highlighting */
         .table-container table {
             width: 100%;
         }
 
-        /* Fixed 3D Flashcard Flip Mechanics & Controls Spacing */
+        tr.highlighted-speech {
+            background-color: rgba(79, 70, 229, 0.18) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Outline (Unfavorited ☆) vs Filled Gold (Favorited ⭐) Icon Toggle */
+        .fav-icon-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-muted);
+            opacity: 0.6;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            line-height: 1;
+            min-width: 32px;
+            min-height: 32px;
+        }
+
+        .fav-icon-btn.active {
+            opacity: 1;
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.9));
+        }
+
+        .fav-icon-btn:hover {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        /* 3D Flashcard Mechanics & Controls Spacing */
         .verb-flashcard-wrapper {
             perspective: 1200px;
             width: 100%;
-            max-width: 680px;
-            margin: 0 auto 36px;
+            max-width: 640px;
+            margin: 0 auto 20px;
         }
 
         .verb-flashcard {
             width: 100%;
-            min-height: 440px;
+            min-height: 400px;
             position: relative;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            margin-bottom: 32px; /* Generous spacing below card */
+            margin-bottom: 20px;
         }
 
         .verb-flashcard.flipped {
@@ -294,18 +330,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            min-height: 440px;
+            min-height: 400px;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 24px;
+            border-radius: 20px;
+            padding: 20px;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         .verb-card-front {
@@ -337,10 +374,10 @@
             background: rgba(79, 70, 229, 0.1);
             color: var(--primary);
             border: 1px solid rgba(79, 70, 229, 0.2);
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -353,59 +390,34 @@
         .topbar-right-btns {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        /* Outline (Unfavorited ☆) vs Filled Gold (Favorited ⭐) Icon Toggle */
-        .fav-icon-btn {
-            font-size: 1.6rem;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            color: var(--text-muted);
-            opacity: 0.6;
-            user-select: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            line-height: 1;
-        }
-
-        .fav-icon-btn.active {
-            opacity: 1;
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.9));
-        }
-
-        .fav-icon-btn:hover {
-            transform: scale(1.25);
-            opacity: 1;
+            gap: 8px;
         }
 
         .verb-center-content {
             text-align: center;
             margin: auto 0;
-            padding: 20px 0;
+            padding: 16px 0;
         }
 
         .verb-label {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .verb-infinitive {
             font-family: 'Poppins', sans-serif;
-            font-size: 3rem;
+            font-size: 2.8rem;
             font-weight: 700;
             color: var(--text-main);
-            margin-bottom: 14px;
+            margin-bottom: 12px;
+            word-break: break-word;
         }
 
         .verb-tags-container {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -413,43 +425,43 @@
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 4px 12px;
-            border-radius: 14px;
-            font-size: 0.85rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
         .verb-hint-box {
-            margin-top: 16px;
-            padding: 12px;
+            margin-top: 14px;
+            padding: 10px;
             background: #FEF3C7;
             color: #92400E;
-            border-radius: 12px;
-            font-size: 0.95rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
         }
 
         .verb-tap-hint {
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             opacity: 0.7;
         }
 
         .back-accent-sparkles {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             letter-spacing: 2px;
         }
 
         .back-main-row {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin: 12px 0;
+            gap: 6px;
+            margin: 10px 0;
             text-align: left;
         }
 
         .back-field {
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .back-field span {
@@ -461,41 +473,41 @@
             background: var(--bg);
             border: 1px solid var(--border);
             border-left: 4px solid var(--primary);
-            padding: 12px;
-            border-radius: 12px;
-            margin: 12px 0;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
             text-align: left;
         }
 
         .ex-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .ex-text {
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            line-height: 1.45;
             color: var(--text-main);
             font-style: normal !important;
         }
 
         .accordion-toggles-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .accordion-btn {
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 0.82rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -508,56 +520,56 @@
 
         .conj-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            margin-top: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
             text-align: left;
         }
 
         .conj-section {
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 8px;
         }
 
         .conj-section h4 {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--primary);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 4px;
+            padding-bottom: 3px;
         }
 
         .conj-section ul {
             list-style: none;
             padding: 0;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
         }
 
         .conj-section li {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .origins-block {
             background: var(--bg);
             border: 1px dashed var(--primary);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 12px;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
             text-align: left;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
 
         .orig-row {
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .orig-row.logic {
-            margin-top: 6px;
-            padding-top: 6px;
+            margin-top: 5px;
+            padding-top: 5px;
             border-top: 1px solid var(--border);
             color: var(--primary);
             font-weight: 600;
@@ -565,23 +577,135 @@
 
         .verb-card-controls {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 28px; /* Clear spacing between card and action buttons */
-            margin-bottom: 20px;
+            margin-top: 16px;
+            margin-bottom: 16px;
         }
 
         .verb-card-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 680px;
+            max-width: 640px;
             margin: 0 auto;
         }
 
         .verb-counter-text {
             font-weight: 700;
             color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           📱 MOBILE UI/UX OPTIMIZATION MEDIA QUERIES (375px - 768px)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            #content-area {
+                padding: 12px 10px !important;
+            }
+
+            .controls-row {
+                padding: 12px !important;
+                gap: 10px !important;
+            }
+
+            .search-input-box {
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .auto-play-settings-row {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+            }
+
+            .auto-play-settings-row > div {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+
+            .auto-play-settings-row select {
+                flex: 1;
+                max-width: 180px !important;
+            }
+
+            .verbs-deck-grid {
+                grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)) !important;
+                gap: 8px !important;
+                max-height: 150px !important;
+            }
+
+            .deck-chip-card {
+                padding: 6px 8px !important;
+            }
+
+            .deck-chip-num {
+                font-size: 0.78rem !important;
+            }
+
+            .verb-flashcard {
+                min-height: 350px !important;
+                margin-bottom: 12px !important;
+            }
+
+            .verb-card-front, .verb-card-back {
+                min-height: 350px !important;
+                padding: 14px !important;
+                border-radius: 16px !important;
+            }
+
+            .verb-infinitive {
+                font-size: 2.2rem !important;
+                margin-bottom: 8px !important;
+            }
+
+            .fc-btn {
+                padding: 12px 16px !important;
+                font-size: 0.95rem !important;
+            }
+
+            /* Responsive Touch Table / Mobile Card Conversion */
+            .table-container {
+                border-radius: 14px !important;
+                padding: 0 !important;
+            }
+
+            .table-container table, 
+            .table-container tbody, 
+            .table-container tr, 
+            .table-container td {
+                display: block;
+                width: 100%;
+            }
+
+            .table-container thead {
+                display: none; /* Hide header row on mobile cards */
+            }
+
+            .table-container tr {
+                border-bottom: 1px solid var(--border);
+                padding: 12px 10px;
+                box-sizing: border-box;
+                background: var(--surface);
+            }
+
+            .table-container td {
+                padding: 4px 0 !important;
+                border-bottom: none !important;
+            }
+
+            .table-container td:first-child {
+                padding-bottom: 6px !important;
+            }
+
+            .speak-btn {
+                min-width: 36px;
+                min-height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -621,16 +745,16 @@
         <header id="topbar">
             <button id="mobile-menu-btn" class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)">☰</button>
             <div class="progress-container">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
                     <span id="progress-label">Overall Verb Progress</span>
-                    <span id="overall-progress-text">0 / 1796 (0%)</span>
+                    <span id="overall-progress-text">0 / 1757 (0%)</span>
                 </div>
                 <div class="progress-bar-bg">
                     <div id="overall-progress-fill" class="progress-bar-fill"></div>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar">↔️ Sidebar</button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar">↔️</button>
                 <button class="topbar-btn" onclick="window.verbsEngine.toggleDarkMode()" id="theme-btn" title="Toggle Theme">🌙</button>
             </div>
         </header>
@@ -638,28 +762,28 @@
         <div id="content-area">
             <!-- VIEW 1: LIST / GLOSSARY VIEW (DEFAULT VIEW) -->
             <div id="view-glossary">
-                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <h2 id="verbs-deck-title" style="margin: 0;">Deck 1 (Verbs 1–50)</h2>
+                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; width: 100%;">
+                        <h2 id="verbs-deck-title" style="margin: 0; font-size: 1.3rem;">Deck 1 (Verbs 1–50)</h2>
                         <input type="text" id="verbs-search-input" class="search-input-box" placeholder="🔍 Search verb or meaning...">
                     </div>
-                    <div class="btn-group">
+                    <div class="btn-group" style="width: 100%; justify-content: space-between; margin-top: 6px;">
                         <select id="type-filter" class="filter-select" onchange="window.verbsEngine.setFilter(this.value)">
                             <option value="all">🔍 All Verbs</option>
                             <option value="fav">⭐ Favourites Only</option>
                             <option value="sep">🏃‍♂️ Separable Verbs</option>
                             <option value="irreg">⚡ Irregular Verbs</option>
                         </select>
-                        <button class="btn primary" onclick="window.verbsEngine.switchMode('flashcard')">🃏 Flashcards</button>
+                        <button class="btn primary" onclick="window.verbsEngine.switchMode('flashcard')">🃏 Flashcards Mode</button>
                     </div>
                 </div>
 
-                <!-- Deck Progress Tracker Grid -->
+                <!-- Deck Progress Tracker Grid (Collapsible Drawer on Mobile) -->
                 <section class="deck-tracker-section">
-                    <div class="tracker-header-row">
+                    <div class="tracker-header-row" onclick="document.getElementById('verbs-deck-grid').classList.toggle('hidden');" style="cursor: pointer;">
                         <div>
-                            <h3 style="margin:0; font-family:'Poppins',sans-serif;">Deck Progress Tracker (Ordered by Frequency #1 to #1796)</h3>
-                            <span style="font-size:0.85rem; color:var(--text-muted);">Select a deck chip to load its 50 verbs into the list</span>
+                            <h3 style="margin:0; font-family:'Poppins',sans-serif; font-size: 1.05rem;">📊 50-Verb Decks Tracker</h3>
+                            <span style="font-size:0.78rem; color:var(--text-muted);">Tap to expand/collapse 36 frequency decks</span>
                         </div>
                         <div class="tracker-summary-badge" id="verbs-finished-summary">0 / 36 Decks Finished</div>
                     </div>
@@ -668,33 +792,70 @@
                     </div>
                 </section>
 
-                <!-- Practice Controls & Audio Queue -->
-                <div class="controls-row" style="background: var(--surface); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <span style="font-weight: bold; font-size: 0.9rem;">Hide & Guess:</span>
-                        <div class="btn-group">
-                            <button class="btn" onclick="window.verbsEngine.toggleColumn('en')">Hide English</button>
-                            <button class="btn" onclick="window.verbsEngine.toggleColumn('de')">Hide German</button>
-                            <button class="btn" onclick="window.verbsEngine.toggleColumn('mixed')">Hide Mixed</button>
-                            <button class="btn" onclick="window.verbsEngine.toggleExamples()">Hide Examples</button>
-                            <button class="btn" onclick="window.verbsEngine.revealAllTable()">Reveal All</button>
+                <!-- Practice Controls & Audio Queue Bar -->
+                <div class="controls-row" style="background: var(--surface); padding: 14px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                            <span style="font-weight: bold; font-size: 0.85rem;">Hide & Guess:</span>
+                            <div class="btn-group" style="gap: 4px;">
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('en')">Hide EN</button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('de')">Hide DE</button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('mixed')">Mix</button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleExamples()">Examples</button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.revealAllTable()">Reveal</button>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 6px; align-items: center; width: 100%; justify-content: flex-end; margin-top: 4px;">
+                            <button class="btn btn-primary" id="btn-play-all-words" onclick="window.verbsEngine.playAllVerbsAudio()" style="display: flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.85rem;">
+                                <span>▶️</span> Auto Play Audio
+                            </button>
+                            <button class="btn hidden" id="btn-pause-words" onclick="window.verbsEngine.togglePauseAudio()" style="display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 0.85rem;">
+                                <span>⏸️</span> Pause
+                            </button>
+                            <button class="btn" id="btn-stop-words" onclick="window.verbsEngine.stopAudioQueue()" style="display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 0.85rem;">
+                                <span>⏹️</span> Stop
+                            </button>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <button class="btn btn-primary" id="btn-play-all-words" onclick="window.verbsEngine.playAllVerbsAudio()" style="display: flex; align-items: center; gap: 8px;">
-                            <span>▶️</span> Play All
-                        </button>
-                        <button class="btn hidden" id="btn-pause-words" onclick="window.verbsEngine.togglePauseAudio()" style="display: flex; align-items: center; gap: 8px;">
-                            <span>⏸️</span> Pause
-                        </button>
-                        <button class="btn" id="btn-stop-words" onclick="window.verbsEngine.stopAudioQueue()" style="display: flex; align-items: center; gap: 8px;">
-                            <span>⏹️</span> Stop
-                        </button>
+                    <!-- Custom Auto-Play Audio Settings Row -->
+                    <div class="auto-play-settings-row" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--border);">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="auto-repeat-count" style="font-size: 0.82rem; font-weight: 600;">🔄 Repeat:</label>
+                            <select id="auto-repeat-count" class="filter-select" style="padding: 4px 8px; font-size: 0.82rem;">
+                                <option value="1">1x per word</option>
+                                <option value="2" selected>2x per word</option>
+                                <option value="3">3x per word</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="auto-example-mode" style="font-size: 0.82rem; font-weight: 600;">💬 Examples:</label>
+                            <select id="auto-example-mode" class="filter-select" style="padding: 4px 8px; font-size: 0.82rem;">
+                                <option value="first" selected>1st Example Only</option>
+                                <option value="all">All Examples</option>
+                                <option value="none">No Examples (Verb Only)</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label style="font-size: 0.82rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox" id="auto-include-en" checked style="accent-color: var(--primary); width: 15px; height: 15px;">
+                                <span>🔊 Speak English Translation</span>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="auto-start-verb" style="font-size: 0.82rem; font-weight: 600;">📍 Start At:</label>
+                            <select id="auto-start-verb" class="filter-select" style="padding: 4px 8px; font-size: 0.82rem; max-width: 180px;">
+                                <!-- Dynamically populated from active deck -->
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Glossary Table -->
+                <!-- Glossary Table / Mobile Responsive Touch Cards -->
                 <div class="table-container">
                     <table>
                         <thead>
@@ -714,17 +875,17 @@
 
             <!-- VIEW 2: FLASHCARD VIEW -->
             <div id="view-flashcard" class="hidden">
-                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                    <button class="btn" onclick="window.verbsEngine.switchMode('glossary')">⬅ Back to List</button>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-weight: bold; font-size: 0.9rem;">🎴 Front Card:</span>
-                        <select class="filter-select" onchange="window.verbsEngine.setCardDirectionMode(this.value)">
+                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.switchMode('glossary')">⬅ Back to List</button>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-weight: bold; font-size: 0.85rem;">🎴 Front Card:</span>
+                        <select class="filter-select" style="padding: 5px 10px; font-size: 0.82rem;" onchange="window.verbsEngine.setCardDirectionMode(this.value)">
                             <option value="de-to-en">🇩🇪 German (Verb) → 🇺🇸 English</option>
                             <option value="en-to-de">🇺🇸 English (Meaning) → 🇩🇪 German</option>
                             <option value="audio-to-de">🔊 Listening Practice → 🇩🇪 German</option>
                         </select>
                     </div>
-                    <button class="btn" id="shuffle-btn" onclick="window.verbsEngine.toggleShuffle()">🔀 Shuffle: OFF</button>
+                    <button class="btn" id="shuffle-btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.toggleShuffle()">🔀 Shuffle: OFF</button>
                 </div>
 
                 <div class="verb-flashcard-wrapper" id="verbs-card-working-area">
