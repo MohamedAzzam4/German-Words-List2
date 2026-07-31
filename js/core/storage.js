@@ -34,7 +34,7 @@ export const getLocalProgressForUser = (appId, uid) => {
         clearLocalProgress(appId);
         return getDefaultProgress();
     }
-    if (!local._ownerUid && local.known?.length > 0) {
+    if (!local._ownerUid && (local.known?.length > 0 || local.knownVerbIds?.length > 0)) {
         console.warn('⚠️ LocalStorage has no owner UID (likely from old website). Discarding stale data.');
         clearLocalProgress(appId);
         return getDefaultProgress();
@@ -77,6 +77,22 @@ export const mergeProgress = (local, remote) => {
     merged.favoritePhrases = Array.from(new Set([
         ...(local.favoritePhrases || []),
         ...(remote.favoritePhrases || [])
+    ]));
+
+    // Deep merge arrays (verbs module: finished decks, known verb IDs, favorite verb IDs)
+    merged.finishedVerbDecks = Array.from(new Set([
+        ...(local.finishedVerbDecks || []),
+        ...(remote.finishedVerbDecks || [])
+    ]));
+
+    merged.knownVerbIds = Array.from(new Set([
+        ...(local.knownVerbIds || []),
+        ...(remote.knownVerbIds || [])
+    ]));
+
+    merged.verbFavorites = Array.from(new Set([
+        ...(local.verbFavorites || []),
+        ...(remote.verbFavorites || [])
     ]));
 
     // Merge trophy counts (keep higher)
@@ -147,6 +163,9 @@ const getDefaultProgress = () => ({
     favorites: [],
     knownPhrases: [],
     favoritePhrases: [],
+    finishedVerbDecks: [],
+    knownVerbIds: [],
+    verbFavorites: [],
     trophies: [],
     trophyCounts: {},
     sessionCount: 0,

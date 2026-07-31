@@ -7,10 +7,31 @@
  * 50-verb decks tracker, collapsible sidebar, Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
  * stable verb IDs & progress preservation across dataset re-rankings,
  * Card Direction Mode (DE->EN, EN->DE, Audio->DE),
- * and Auto-Play Audio Practice Mode (custom repeat count, examples scope, English TTS translations, start-at-verb selection).
+ * Auto-Play Audio Practice Mode (custom repeat count, examples scope, English TTS translations, start-at-verb selection),
+ * Floating Audio Control Pill (sticky pause/resume/stop bar),
+ * Sleek SVG Row Action Play Chip buttons & Animated pulsing speech highlight (speechPulse),
+ * AND full Firebase Account Authentication & Real-time Cloud Progress Sync.
  */
 import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
-import { getLocalProgress, saveLocalProgress } from './storage.js';
+import { 
+    initFirebase, 
+    loginWithGoogle as fbLoginWithGoogle, 
+    logout as fbLogout, 
+    loadProgress as fbLoadProgress, 
+    saveProgress as fbSaveProgress, 
+    listenAuth, 
+    updateLeaderboard, 
+    loginWithEmailAndPassword as fbLoginWithEmail, 
+    signUpWithEmailAndPassword as fbSignUpWithEmail 
+} from './firebase.js?v=3';
+import { 
+    getLocalProgress, 
+    getLocalProgressForUser, 
+    saveLocalProgress, 
+    mergeProgress, 
+    clearLocalProgress, 
+    getDefaultProgressObj 
+} from './storage.js?v=3';
 import { sanitize } from './utils.js';
 
 class VerbsEngineClass {
@@ -30,6 +51,11 @@ class VerbsEngineClass {
         this.isSidebarCollapsed = false;
         this.typeFilter = 'all'; // 'all', 'fav', 'sep', 'irreg'
         this.appId = 'a1_app_data';
+        this.uid = null;
+        this.auth = null;
+        this.db = null;
+        this._emailAuthMode = 'signin';
+
         this.userData = getLocalProgress(this.appId);
 
         if (!this.userData.finishedVerbDecks) {
@@ -46,14 +72,43 @@ class VerbsEngineClass {
     async init() {
         try {
             this._applyTheme();
+
+            // 1. Initialize Firebase Auth & Cloud Database
+            const firebaseConfig = {
+                apiKey: "AIzaSyDa0QJmnt7uiKDNhcD1oRm6xaq718MDSD8",
+                authDomain: "german-words-list-app.firebaseapp.com",
+                projectId: "german-words-list-app",
+                storageBucket: "german-words-list-app.firebasestorage.app",
+                messagingSenderId: "997179116756",
+                appId: "1:997179116756:web:31dddba4688485f9a23f41",
+                measurementId: "G-PW8LJZWW5T"
+            };
+
+            try {
+                const fbInit = initFirebase(firebaseConfig, this.appId);
+                this.auth = fbInit.auth;
+                this.db = fbInit.db;
+            } catch (e) {
+                console.warn('⚠️ Firebase init fallback:', e);
+            }
+
+            // 2. Fetch Verbs Dataset
             const res = await fetch('content/generated/verbs/top_verbs_2000.json');
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             this.dataset = await res.json();
 
-            this.renderDeckTracker();
-            this.loadDeck(this.currentDeckId);
+            // 3. Set up Auth Listener & Sync
+            if (this.auth) {
+                listenAuth(async (user) => {
+                    await this._onAuthChanged(user);
+                });
+            } else {
+                this.renderAuthUI();
+                this.renderDeckTracker();
+                this.loadDeck(this.currentDeckId);
+            }
+
             this.bindEvents();
-            this.updateOverallProgress();
             console.log(`✅ VerbsEngine initialized with ${this.dataset.totalVerbs} verbs across ${this.dataset.totalDecks} decks.`);
         } catch (e) {
             console.error('VerbsEngine initialization failed:', e);
@@ -64,8 +119,234 @@ class VerbsEngineClass {
         }
     }
 
+    async _onAuthChanged(user) {
+        this.uid = user ? user.uid : null;
+
+        if (user) {
+            console.log('☁️ User logged in:', user.email);
+            try {
+                const safeLocal = getLocalProgressForUser(this.appId, user.uid);
+                const remote = await fbLoadProgress(this.appId, user.uid);
+                this.userData = mergeProgress(safeLocal, remote);
+                saveLocalProgress(this.appId, this.userData, user.uid);
+            } catch (e) {
+                console.warn('Failed to load cloud progress:', e);
+                this.userData = getLocalProgress(this.appId);
+            }
+        } else {
+            console.log('💾 Running in local offline mode');
+            this.userData = getLocalProgress(this.appId);
+        }
+
+        this.renderAuthUI();
+        this.renderDeckTracker();
+        this.loadDeck(this.currentDeckId);
+        this.updateOverallProgress();
+    }
+
     _save() {
-        saveLocalProgress(this.appId, this.userData);
+        saveLocalProgress(this.appId, this.userData, this.uid);
+
+        if (this.uid && this.auth) {
+            fbSaveProgress(this.appId, this.uid, this.userData);
+            const knownCount = (this.userData.knownVerbIds || []).length;
+            const displayName = this.auth.currentUser?.displayName || this.auth.currentUser?.email || "Linguist";
+            const photoURL = this.auth.currentUser?.photoURL || "";
+            updateLeaderboard(this.appId, this.uid, displayName, photoURL, knownCount);
+        }
+    }
+
+    // ── AUTHENTICATION METHODS ──
+    async loginWithGoogle() {
+        if (!this.auth) {
+            alert('Firebase not configured. Check network connection.');
+            return;
+        }
+        try {
+            await fbLoginWithGoogle();
+            window.location.reload();
+        } catch (e) {
+            console.error('Google login failed:', e);
+            alert('Login failed: ' + e.message);
+        }
+    }
+
+    openEmailAuthModal() {
+        let modal = document.getElementById('email-auth-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'email-auth-modal';
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content" style="background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:24px; max-width:400px; margin:15% auto; color:var(--text-main);">
+                    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h3 id="modal-title" style="margin:0;">Sign In with Email</h3>
+                        <button class="modal-close" onclick="window.verbsEngine.closeEmailAuthModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text-muted);">✕</button>
+                    </div>
+                    <form id="email-auth-form">
+                        <div class="form-group hidden" id="name-group" style="margin-bottom:12px;">
+                            <label for="auth-name" style="display:block; font-size:0.85rem; margin-bottom:4px;">Name</label>
+                            <input type="text" id="auth-name" class="form-input" placeholder="Your name" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main);">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label for="auth-email" style="display:block; font-size:0.85rem; margin-bottom:4px;">Email</label>
+                            <input type="email" id="auth-email" class="form-input" placeholder="you@example.com" required autocomplete="username" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main);">
+                        </div>
+                        <div class="form-group" style="margin-bottom:16px;">
+                            <label for="auth-password" style="display:block; font-size:0.85rem; margin-bottom:4px;">Password</label>
+                            <input type="password" id="auth-password" class="form-input" placeholder="••••••••" required autocomplete="current-password" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text-main);">
+                        </div>
+                        <div id="auth-error-msg" style="color:var(--danger); font-size:0.85rem; margin-bottom:12px;"></div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn primary" id="auth-submit-btn" style="width: 100%; padding:12px; font-weight:bold;">Sign In</button>
+                            <div class="modal-toggle-text" style="text-align:center; margin-top:12px; font-size:0.85rem; cursor:pointer; color:var(--primary);" onclick="window.verbsEngine.toggleEmailAuthMode()">
+                                Don't have an account? <span id="auth-toggle-link" style="text-decoration:underline;">Sign Up</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('email-auth-form').addEventListener('submit', (e) => {
+                this.handleEmailAuth(e);
+            });
+        }
+
+        this._emailAuthMode = 'signin';
+        document.getElementById('name-group').classList.add('hidden');
+        document.getElementById('auth-name').removeAttribute('required');
+        document.getElementById('modal-title').textContent = 'Sign In with Email';
+        document.getElementById('auth-submit-btn').textContent = 'Sign In';
+        document.getElementById('auth-toggle-link').textContent = 'Sign Up';
+        document.getElementById('auth-error-msg').textContent = '';
+        document.getElementById('email-auth-form').reset();
+
+        modal.classList.remove('hidden');
+    }
+
+    closeEmailAuthModal() {
+        const modal = document.getElementById('email-auth-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    toggleEmailAuthMode() {
+        const nameGroup = document.getElementById('name-group');
+        const authName = document.getElementById('auth-name');
+        const modalTitle = document.getElementById('modal-title');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const toggleLink = document.getElementById('auth-toggle-link');
+        const errorMsg = document.getElementById('auth-error-msg');
+
+        errorMsg.textContent = '';
+
+        if (this._emailAuthMode === 'signin') {
+            this._emailAuthMode = 'signup';
+            nameGroup.classList.remove('hidden');
+            authName.setAttribute('required', 'true');
+            modalTitle.textContent = 'Create Account';
+            submitBtn.textContent = 'Sign Up';
+            toggleLink.textContent = 'Sign In';
+        } else {
+            this._emailAuthMode = 'signin';
+            nameGroup.classList.add('hidden');
+            authName.removeAttribute('required');
+            modalTitle.textContent = 'Sign In with Email';
+            submitBtn.textContent = 'Sign In';
+            toggleLink.textContent = 'Sign Up';
+        }
+    }
+
+    async handleEmailAuth(event) {
+        event.preventDefault();
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const name = document.getElementById('auth-name').value;
+        const errorMsg = document.getElementById('auth-error-msg');
+        const submitBtn = document.getElementById('auth-submit-btn');
+
+        errorMsg.textContent = '';
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing... ⏳';
+
+        try {
+            if (this._emailAuthMode === 'signup') {
+                await fbSignUpWithEmail(email, password, name);
+            } else {
+                await fbLoginWithEmail(email, password);
+            }
+            this.closeEmailAuthModal();
+            window.location.reload();
+        } catch (e) {
+            console.error('Email authentication failed:', e);
+            let userFriendlyMsg = e.message;
+            if (e.code === 'auth/invalid-credential' || e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') {
+                userFriendlyMsg = 'Incorrect email or password.';
+            } else if (e.code === 'auth/email-already-in-use') {
+                userFriendlyMsg = 'This email is already registered. Try logging in.';
+            } else if (e.code === 'auth/weak-password') {
+                userFriendlyMsg = 'Password should be at least 6 characters.';
+            } else if (e.code === 'auth/invalid-email') {
+                userFriendlyMsg = 'Please enter a valid email address.';
+            }
+            errorMsg.textContent = userFriendlyMsg;
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+        }
+    }
+
+    async logout() {
+        if (this.auth) {
+            try { await fbLogout(); } catch (e) {}
+        }
+        clearLocalProgress(this.appId);
+        window._isLoggingOut = true;
+        window.location.reload();
+    }
+
+    async resetData() {
+        if (confirm("⚠️ Are you sure you want to completely RESET ALL your progress data? This cannot be undone!")) {
+            clearLocalProgress(this.appId);
+            if (this.auth && this.uid) {
+                try {
+                    await fbSaveProgress(this.appId, this.uid, getDefaultProgressObj());
+                } catch (e) {
+                    console.warn("Failed to reset firebase.", e);
+                }
+            }
+            window.location.reload();
+        }
+    }
+
+    renderAuthUI() {
+        const sync = document.getElementById('sync-status');
+        const login = document.getElementById('login-btn');
+        const loginEmail = document.getElementById('login-email-btn');
+        const info = document.getElementById('user-info');
+
+        if (!info) return;
+
+        if (this.uid && this.auth?.currentUser) {
+            if (sync) sync.textContent = '☁️ Cloud Sync Active';
+            if (login) login.classList.add('hidden');
+            if (loginEmail) loginEmail.classList.add('hidden');
+            info.classList.remove('hidden');
+
+            const avatar = document.getElementById('user-avatar');
+            const name = document.getElementById('user-name');
+            if (avatar) {
+                avatar.src = this.auth.currentUser.photoURL || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%2364748b\'><path d=\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\'/></svg>';
+            }
+            if (name) name.textContent = this.auth.currentUser.displayName || this.auth.currentUser.email || 'Linguist User';
+        } else {
+            if (sync) sync.textContent = '💾 Local Mode';
+            if (login) login.classList.remove('hidden');
+            if (loginEmail) loginEmail.classList.remove('hidden');
+            info.classList.add('hidden');
+        }
     }
 
     _applyTheme() {
@@ -197,14 +478,14 @@ class VerbsEngineClass {
 
         if (!this.dataset) return;
 
-        const finishedCount = this.userData.finishedVerbDecks.length;
+        const finishedCount = (this.userData.finishedVerbDecks || []).length;
         if (summaryEl) {
             summaryEl.textContent = `${finishedCount} / ${this.dataset.totalDecks} Decks Finished`;
         }
 
         if (trackerContainer) {
             trackerContainer.innerHTML = this.dataset.decks.map(deck => {
-                const isFinished = this.userData.finishedVerbDecks.includes(deck.deckId);
+                const isFinished = (this.userData.finishedVerbDecks || []).includes(deck.deckId);
                 const isActive = deck.deckId === this.currentDeckId;
                 
                 const knownInDeck = deck.verbs.filter(v => this.isVerbKnown(v)).length;
@@ -308,9 +589,15 @@ class VerbsEngineClass {
                     <td>
                         <div style="display:flex; align-items:center; gap: 8px;">
                             <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
-                            <button class="speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Listen to Verb">🔊</button>
-                            <button class="speak-btn" data-action="play-from-row" data-array-idx="${arrayIdx}" title="Start Auto Play from this verb">▶</button>
-                            <div style="flex:1;">
+                            <div class="row-action-group">
+                                <button class="row-speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Pronounce single verb">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                                </button>
+                                <button class="row-play-btn" data-action="play-from-row" data-array-idx="${arrayIdx}" title="Start Auto-Play Audio sequence from this verb">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                            </div>
+                            <div style="flex:1; margin-left: 4px;">
                                 <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
                                 <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
                             </div>
@@ -323,7 +610,7 @@ class VerbsEngineClass {
                                 ${isKnown ? '<span style="color:var(--success);" title="Known">✓</span>' : ''}
                             </div>
                             
-                            <!-- Inline Example Box (Original single-line layout, Click each sentence to pronounce) -->
+                            <!-- Inline Example Box -->
                             ${examplePairs.length > 0 ? `
                                 <div class="verb-inline-example-box">
                                     <div class="ex-de-line" style="display:flex; align-items:center; gap: 4px; flex-wrap: wrap;">
@@ -372,7 +659,7 @@ class VerbsEngineClass {
         const startVerbSelect = document.getElementById('auto-start-verb');
 
         const repeatCount = repeatSelect ? parseInt(repeatSelect.value, 10) || 1 : 1;
-        const exampleMode = exampleSelect ? exampleSelect.value : 'first'; // 'first', 'all', 'none'
+        const exampleMode = exampleSelect ? exampleSelect.value : 'first';
         const includeEn = includeEnCheck ? includeEnCheck.checked : true;
 
         let startIdx = 0;
@@ -389,27 +676,27 @@ class VerbsEngineClass {
             const verb = this.queue[i];
             const exPairs = this._getExamplePairs(verb);
 
-            // Repeat per verb according to repeatCount (1x, 2x, 3x)
             for (let r = 0; r < repeatCount; r++) {
-                // 1. German Verb Infinitive
                 itemsToPlay.push({
                     verbId: verb.id,
+                    verbInfinitive: verb.infinitive,
+                    verbIndex: verb.index,
                     text: verb.infinitive,
                     lang: 'de',
                     label: `Verb (${r+1}/${repeatCount})`
                 });
 
-                // 2. English Meaning (if enabled)
                 if (includeEn && verb.meaning) {
                     itemsToPlay.push({
                         verbId: verb.id,
+                        verbInfinitive: verb.infinitive,
+                        verbIndex: verb.index,
                         text: verb.meaning,
                         lang: 'en',
                         label: `Translation`
                     });
                 }
 
-                // 3. Example Sentences ('first', 'all', 'none')
                 if (exampleMode !== 'none' && exPairs.length > 0) {
                     const targetPairs = exampleMode === 'first' ? [exPairs[0]] : exPairs;
 
@@ -417,6 +704,8 @@ class VerbsEngineClass {
                         if (pair.de) {
                             itemsToPlay.push({
                                 verbId: verb.id,
+                                verbInfinitive: verb.infinitive,
+                                verbIndex: verb.index,
                                 text: pair.de,
                                 lang: 'de',
                                 label: `Example (DE)`
@@ -425,6 +714,8 @@ class VerbsEngineClass {
                         if (includeEn && pair.en) {
                             itemsToPlay.push({
                                 verbId: verb.id,
+                                verbInfinitive: verb.infinitive,
+                                verbIndex: verb.index,
                                 text: pair.en,
                                 lang: 'en',
                                 label: `Example (EN)`
@@ -437,12 +728,19 @@ class VerbsEngineClass {
 
         const btn = document.getElementById('btn-play-all-words');
         const pauseBtn = document.getElementById('btn-pause-words');
+        const fab = document.getElementById('floating-audio-bar');
+        const fabVerbText = document.getElementById('fab-current-verb');
+        const fabPauseIcon = document.getElementById('fab-pause-icon');
+
         if (btn) {
             btn.classList.add('playing');
             btn.innerHTML = '<span>🔊</span> Auto Playing...';
         }
         if (pauseBtn) {
             pauseBtn.classList.remove('hidden');
+        }
+        if (fab) {
+            fab.classList.remove('hidden');
         }
 
         SpeechQueue.playAll(
@@ -454,6 +752,12 @@ class VerbsEngineClass {
                     document.querySelectorAll('.highlighted-speech').forEach(el => el.classList.remove('highlighted-speech'));
                     tr.classList.add('highlighted-speech');
                 }
+                if (fabVerbText && item.verbInfinitive) {
+                    fabVerbText.textContent = `Playing: #${item.verbIndex} ${item.verbInfinitive}`;
+                }
+                if (fabPauseIcon) {
+                    fabPauseIcon.textContent = '⏸️';
+                }
             },
             () => {
                 this.stopAudioQueue();
@@ -463,13 +767,16 @@ class VerbsEngineClass {
 
     togglePauseAudio() {
         const pauseBtn = document.getElementById('btn-pause-words');
-        if (!pauseBtn) return;
+        const fabPauseIcon = document.getElementById('fab-pause-icon');
+
         if (SpeechQueue.isPlaying) {
             SpeechQueue.pause();
-            pauseBtn.innerHTML = '<span>▶️</span> Resume';
+            if (pauseBtn) pauseBtn.innerHTML = '<span>▶️</span> Resume';
+            if (fabPauseIcon) fabPauseIcon.textContent = '▶️';
         } else {
             SpeechQueue.resume();
-            pauseBtn.innerHTML = '<span>⏸️</span> Pause';
+            if (pauseBtn) pauseBtn.innerHTML = '<span>⏸️</span> Pause';
+            if (fabPauseIcon) fabPauseIcon.textContent = '⏸️';
         }
     }
 
@@ -478,12 +785,17 @@ class VerbsEngineClass {
         document.querySelectorAll('.highlighted-speech').forEach(el => el.classList.remove('highlighted-speech'));
         const btn = document.getElementById('btn-play-all-words');
         const pauseBtn = document.getElementById('btn-pause-words');
+        const fab = document.getElementById('floating-audio-bar');
+
         if (btn) {
             btn.classList.remove('playing');
             btn.innerHTML = '<span>▶️</span> Auto Play Audio';
         }
         if (pauseBtn) {
             pauseBtn.classList.add('hidden');
+        }
+        if (fab) {
+            fab.classList.add('hidden');
         }
     }
 
@@ -553,7 +865,6 @@ class VerbsEngineClass {
         const examplePairs = this._getExamplePairs(verb);
         const hasEn = examplePairs.some(p => p.en);
 
-        // Front Card Content based on cardDirectionMode
         let frontMainHTML = '';
         let frontHintText = '';
 
@@ -576,7 +887,6 @@ class VerbsEngineClass {
             `;
             frontHintText = `Meaning: ${verb.meaning}`;
         } else {
-            // Default: 'de-to-en'
             frontMainHTML = `
                 <div class="verb-label">Verb (German)</div>
                 <h2 class="verb-infinitive">${verb.infinitive}</h2>
@@ -776,9 +1086,10 @@ class VerbsEngineClass {
 
         const deckVerbs = this.queue;
         const allKnown = deckVerbs.every(v => this.isVerbKnown(v));
-        if (allKnown && !this.userData.finishedVerbDecks.includes(this.currentDeckId)) {
+        if (allKnown && !(this.userData.finishedVerbDecks || []).includes(this.currentDeckId)) {
+            if (!this.userData.finishedVerbDecks) this.userData.finishedVerbDecks = [];
             this.userData.finishedVerbDecks.push(this.currentDeckId);
-        } else if (!allKnown) {
+        } else if (!allKnown && this.userData.finishedVerbDecks) {
             const dIdx = this.userData.finishedVerbDecks.indexOf(this.currentDeckId);
             if (dIdx > -1) {
                 this.userData.finishedVerbDecks.splice(dIdx, 1);
@@ -816,7 +1127,9 @@ class VerbsEngineClass {
         const targetId = verb ? verb.id : verbId;
         const inf = verb ? (verb.infinitive || '').toLowerCase() : '';
 
-        const isFav = verb ? this.isVerbFavorite(verb) : this.userData.verbFavorites.includes(verbId);
+        const isFav = verb ? this.isVerbFavorite(verb) : (this.userData.verbFavorites || []).includes(verbId);
+
+        if (!this.userData.verbFavorites) this.userData.verbFavorites = [];
 
         if (isFav) {
             this.userData.verbFavorites = this.userData.verbFavorites.filter(x => x !== targetId && x !== inf && x !== `v_${inf}`);

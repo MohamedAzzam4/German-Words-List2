@@ -41,7 +41,8 @@
         body.sidebar-collapsed #sidebar .nav-header div,
         body.sidebar-collapsed #sidebar .nav-item span,
         body.sidebar-collapsed #sidebar .nav-section-title,
-        body.sidebar-collapsed #sidebar #sidebar-close-btn {
+        body.sidebar-collapsed #sidebar #sidebar-close-btn,
+        body.sidebar-collapsed #sidebar #auth-section {
             display: none !important;
         }
 
@@ -85,7 +86,7 @@
             overflow-y: auto;
         }
 
-        /* Wide Content Container (Zero Wasted Space on Mobile) */
+        /* Wide Content Container */
         #content-area {
             padding: 20px 28px;
             max-width: 1400px;
@@ -263,17 +264,143 @@
             margin-left: 4px;
         }
 
-        /* Table Width Optimization & Highlighting */
+        /* Table Width Optimization */
         .table-container table {
             width: 100%;
         }
 
-        tr.highlighted-speech {
-            background-color: rgba(79, 70, 229, 0.18) !important;
-            transition: background-color 0.3s ease;
+        /* Sleek Row Action Buttons (SVG Play Button Chip & Speaker) */
+        .row-action-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        /* Outline (Unfavorited ☆) vs Filled Gold (Favorited ⭐) Icon Toggle */
+        .row-play-btn, .row-speak-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.25);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0;
+        }
+
+        .row-play-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.12);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+        }
+
+        .row-speak-btn:hover {
+            background: rgba(79, 70, 229, 0.22);
+            color: var(--primary);
+            transform: scale(1.12);
+        }
+
+        /* Sleek Animated Highlight for Pronounced Row */
+        tr.highlighted-speech {
+            animation: speechPulse 1.8s infinite alternate cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border-left: 4px solid var(--primary) !important;
+            position: relative;
+        }
+
+        @keyframes speechPulse {
+            0% {
+                background-color: rgba(79, 70, 229, 0.14) !important;
+                box-shadow: inset 0 0 12px rgba(79, 70, 229, 0.2), 0 4px 15px rgba(79, 70, 229, 0.15);
+            }
+            100% {
+                background-color: rgba(79, 70, 229, 0.28) !important;
+                box-shadow: inset 0 0 20px rgba(79, 70, 229, 0.35), 0 8px 25px rgba(79, 70, 229, 0.25);
+            }
+        }
+
+        /* Floating Audio Control Pill (Sticky Floating Pause/Resume/Stop Bar) */
+        .floating-audio-bar {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            background: var(--surface);
+            border: 1px solid var(--primary);
+            border-radius: 30px;
+            padding: 10px 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 15px rgba(79, 70, 229, 0.3);
+            backdrop-filter: blur(16px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+        }
+
+        .floating-audio-bar.hidden {
+            transform: translateY(100px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .fab-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .fab-status-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fab-verb-text {
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        .fab-equalizer {
+            animation: eqPulse 1s infinite alternate;
+        }
+
+        @keyframes eqPulse {
+            0% { transform: scaleY(0.8); opacity: 0.7; }
+            100% { transform: scaleY(1.2); opacity: 1; }
+        }
+
+        .fab-btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .fab-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .fab-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .fab-btn.stop {
+            background: var(--danger);
+        }
+
+        /* Outline vs Filled Gold Favorite Icon */
         .fav-icon-btn {
             font-size: 1.5rem;
             cursor: pointer;
@@ -301,7 +428,7 @@
             opacity: 1;
         }
 
-        /* 3D Flashcard Mechanics & Controls Spacing */
+        /* 3D Flashcard Mechanics & Controls */
         .verb-flashcard-wrapper {
             perspective: 1200px;
             width: 100%;
@@ -596,9 +723,7 @@
             color: var(--text-muted);
         }
 
-        /* ==========================================================================
-           📱 MOBILE UI/UX OPTIMIZATION MEDIA QUERIES (375px - 768px)
-           ========================================================================== */
+        /* MOBILE MEDIA QUERIES */
         @media (max-width: 768px) {
             #content-area {
                 padding: 12px 10px !important;
@@ -665,7 +790,6 @@
                 font-size: 0.95rem !important;
             }
 
-            /* Responsive Touch Table / Mobile Card Conversion */
             .table-container {
                 border-radius: 14px !important;
                 padding: 0 !important;
@@ -680,7 +804,7 @@
             }
 
             .table-container thead {
-                display: none; /* Hide header row on mobile cards */
+                display: none;
             }
 
             .table-container tr {
@@ -699,12 +823,25 @@
                 padding-bottom: 6px !important;
             }
 
-            .speak-btn {
-                min-width: 36px;
-                min-height: 36px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
+            .floating-audio-bar {
+                bottom: 16px !important;
+                right: 12px !important;
+                left: 12px !important;
+                padding: 8px 14px !important;
+                border-radius: 25px !important;
+            }
+
+            .fab-content {
+                justify-content: space-between !important;
+                width: 100% !important;
+            }
+
+            .fab-verb-text {
+                font-size: 0.82rem !important;
+                max-width: 170px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
     </style>
@@ -719,6 +856,24 @@
             <div class="header-collapse-container" style="display: flex; gap: 6px; position: absolute; right: 12px; top: 18px;">
                 <button class="sidebar-toggle-desktop-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar Collapse">↔️</button>
                 <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
+            </div>
+        </div>
+
+        <!-- Auth Section -->
+        <div id="auth-section" style="padding: 14px 18px; background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;">
+            <button id="login-btn" class="btn primary" onclick="window.verbsEngine.loginWithGoogle()" style="width: 100%; margin-bottom: 8px; font-size: 0.85rem; justify-content: center;">
+                🌐 Sign in with Google
+            </button>
+            <button id="login-email-btn" class="btn" onclick="window.verbsEngine.openEmailAuthModal()" style="width: 100%; font-size: 0.85rem; justify-content: center;">
+                ✉️ Sign in with Email
+            </button>
+            <div id="user-info" class="hidden">
+                <img id="user-avatar" src="" alt="User Avatar" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px var(--primary);">
+                <div id="user-name" style="font-weight: bold; font-size: 0.9rem; margin-top: 6px; color: white;">Linguist User</div>
+                <div style="display: flex; gap: 6px; margin-top: 8px; justify-content: center; width: 100%;">
+                    <button onclick="window.verbsEngine.logout()" class="btn danger" style="padding: 4px 10px; font-size: 0.75rem; flex: 1;">Sign Out</button>
+                    <button onclick="window.verbsEngine.resetData()" class="btn" style="padding: 4px 10px; font-size: 0.75rem; flex: 1;">Reset</button>
+                </div>
             </div>
         </div>
 
@@ -754,6 +909,9 @@
                 </div>
             </div>
             <div style="display: flex; gap: 8px; align-items: center;">
+                <div id="sync-status" style="font-size: 0.78rem; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: var(--surface-hover); border: 1px solid var(--border);">
+                    💾 Local Mode
+                </div>
                 <button class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar">↔️</button>
                 <button class="topbar-btn" onclick="window.verbsEngine.toggleDarkMode()" id="theme-btn" title="Toggle Theme">🌙</button>
             </div>
@@ -894,6 +1052,24 @@
             </div>
         </div>
     </main>
+
+    <!-- Floating Audio Practice Control Pill (Shown when Auto-Play is active) -->
+    <div id="floating-audio-bar" class="floating-audio-bar hidden">
+        <div class="fab-content">
+            <div class="fab-status-group">
+                <span class="fab-equalizer">📊</span>
+                <span id="fab-current-verb" class="fab-verb-text">Playing: werden</span>
+            </div>
+            <div class="fab-btn-group">
+                <button class="fab-btn" id="fab-pause-btn" onclick="window.verbsEngine.togglePauseAudio()" title="Pause / Resume Audio">
+                    <span id="fab-pause-icon">⏸️</span>
+                </button>
+                <button class="fab-btn stop" onclick="window.verbsEngine.stopAudioQueue()" title="Stop Audio">
+                    <span>⏹️</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { VerbsEngine } from './js/core/verbs-engine.js';
