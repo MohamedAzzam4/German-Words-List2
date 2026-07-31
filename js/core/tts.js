@@ -5,8 +5,13 @@ const audioCtx = typeof window !== 'undefined' && window.AudioContext
 export const cleanTextForAudio = (text) => {
     if (!text) return '';
     return text
-        // استخدام وظيفة التنظيف (التي تزيل الأقواس وعلامات الجمع) قبل النطق
+        // Remove explicit grammar labels like Präsens, Präteritum, Partizip II, Futur I
+        .replace(/Präsens|Präteritum|Partizip\s*(II|2)?|Futur\s*(I|1)?/gi, '')
+        // Remove all parenthetical content e.g. (Präsens), (Partizip II), (with 'sein' for movement)
         .replace(/\([^)]*\)/g, '')
+        // Remove all square bracket content
+        .replace(/\[[^\]]*\]/g, '')
+        // Remove leftover dash artifacts
         .replace(/[\s,]*[-–—]\s*[a-zäöüß¨]*/gi, '')
         .replace(/\s+/g, ' ')
         .trim();
@@ -15,15 +20,47 @@ export const cleanTextForAudio = (text) => {
 let germanVoice = null;
 let englishVoice = null;
 
-const setVoices = () => {
+export const setVoices = () => {
     if (!window.speechSynthesis) return;
     const voices = window.speechSynthesis.getVoices();
-    germanVoice = voices.find(v => v.lang === 'de-DE' || v.lang === 'de_DE')
-               || voices.find(v => v.lang.startsWith('de'))
-               || null;
-    englishVoice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US' || v.lang === 'en-GB')
-                || voices.find(v => v.lang.startsWith('en'))
-                || null;
+    if (!voices || voices.length === 0) return;
+
+    // Helper to score voice quality (higher score = more natural / human-like)
+    const scoreVoice = (v, preferredLangPrefix) => {
+        const langLower = (v.lang || '').toLowerCase();
+        if (!langLower.startsWith(preferredLangPrefix)) return -1;
+        let score = 10;
+        const name = (v.name || '').toLowerCase();
+
+        if (name.includes('natural') || name.includes('online')) score += 50;
+        if (name.includes('google')) score += 40;
+        if (name.includes('premium') || name.includes('enhanced')) score += 30;
+        if (name.includes('samantha') || name.includes('alex') || name.includes('daniel') || name.includes('karen')) score += 20;
+        if (name.includes('zira') || name.includes('jenni') || name.includes('guy') || name.includes('aria')) score += 15;
+        if (name.includes('desktop')) score -= 20; // Penalize legacy SAPI5 Windows Desktop voices (David, Mark)
+        if (v.localService === false) score += 10; // Web-synthesized neural voices are smoother
+
+        return score;
+    };
+
+    const englishVoices = voices
+        .map(v => ({ voice: v, score: scoreVoice(v, 'en') }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+    const germanVoices = voices
+        .map(v => ({ voice: v, score: scoreVoice(v, 'de') }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+    if (englishVoices.length > 0) {
+        englishVoice = englishVoices[0].voice;
+        console.log('🎙️ Selected English Voice:', englishVoice.name);
+    }
+    if (germanVoices.length > 0) {
+        germanVoice = germanVoices[0].voice;
+        console.log('🎙️ Selected German Voice:', germanVoice.name);
+    }
 };
 
 if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -32,18 +69,13 @@ if (typeof window !== 'undefined' && window.speechSynthesis) {
 }
 
 export const speak = (text, lang = 'de') => {
-    if (window.app && window.app.stopAudioQueue) {
-        window.app.stopAudioQueue();
+    if (window.verbsEngine && window.verbsEngine.stopAudioQueue) {
+        window.verbsEngine.stopAudioQueue();
     }
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
 
-    if (window.app && window.app.userData) {
-        window.app.userData.ttsCount = (window.app.userData.ttsCount || 0) + 1;
-        if (window.app._save) window.app._save();
-    }
-
-    const clean = lang === 'de' ? cleanTextForAudio(text) : text;
+    const clean = cleanTextForAudio(text);
     if (!clean) return;
 
     const utterance = new SpeechSynthesisUtterance(clean);
@@ -54,7 +86,7 @@ export const speak = (text, lang = 'de') => {
     } else if (lang === 'en' && englishVoice) {
         utterance.voice = englishVoice;
     }
-    utterance.rate = 0.85;
+    utterance.rate = lang === 'en' ? 0.95 : 0.85;
 
     window.speechSynthesis.speak(utterance);
 };
@@ -119,7 +151,6 @@ class SpeechQueueClass {
         }
 
         if (!window.speechSynthesis) {
-            // Simulated delay for non-speech environments
             setTimeout(() => {
                 this.currentIndex++;
                 this._speakCurrent();
@@ -127,21 +158,20 @@ class SpeechQueueClass {
             return;
         }
 
-        // Clear any watchdog from the previous utterance
         if (this._watchdogTimer) {
             clearTimeout(this._watchdogTimer);
             this._watchdogTimer = null;
         }
 
-        // Cancel first to reset Chrome's internal speech state, then wait
-        // 250ms before speaking. Without this delay, mobile Chrome kills
-        // the new utterance immediately after cancel().
         window.speechSynthesis.cancel();
 
         this._speakDelayTimer = setTimeout(() => {
             if (!this.isPlaying) return;
 
-            const clean = cleanTextForAudio(item.de || item);
+            const itemLang = item.lang || 'de';
+            const rawText = item.text || item.de || item;
+            const clean = cleanTextForAudio(rawText);
+
             if (!clean) {
                 this.currentIndex++;
                 this._speakCurrent();
@@ -149,9 +179,14 @@ class SpeechQueueClass {
             }
 
             const utterance = new SpeechSynthesisUtterance(clean);
-            utterance.lang = 'de-DE';
-            if (germanVoice) utterance.voice = germanVoice;
-            utterance.rate = 0.85;
+            utterance.lang = itemLang === 'en' ? 'en-US' : 'de-DE';
+
+            if (itemLang === 'en' && englishVoice) {
+                utterance.voice = englishVoice;
+            } else if (itemLang !== 'en' && germanVoice) {
+                utterance.voice = germanVoice;
+            }
+            utterance.rate = itemLang === 'en' ? 0.92 : 0.85;
 
             utterance.onend = () => {
                 if (this.currentUtterance === utterance) {
@@ -163,7 +198,6 @@ class SpeechQueueClass {
             };
 
             utterance.onerror = (e) => {
-                // 'interrupted' is expected from cancel() — ignore it
                 if (e.error === 'interrupted' || e.error === 'canceled') return;
                 console.warn('SpeechQueue: Speech error occurred', e.error);
                 if (this.currentUtterance === utterance) {
@@ -177,8 +211,6 @@ class SpeechQueueClass {
             this.currentUtterance = utterance;
             window.speechSynthesis.speak(utterance);
 
-            // Watchdog: if mobile Chrome silently drops the utterance (no onend/onerror),
-            // force-advance the queue after 15s.
             this._watchdogTimer = setTimeout(() => {
                 if (this.isPlaying && this.currentUtterance === utterance) {
                     console.warn('SpeechQueue: Watchdog fired — advancing.');
@@ -187,13 +219,13 @@ class SpeechQueueClass {
                     this.currentIndex++;
                     this._speakCurrent();
                 }
-            }, 15000);
+            }, 12000);
         }, 250);
     }
 
-    speakSingle(text) {
+    speakSingle(text, lang = 'de') {
         this.stop();
-        speak(text);
+        speak(text, lang);
     }
 
     stop() {
