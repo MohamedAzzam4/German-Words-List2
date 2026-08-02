@@ -16,6 +16,8 @@
             color: var(--text-main);
             transition: all 0.3s ease;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         #sidebar {
@@ -23,18 +25,48 @@
             z-index: 100;
         }
 
-        /* Sticky Topbar Header - Stays pinned at top on all screens */
+        /* Clean Topbar Header */
         #topbar {
-            position: sticky;
-            top: 0;
-            z-index: 90;
             background: var(--surface);
             backdrop-filter: blur(16px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
         }
 
-        /* Clean Collapsed Sidebar with Icons on Desktop */
+        /* Clean Sidebar Buttons Separation (Desktop vs Mobile) */
         @media (min-width: 769px) {
+            .sidebar-toggle-desktop-btn {
+                display: inline-flex !important;
+                position: absolute;
+                right: 12px;
+                top: 18px;
+                background: rgba(255, 255, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                color: white;
+                padding: 4px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 0.85rem;
+                transition: all 0.2s ease;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sidebar-toggle-desktop-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            #sidebar-close-btn {
+                display: none !important;
+            }
+
             body.sidebar-collapsed #sidebar {
                 width: 64px;
                 min-width: 64px;
@@ -51,18 +83,16 @@
             }
 
             body.sidebar-collapsed #sidebar .nav-header h2,
-            body.sidebar-collapsed #sidebar .nav-header div:not(.header-collapse-container),
+            body.sidebar-collapsed #sidebar .nav-header div,
             body.sidebar-collapsed #sidebar .nav-text,
             body.sidebar-collapsed #sidebar .nav-section-title,
-            body.sidebar-collapsed #sidebar #sidebar-close-btn,
             body.sidebar-collapsed #sidebar #auth-section {
                 display: none !important;
             }
 
-            body.sidebar-collapsed #sidebar .nav-header .header-collapse-container {
+            body.sidebar-collapsed #sidebar .nav-header .sidebar-toggle-desktop-btn {
                 position: static !important;
-                justify-content: center;
-                width: 100%;
+                margin: 0 auto;
             }
 
             body.sidebar-collapsed #sidebar .nav-item {
@@ -80,22 +110,29 @@
             }
         }
 
-        .sidebar-toggle-desktop-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
+        @media (max-width: 768px) {
+            .sidebar-toggle-desktop-btn {
+                display: none !important;
+            }
 
-        .sidebar-toggle-desktop-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            #sidebar-close-btn {
+                display: flex !important;
+                position: absolute !important;
+                top: 14px !important;
+                right: 14px !important;
+                background: rgba(255, 255, 255, 0.15) !important;
+                border: 1px solid rgba(255, 255, 255, 0.25) !important;
+                color: white !important;
+                border-radius: 50% !important;
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 1rem !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                padding: 0 !important;
+                z-index: 10;
+            }
         }
 
         #main-content {
@@ -104,7 +141,7 @@
             flex-direction: column;
             min-width: 0;
             min-height: 100vh;
-            overflow-y: auto;
+            box-sizing: border-box;
         }
 
         /* Wide Content Container */
@@ -114,6 +151,7 @@
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
+            flex: 1;
         }
 
         /* Deck Progress Tracker Section */
@@ -994,10 +1032,8 @@
         <div class="nav-header" style="position: relative;">
             <h2>🔥 Top Verbs</h2>
             <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px;">50 Verbs per Deck</div>
-            <div class="header-collapse-container" style="display: flex; gap: 6px; position: absolute; right: 12px; top: 18px;">
-                <button class="sidebar-toggle-desktop-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar Collapse">↔️</button>
-                <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
-            </div>
+            <button class="sidebar-toggle-desktop-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar Collapse">↔️</button>
+            <button id="sidebar-close-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Close menu">✕</button>
         </div>
 
         <!-- Auth Section -->
@@ -1041,7 +1077,7 @@
     <div id="sidebar-overlay" onclick="window.verbsEngine.toggleSidebar(event)"></div>
 
     <main id="main-content">
-        <!-- Header Topbar (Sticky Pinned to Top) -->
+        <!-- Header Topbar -->
         <header id="topbar">
             <button id="mobile-menu-btn" class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)">☰</button>
             <div class="progress-container">
