@@ -25,19 +25,66 @@
             z-index: 100;
         }
 
-        /* Clean Topbar Header */
+        /* Sticky Compact Topbar Header */
         #topbar {
+            position: sticky;
+            top: 0;
+            z-index: 90;
             background: var(--surface);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
-            padding: 12px 20px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
             width: 100%;
             box-sizing: border-box;
-            z-index: 10;
+            height: 52px;
+        }
+
+        /* Mobile specific topbar adjustments */
+        @media (max-width: 768px) {
+            #topbar {
+                padding: 6px 12px !important;
+                height: 48px !important; /* Ultra-compact 48px sticky header */
+                gap: 8px !important;
+            }
+
+            #topbar .progress-container {
+                margin: 0 6px !important;
+                max-width: 100% !important;
+                flex: 1 !important;
+            }
+
+            #topbar #progress-label {
+                display: none !important; /* Hide long label on small phone screens */
+            }
+
+            #topbar #overall-progress-text {
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
+            }
+
+            #topbar .progress-bar-bg {
+                height: 6px !important;
+                margin-top: 2px !important;
+            }
+
+            #topbar #sync-status,
+            #topbar .topbar-desktop-toggle {
+                display: none !important; /* Keep 1 clean row on mobile topbar */
+            }
+
+            #topbar #theme-btn {
+                padding: 6px 10px !important;
+                font-size: 0.85rem !important;
+            }
+
+            #topbar #mobile-menu-btn {
+                padding: 6px 10px !important;
+                font-size: 0.95rem !important;
+            }
         }
 
         /* Clean Sidebar Buttons Separation (Desktop vs Mobile) */
@@ -1089,11 +1136,11 @@
                     <div id="overall-progress-fill" class="progress-bar-fill"></div>
                 </div>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <div id="sync-status" style="font-size: 0.78rem; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: var(--surface-hover); border: 1px solid var(--border);">
+            <div class="topbar-right-group" style="display: flex; gap: 8px; align-items: center;">
+                <div id="sync-status" class="sync-status-badge" style="font-size: 0.78rem; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: var(--surface-hover); border: 1px solid var(--border);">
                     💾 Local Mode
                 </div>
-                <button class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar">↔️</button>
+                <button class="topbar-btn topbar-desktop-toggle" onclick="window.verbsEngine.toggleSidebar(event)" title="Toggle Sidebar">↔️</button>
                 <button class="topbar-btn" onclick="window.verbsEngine.toggleDarkMode()" id="theme-btn" title="Toggle Theme">🌙</button>
             </div>
         </header>
