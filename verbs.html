@@ -25,7 +25,7 @@
             z-index: 100;
         }
 
-        /* Sticky Compact Topbar Header */
+        /* Sticky Topbar Header */
         #topbar {
             position: sticky;
             top: 0;
@@ -33,21 +33,22 @@
             background: var(--surface);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
-            padding: 10px 20px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
             width: 100%;
             box-sizing: border-box;
-            height: 52px;
+            min-height: 56px;
         }
 
         /* Mobile specific topbar adjustments */
         @media (max-width: 768px) {
             #topbar {
-                padding: 6px 12px !important;
-                height: 48px !important; /* Ultra-compact 48px sticky header */
+                padding: 10px 14px !important;
+                min-height: 54px !important;
+                height: auto !important;
                 gap: 8px !important;
             }
 
@@ -58,22 +59,28 @@
             }
 
             #topbar #progress-label {
-                display: none !important; /* Hide long label on small phone screens */
+                font-size: 0.72rem !important;
+                color: var(--text-muted) !important;
+                display: inline !important;
             }
 
             #topbar #overall-progress-text {
-                font-size: 0.72rem !important;
+                font-size: 0.76rem !important;
                 font-weight: 700 !important;
             }
 
             #topbar .progress-bar-bg {
-                height: 6px !important;
-                margin-top: 2px !important;
+                height: 8px !important;
+                margin-top: 3px !important;
             }
 
-            #topbar #sync-status,
+            #topbar #sync-status {
+                font-size: 0.7rem !important;
+                padding: 3px 8px !important;
+            }
+
             #topbar .topbar-desktop-toggle {
-                display: none !important; /* Keep 1 clean row on mobile topbar */
+                display: none !important;
             }
 
             #topbar #theme-btn {
@@ -1023,8 +1030,7 @@
 
             .table-container table, 
             .table-container tbody, 
-            .table-container tr, 
-            .table-container td {
+            .table-container tr {
                 display: block;
                 width: 100%;
             }
@@ -1040,7 +1046,12 @@
                 background: var(--surface);
             }
 
+            /* FORCE TABLE CELLS TO FULL WIDTH ON MOBILE (Overriding inline style="width:XX%") */
             .table-container td {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
                 padding: 4px 0 !important;
                 border-bottom: none !important;
             }
@@ -1251,10 +1262,10 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 20%;">GERMAN VERB <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
-                                <th style="width: 18%;">TRANSLATION</th>
-                                <th style="width: 31%;">EXAMPLE SENTENCE GERMAN</th>
-                                <th style="width: 31%;">ENGLISH TRANSLATION</th>
+                                <th>GERMAN VERB <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
+                                <th>TRANSLATION</th>
+                                <th>EXAMPLE SENTENCE GERMAN</th>
+                                <th>ENGLISH TRANSLATION</th>
                             </tr>
                         </thead>
                         <tbody id="verbs-table-tbody">
