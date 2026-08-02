@@ -25,7 +25,7 @@ test.describe('Top German Verbs Mastery E2E Suite (Card Recycling & Custom Auto-
     const viewGlossary = page.locator('#view-glossary');
     await expect(viewGlossary).toBeVisible();
 
-    const exSentenceText = page.locator('.verb-inline-example-box .ex-sentence-span').first();
+    const exSentenceText = page.locator('.ex-sentence-span').first();
     await expect(exSentenceText).toBeVisible();
     await exSentenceText.click();
   });
@@ -34,9 +34,12 @@ test.describe('Top German Verbs Mastery E2E Suite (Card Recycling & Custom Auto-
     const viewGlossary = page.locator('#view-glossary');
     await expect(viewGlossary).toBeVisible();
 
+    const gearBtn = page.locator('#btn-toggle-audio-settings');
+    await gearBtn.click();
+
     // Select 2x per word
     const repeatSelect = page.locator('#auto-repeat-count');
-    await repeatSelect.selectOption('2');
+    await repeatSelect.selectOption('3');
 
     // Select 1st Example Only
     const exampleSelect = page.locator('#auto-example-mode');
@@ -80,4 +83,16 @@ test.describe('Top German Verbs Mastery E2E Suite (Card Recycling & Custom Auto-
     await expect(targetRow).toHaveClass(/highlighted-speech/);
   });
 
+  test('should toggle Favorites Only mode in Flashcards view', async ({ page }) => {
+    const fcBtn = page.locator('button:has-text("Flashcards")');
+    await fcBtn.click();
+
+    const favOnlyBtn = page.locator('#fav-only-btn');
+    await expect(favOnlyBtn).toBeVisible();
+    await favOnlyBtn.click();
+
+    await expect(favOnlyBtn).toHaveText(/Favorites Only: ON/);
+  });
+
 });
+

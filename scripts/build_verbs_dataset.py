@@ -256,7 +256,9 @@ def main():
     notes = cursor.fetchall()
     print(f"Extracted ALL {len(notes)} raw verb notes from Anki database.")
 
+    seen_infinitives = set()
     raw_verbs = []
+
     for idx, note in enumerate(notes):
         flds = note[2].split('\x1f')
         raw_front = clean_html(flds[0])
@@ -270,12 +272,19 @@ def main():
         back_lines = [l.strip() for l in clean_back.split('\n') if l.strip()]
         meaning = back_lines[0] if len(back_lines) > 0 else ''
 
+        inf_lower = infinitive.lower()
+
+        # Skip explicit duplicate notes or repeated infinitives
+        if inf_lower in seen_infinitives or 'duplicate entry' in meaning.lower():
+            continue
+
+        seen_infinitives.add(inf_lower)
+
         ex_struct = parse_examples_structured(raw_back)
         pref_info = detect_prefix_info(infinitive, meaning)
         pres_3rd, past_3rd, participle, auxiliary = parse_verb_forms(forms_raw, infinitive)
         conj = generate_conjugations(infinitive, pres_3rd, past_3rd, participle, auxiliary, pref_info)
 
-        inf_lower = infinitive.lower()
         zipf = zipf_frequency(inf_lower, 'de')
         score = zipf
 
@@ -301,7 +310,7 @@ def main():
             'score': score
         })
 
-    # Sort ALL 1796 verbs descending by score (NO DELETIONS - rare ones go to the very end!)
+    # Sort UNIQUE verbs descending by score
     raw_verbs.sort(key=lambda x: x['score'], reverse=True)
 
     # Group into 50-verb decks
@@ -369,7 +378,7 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(final_payload, f, ensure_ascii=False, indent=2)
 
-    print(f"SUCCESS: Exported {total} verbs across {deck_count} decks to {output_file}.")
+    print(f"SUCCESS: Exported {total} UNIQUE verbs across {deck_count} decks to {output_file}.")
 
 if __name__ == '__main__':
     main()

@@ -19,44 +19,65 @@
         }
 
         #sidebar {
-            transition: width 0.3s ease, padding 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease;
+            z-index: 100;
         }
 
-        /* Clean & Sleek Collapsed Sidebar */
-        body.sidebar-collapsed #sidebar {
-            width: 70px;
-            min-width: 70px;
-            padding: 15px 6px;
-            align-items: center;
+        /* Sticky Topbar Header - Stays pinned at top on all screens */
+        #topbar {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
         }
 
-        body.sidebar-collapsed #sidebar .nav-header {
-            padding: 10px 4px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            width: 100%;
-        }
+        /* Clean Collapsed Sidebar with Icons on Desktop */
+        @media (min-width: 769px) {
+            body.sidebar-collapsed #sidebar {
+                width: 64px;
+                min-width: 64px;
+                padding: 15px 6px;
+                align-items: center;
+                overflow: hidden;
+            }
 
-        body.sidebar-collapsed #sidebar .nav-header h2,
-        body.sidebar-collapsed #sidebar .nav-header div,
-        body.sidebar-collapsed #sidebar .nav-item span,
-        body.sidebar-collapsed #sidebar .nav-section-title,
-        body.sidebar-collapsed #sidebar #sidebar-close-btn,
-        body.sidebar-collapsed #sidebar #auth-section {
-            display: none !important;
-        }
+            body.sidebar-collapsed #sidebar .nav-header {
+                padding: 10px 4px;
+                text-align: center;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                width: 100%;
+            }
 
-        body.sidebar-collapsed #sidebar .nav-header .header-collapse-container {
-            position: static !important;
-            justify-content: center;
-        }
+            body.sidebar-collapsed #sidebar .nav-header h2,
+            body.sidebar-collapsed #sidebar .nav-header div:not(.header-collapse-container),
+            body.sidebar-collapsed #sidebar .nav-text,
+            body.sidebar-collapsed #sidebar .nav-section-title,
+            body.sidebar-collapsed #sidebar #sidebar-close-btn,
+            body.sidebar-collapsed #sidebar #auth-section {
+                display: none !important;
+            }
 
-        body.sidebar-collapsed #sidebar .nav-item {
-            justify-content: center;
-            padding: 12px 0;
-            text-align: center;
-            width: 100%;
-            border-radius: 10px;
+            body.sidebar-collapsed #sidebar .nav-header .header-collapse-container {
+                position: static !important;
+                justify-content: center;
+                width: 100%;
+            }
+
+            body.sidebar-collapsed #sidebar .nav-item {
+                justify-content: center;
+                padding: 12px 0;
+                text-align: center;
+                width: 100%;
+                border-radius: 10px;
+            }
+
+            body.sidebar-collapsed #sidebar .nav-icon {
+                font-size: 1.25rem;
+                display: inline-block;
+                margin: 0 auto;
+            }
         }
 
         .sidebar-toggle-desktop-btn {
@@ -210,63 +231,98 @@
             max-width: 280px;
         }
 
-        /* Inline Example Styling */
-        .meaning-and-example-cell {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .verb-inline-example-box {
-            background: var(--bg);
-            border-left: 3px solid var(--primary);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.86rem;
-            margin-top: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .ex-de-line {
-            color: var(--text-main);
-            font-weight: 400;
-            font-style: normal !important;
-            line-height: 1.45;
-        }
-
-        .ex-en-chip {
-            background: rgba(79, 70, 229, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(79, 70, 229, 0.25);
-            border-radius: 12px;
-            padding: 1px 7px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-left: 4px;
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            transition: all 0.2s ease;
-            vertical-align: middle;
-        }
-
-        .ex-en-chip:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .ex-en-line {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-style: normal !important;
-            line-height: 1.45;
-            margin-left: 4px;
-        }
-
-        /* Table Width Optimization */
+        /* Table Width & Clean 4-Column Layout */
         .table-container table {
             width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-container th {
+            text-align: left;
+            padding: 12px 14px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+            background: var(--surface-hover);
+        }
+
+        .table-container td {
+            padding: 14px;
+            vertical-align: top;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Clickable German Infinitive Verb styling */
+        .verb-infinitive-click {
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.08rem;
+            color: var(--text-main);
+            transition: color 0.2s ease;
+            display: inline-block;
+        }
+
+        .verb-infinitive-click:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* High-contrast Word Meaning Translation */
+        .verb-meaning-sub {
+            font-size: 0.94rem;
+            font-weight: 600;
+            color: #38BDF8; /* High contrast cyan/light blue in dark mode */
+            line-height: 1.45;
+        }
+
+        [data-theme="light"] .verb-meaning-sub {
+            color: #0284C7; /* High contrast rich blue in light mode */
+        }
+
+        .table-ex-de-text {
+            font-size: 0.94rem;
+            line-height: 1.55;
+            color: var(--text-main);
+        }
+
+        /* High-contrast English Example Sentence */
+        .table-ex-en-text {
+            font-size: 0.94rem;
+            line-height: 1.55;
+            color: var(--text-main); /* High contrast legible text */
+            opacity: 0.92;
+        }
+
+        /* Distinct, crisp per-row sentence toggle pill button */
+        .ex-row-toggle-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="light"] .ex-row-toggle-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.18);
+            color: var(--text-main);
+        }
+
+        .ex-row-toggle-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         /* Sleek Row Action Buttons (SVG Play Button Chip & Speaker) */
@@ -322,7 +378,7 @@
             }
         }
 
-        /* Floating Audio Control Pill (Sticky Floating Pause/Resume/Stop Bar) */
+        /* Floating Audio Control Pill */
         .floating-audio-bar {
             position: fixed;
             bottom: 24px;
@@ -400,32 +456,88 @@
             background: var(--danger);
         }
 
-        /* Outline vs Filled Gold Favorite Icon */
+        /* Consistent Favorite Icon size (Un-favorited & Favorited are EXACT same dimensions) */
         .fav-icon-btn {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: filter 0.2s ease, opacity 0.2s ease;
             color: var(--text-muted);
             opacity: 0.6;
             user-select: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 4px;
+            padding: 2px;
             line-height: 1;
-            min-width: 32px;
-            min-height: 32px;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            box-sizing: border-box;
         }
 
         .fav-icon-btn.active {
             opacity: 1;
-            transform: scale(1.15);
-            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.9));
+            transform: none !important; /* Keep exact same size! */
+            font-size: 1.2rem !important; /* Keep exact same size! */
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
         }
 
         .fav-icon-btn:hover {
-            transform: scale(1.2);
             opacity: 1;
+        }
+
+        /* Sleek Flashcard 🇺🇸 EN Toggle Chip Button Styling */
+        .ex-en-chip {
+            background: rgba(79, 70, 229, 0.2) !important;
+            color: #818CF8 !important;
+            border: 1px solid rgba(79, 70, 229, 0.35) !important;
+            border-radius: 12px !important;
+            padding: 3px 10px !important;
+            font-size: 0.76rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            line-height: 1.2 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        [data-theme="light"] .ex-en-chip {
+            background: rgba(79, 70, 229, 0.12) !important;
+            color: var(--primary) !important;
+        }
+
+        .ex-en-chip:hover {
+            background: var(--primary) !important;
+            color: white !important;
+        }
+
+        /* Gear settings drawer button & animation */
+        .gear-btn {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(79, 70, 229, 0.25);
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gear-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .gear-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
         }
 
         /* 3D Flashcard Mechanics & Controls */
@@ -723,8 +835,37 @@
             color: var(--text-muted);
         }
 
-        /* MOBILE MEDIA QUERIES */
+        /* MOBILE MEDIA QUERIES & DRAWER ANIMATIONS */
         @media (max-width: 768px) {
+            #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                height: 100% !important;
+                width: 280px !important;
+                transform: translateX(-100%) !important;
+                z-index: 1000 !important;
+                background: var(--surface) !important;
+            }
+
+            #sidebar.open, #sidebar.active {
+                transform: translateX(0) !important;
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5) !important;
+            }
+
+            #sidebar-overlay {
+                display: none;
+                position: fixed !important;
+                inset: 0 !important;
+                background: rgba(0, 0, 0, 0.6) !important;
+                z-index: 999 !important;
+                backdrop-filter: blur(4px) !important;
+            }
+
+            #sidebar-overlay.visible, #sidebar-overlay.active {
+                display: block !important;
+            }
+
             #content-area {
                 padding: 12px 10px !important;
             }
@@ -878,17 +1019,21 @@
         </div>
 
         <a href="index.html" class="nav-item" style="text-decoration: none; color: inherit; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; background-color: rgba(255,255,255,0.05);">
-            <span>🏠 Back to Portal</span>
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Back to Portal</span>
         </a>
         <a href="level.html?level=a1" class="nav-item" style="text-decoration: none; color: inherit;">
-            <span>📘 Menschen A1</span>
+            <span class="nav-icon">📘</span>
+            <span class="nav-text">Menschen A1</span>
         </a>
         <a href="level.html?level=b2" class="nav-item" style="text-decoration: none; color: inherit; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
-            <span>📙 Aspekte B2</span>
+            <span class="nav-icon">📙</span>
+            <span class="nav-text">Aspekte B2</span>
         </a>
         <div class="nav-section-title" style="padding: 10px 20px; font-weight: bold; color: var(--text-muted); border-bottom: 1px solid var(--border);">MODULES</div>
         <div class="nav-item active">
-            <span>🔥 Top Verbs Mastery</span>
+            <span class="nav-icon">🔥</span>
+            <span class="nav-text">Top Verbs Mastery</span>
         </div>
     </nav>
 
@@ -896,7 +1041,7 @@
     <div id="sidebar-overlay" onclick="window.verbsEngine.toggleSidebar(event)"></div>
 
     <main id="main-content">
-        <!-- Header Topbar -->
+        <!-- Header Topbar (Sticky Pinned to Top) -->
         <header id="topbar">
             <button id="mobile-menu-btn" class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)">☰</button>
             <div class="progress-container">
@@ -950,21 +1095,23 @@
                     </div>
                 </section>
 
-                <!-- Practice Controls & Audio Queue Bar -->
+                <!-- Practice Controls & Audio Queue Bar (Clean Single Row + Gear Settings Drawer) -->
                 <div class="controls-row" style="background: var(--surface); padding: 14px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; width: 100%;">
+                        <!-- Left: Hide & Guess Controls -->
                         <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <span style="font-weight: bold; font-size: 0.85rem;">Hide & Guess:</span>
                             <div class="btn-group" style="gap: 4px;">
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('en')">Hide EN</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('de')">Hide DE</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('mixed')">Mix</button>
-                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleExamples()">Examples</button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" id="btn-toggle-examples" onclick="window.verbsEngine.toggleTableExamples()">💬 Show All Sentences (OFF)</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.revealAllTable()">Reveal</button>
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 6px; align-items: center; width: 100%; justify-content: flex-end; margin-top: 4px;">
+                        <!-- Right: Audio Execution & Gear Settings Button -->
+                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
                             <button class="btn btn-primary" id="btn-play-all-words" onclick="window.verbsEngine.playAllVerbsAudio()" style="display: flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 0.85rem;">
                                 <span>▶️</span> Auto Play Audio
                             </button>
@@ -974,11 +1121,14 @@
                             <button class="btn" id="btn-stop-words" onclick="window.verbsEngine.stopAudioQueue()" style="display: flex; align-items: center; gap: 6px; padding: 7px 12px; font-size: 0.85rem;">
                                 <span>⏹️</span> Stop
                             </button>
+                            <button class="gear-btn" id="btn-toggle-audio-settings" onclick="window.verbsEngine.toggleAudioSettingsDrawer()" title="Audio Settings">
+                                ⚙️ <span style="font-size:0.78rem;">Audio Settings</span>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Custom Auto-Play Audio Settings Row -->
-                    <div class="auto-play-settings-row" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--border);">
+                    <!-- Collapsible Audio Settings Drawer (Opened via Gear Icon) -->
+                    <div id="audio-settings-drawer" class="auto-play-settings-row hidden" style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--border); background: var(--bg); padding: 12px; border-radius: 10px;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <label for="auto-repeat-count" style="font-size: 0.82rem; font-weight: 600;">🔄 Repeat:</label>
                             <select id="auto-repeat-count" class="filter-select" style="padding: 4px 8px; font-size: 0.82rem;">
@@ -1013,15 +1163,15 @@
                     </div>
                 </div>
 
-                <!-- Glossary Table / Mobile Responsive Touch Cards -->
+                <!-- Clean 4-Column Table (GERMAN VERB, TRANSLATION, EXAMPLE SENTENCE GERMAN, ENGLISH TRANSLATION) -->
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Verb (Infinitive) <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
-                                <th>Translation & Example Sentence</th>
-                                <th>Prefix</th>
-                                <th>Participle & Aux</th>
+                                <th style="width: 20%;">GERMAN VERB <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
+                                <th style="width: 18%;">TRANSLATION</th>
+                                <th style="width: 31%;">EXAMPLE SENTENCE GERMAN</th>
+                                <th style="width: 31%;">ENGLISH TRANSLATION</th>
                             </tr>
                         </thead>
                         <tbody id="verbs-table-tbody">
@@ -1035,13 +1185,14 @@
             <div id="view-flashcard" class="hidden">
                 <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
                     <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.switchMode('glossary')">⬅ Back to List</button>
-                    <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         <span style="font-weight: bold; font-size: 0.85rem;">🎴 Front Card:</span>
                         <select class="filter-select" style="padding: 5px 10px; font-size: 0.82rem;" onchange="window.verbsEngine.setCardDirectionMode(this.value)">
                             <option value="de-to-en">🇩🇪 German (Verb) → 🇺🇸 English</option>
                             <option value="en-to-de">🇺🇸 English (Meaning) → 🇩🇪 German</option>
                             <option value="audio-to-de">🔊 Listening Practice → 🇩🇪 German</option>
                         </select>
+                        <button class="btn" id="fav-only-btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.toggleFlashcardFavOnly()">⭐ Favorites Only: OFF</button>
                     </div>
                     <button class="btn" id="shuffle-btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.toggleShuffle()">🔀 Shuffle: OFF</button>
                 </div>
@@ -1053,7 +1204,7 @@
         </div>
     </main>
 
-    <!-- Floating Audio Practice Control Pill (Shown when Auto-Play is active) -->
+    <!-- Floating Audio Practice Control Pill -->
     <div id="floating-audio-bar" class="floating-audio-bar hidden">
         <div class="fab-content">
             <div class="fab-status-group">

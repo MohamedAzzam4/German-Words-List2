@@ -1,9 +1,14 @@
 /**
  * VerbsEngine
  * Controller for the Top German Verbs Mastery module.
- * Provides full theme parity with level.html, default List/Glossary view,
+ * Provides clean 4-column table view (GERMAN VERB, TRANSLATION, EXAMPLE SENTENCE GERMAN, ENGLISH TRANSLATION),
+ * High-contrast legible text for Word Translation & English Example Sentences,
+ * Inline compact per-row sentence toggle (`+2 ▾` / `▲`) next to German sentence,
+ * Sticky Topbar header pinned at top on all mobile & desktop screens,
+ * Mobile drawer sidebar compatibility with both `.open` & `.active` CSS triggers,
+ * Gear ⚙️ Audio Settings drawer toggle,
+ * Infinitive text click-to-pronounce, Flashcards Favorites-only practice mode,
  * Hide & Guess practice controls (Hide DE/EN/Mix/Examples/Reveal), TTS SpeechQueue,
- * Single-line example layout with individual sentence-click TTS pronunciation, single EN toggle chip per box,
  * 50-verb decks tracker, collapsible sidebar, Flashcard mode with Still Learning queue recycling & outline/filled star favorite toggles,
  * stable verb IDs & progress preservation across dataset re-rankings,
  * Card Direction Mode (DE->EN, EN->DE, Audio->DE),
@@ -47,6 +52,9 @@ class VerbsEngineClass {
         this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
         this.cardDirectionMode = 'de-to-en'; // 'de-to-en', 'en-to-de', 'audio-to-de'
         this.isShuffle = false;
+        this.flashcardFavOnly = false; // Review only favorites in flashcards
+        this.showAllTableExamples = false; // Global toggle
+        this.expandedRowIds = new Set(); // Per-row sentence toggle tracking
         this.hiddenCols = new Set(); // 'de', 'en', 'mixed', 'ex'
         this.isSidebarCollapsed = false;
         this.typeFilter = 'all'; // 'all', 'fav', 'sep', 'irreg'
@@ -374,8 +382,25 @@ class VerbsEngineClass {
             this.isSidebarCollapsed = !this.isSidebarCollapsed;
             body.classList.toggle('sidebar-collapsed', this.isSidebarCollapsed);
         } else {
-            if (sidebar) sidebar.classList.toggle('active');
-            if (overlay) overlay.classList.toggle('active');
+            if (sidebar) {
+                sidebar.classList.toggle('open');
+                sidebar.classList.toggle('active');
+            }
+            if (overlay) {
+                overlay.classList.toggle('visible');
+                overlay.classList.toggle('active');
+            }
+        }
+    }
+
+    toggleAudioSettingsDrawer() {
+        const drawer = document.getElementById('audio-settings-drawer');
+        const btn = document.getElementById('btn-toggle-audio-settings');
+        if (drawer) {
+            drawer.classList.toggle('hidden');
+            if (btn) {
+                btn.classList.toggle('active', !drawer.classList.contains('hidden'));
+            }
         }
     }
 
@@ -384,6 +409,38 @@ class VerbsEngineClass {
         this.isFlipped = false;
         this.showHint = false;
         this.renderCard();
+    }
+
+    toggleFlashcardFavOnly() {
+        this.flashcardFavOnly = !this.flashcardFavOnly;
+        const btn = document.getElementById('fav-only-btn');
+        if (btn) {
+            btn.textContent = `⭐ Favorites Only: ${this.flashcardFavOnly ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('primary', this.flashcardFavOnly);
+        }
+        this.currentIndex = 0;
+        this.isFlipped = false;
+        this.showHint = false;
+        this.renderCard();
+    }
+
+    toggleTableExamples() {
+        this.showAllTableExamples = !this.showAllTableExamples;
+        const btn = document.getElementById('btn-toggle-examples');
+        if (btn) {
+            btn.textContent = `💬 Show All Sentences (${this.showAllTableExamples ? 'ON' : 'OFF'})`;
+            btn.classList.toggle('primary', this.showAllTableExamples);
+        }
+        this.renderTable();
+    }
+
+    toggleRowSentences(verbId) {
+        if (this.expandedRowIds.has(verbId)) {
+            this.expandedRowIds.delete(verbId);
+        } else {
+            this.expandedRowIds.add(verbId);
+        }
+        this.renderTable();
     }
 
     isVerbKnown(w) {
@@ -525,10 +582,15 @@ class VerbsEngineClass {
         const deParts = exDe.split(' | ').map(s => s.trim()).filter(Boolean);
         const enParts = exEn.split(' | ').map(s => s.trim()).filter(Boolean);
 
-        return deParts.map((de, idx) => ({
-            de: de,
-            en: enParts[idx] || ''
-        }));
+        return deParts.map((de, idx) => {
+            let en = enParts[idx] || '';
+            // Strip tense labels like (Präsens), (Präteritum), (Partizip II), (Futur I)
+            en = en.replace(/\s*\((Präsens|Präteritum|Partizip II|Futur I)\)/gi, '').trim();
+            return {
+                de: de,
+                en: en
+            };
+        });
     }
 
     // ── GLOSSARY / LIST VIEW ──
@@ -568,7 +630,7 @@ class VerbsEngineClass {
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No verbs match your current filter</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2.5rem;">No verbs match your current filter</td></tr>`;
             return;
         }
 
@@ -582,12 +644,15 @@ class VerbsEngineClass {
             const hideEX = this.hiddenCols.has('ex');
 
             const examplePairs = this._getExamplePairs(w);
-            const hasEn = examplePairs.some(p => p.en);
+            const isRowExpanded = this.expandedRowIds.has(w.id) || this.showAllTableExamples;
+            const displayPairs = isRowExpanded ? examplePairs : examplePairs.slice(0, 1);
+            const hasMoreSentences = examplePairs.length > 1;
 
             return `
                 <tr data-id="${w.id}" data-array-idx="${arrayIdx}" class="${isKnown ? 'known-row' : ''}">
-                    <td>
-                        <div style="display:flex; align-items:center; gap: 8px;">
+                    <!-- COLUMN 1: GERMAN VERB (Infinitive + 3rd Form + Actions) -->
+                    <td style="width: 20%;">
+                        <div style="display:flex; align-items:flex-start; gap: 8px;">
                             <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
                             <div class="row-action-group">
                                 <button class="row-speak-btn" data-action="speak-text" data-text="${w.infinitive}" title="Pronounce single verb">
@@ -597,52 +662,52 @@ class VerbsEngineClass {
                                     <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                 </button>
                             </div>
-                            <div style="flex:1; margin-left: 4px;">
-                                <span class="${hideDE ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight:700;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.infinitive)}</span>
+                            <div style="flex:1; margin-left: 2px;">
+                                <span class="verb-infinitive-click ${hideDE ? 'hidden-word' : ''} hideable" onclick="if(this.classList.contains('hidden-word')){this.classList.remove('hidden-word');}else{window.verbsEngine.speakText('${w.infinitive}');}" title="Click verb text to pronounce">${sanitize(w.infinitive)}</span>
                                 <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <div class="meaning-and-example-cell">
-                            <div style="display:flex; align-items:center; gap: 8px;">
-                                <span class="${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer; font-weight: 600; font-size: 1.05rem;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${sanitize(w.meaning)}</span>
-                                ${isKnown ? '<span style="color:var(--success);" title="Known">✓</span>' : ''}
-                            </div>
-                            
-                            <!-- Inline Example Box -->
-                            ${examplePairs.length > 0 ? `
-                                <div class="verb-inline-example-box">
-                                    <div class="ex-de-line" style="display:flex; align-items:center; gap: 4px; flex-wrap: wrap;">
-                                        💬 ${examplePairs.map((pair, idx) => {
-                                            const safeDe = pair.de.replace(/"/g, '&quot;');
-                                            return `
-                                                <span class="${hideEX ? 'hidden-word' : ''} hideable ex-sentence-span" style="cursor:pointer;" onclick="if(this.classList.contains('hidden-word')){this.classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
-                                                    ${sanitize(pair.de)}
-                                                </span>
-                                                ${idx < examplePairs.length - 1 ? '<span style="color:var(--text-muted); opacity:0.4; margin: 0 4px;">|</span>' : ''}
-                                            `;
-                                        }).join('')}
-                                    </div>
 
-                                    ${hasEn ? `
-                                        <div style="margin-top: 6px;">
-                                            <button class="ex-en-chip" onclick="event.stopPropagation(); this.closest('.verb-inline-example-box').querySelector('.ex-en-line').classList.toggle('hidden');" title="Toggle English Example Translations">
-                                                🇺🇸 EN
-                                            </button>
-                                            <div class="ex-en-line hidden ${hideEN ? 'hidden-word' : ''} hideable" style="margin-top: 4px; font-size: 0.82rem; color: var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')">
-                                                (${sanitize(examplePairs.map(p => p.en).filter(Boolean).join(' | '))})
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            ` : ''}
+                    <!-- COLUMN 2: TRANSLATION (Word Meaning Translation with High Contrast) -->
+                    <td style="width: 18%;">
+                        <div class="verb-meaning-sub ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">
+                            ${sanitize(w.meaning)}
+                            ${isKnown ? '<span style="color:var(--success); font-weight:bold; margin-left:4px;" title="Known">✓</span>' : ''}
                         </div>
                     </td>
-                    <td><span class="type-badge">${w.prefixInfo.prefix || 'Base'}</span></td>
-                    <td>
-                        <div style="font-size:0.85rem;"><strong>Participle:</strong> ${w.conjugation.participle}</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted);"><strong>Aux:</strong> ${w.conjugation.auxiliary}</div>
+
+                    <!-- COLUMN 3: EXAMPLE SENTENCE GERMAN (Inline sentence + per-row toggle button on same line) -->
+                    <td style="width: 31%;">
+                        <div class="table-ex-de-text ${hideEX ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
+                            ${displayPairs.length > 0 ? displayPairs.map((pair, pIdx) => {
+                                const safeDe = pair.de.replace(/"/g, '&quot;');
+                                const isFirst = pIdx === 0;
+                                return `
+                                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span>💬 <span class="ex-sentence-span" style="cursor:pointer;" onclick="if(this.closest('.hideable').classList.contains('hidden-word')){this.closest('.hideable').classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
+                                            ${sanitize(pair.de)}
+                                        </span></span>
+                                        ${(isFirst && hasMoreSentences) ? `
+                                            <button class="ex-row-toggle-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleRowSentences('${w.id}');" title="Toggle extra sentences">
+                                                ${isRowExpanded ? '▲ Hide' : `+${examplePairs.length - 1} ▾`}
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('') : '<span style="color:var(--text-muted); opacity:0.6;">No example</span>'}
+                        </div>
+                    </td>
+
+                    <!-- COLUMN 4: ENGLISH TRANSLATION (Clean English sentences without (Präsens) labels) -->
+                    <td style="width: 31%;">
+                        <div class="table-ex-en-text ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
+                            ${displayPairs.length > 0 ? displayPairs.map(pair => `
+                                <div style="margin-bottom: 4px;">
+                                    ${pair.en ? sanitize(pair.en) : '<span style="opacity:0.5;">—</span>'}
+                                </div>
+                            `).join('') : '<span style="color:var(--text-muted); opacity:0.6;">—</span>'}
+                        </div>
                     </td>
                 </tr>
             `;
@@ -804,7 +869,28 @@ class VerbsEngineClass {
         const cardContainer = document.getElementById('verbs-card-working-area');
         if (!cardContainer || this.queue.length === 0) return;
 
-        const verb = this.queue[this.currentIndex];
+        let activeQueue = this.queue;
+        if (this.flashcardFavOnly) {
+            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
+        }
+
+        if (activeQueue.length === 0) {
+            cardContainer.innerHTML = `
+                <div style="text-align: center; padding: 3rem 1.5rem; background: var(--surface); border: 1px dashed var(--border); border-radius: 20px; color: var(--text-main);">
+                    <div style="font-size: 3rem; margin-bottom: 0.8rem;">⭐</div>
+                    <h3 style="margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif;">No Favorite Verbs in this Deck</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 400px; margin: 0 auto 1.2rem;">Star (⭐) some verbs in the list view to practice them here!</p>
+                    <button class="btn primary" onclick="window.verbsEngine.toggleFlashcardFavOnly()">Show All Verbs</button>
+                </div>
+            `;
+            return;
+        }
+
+        if (this.currentIndex >= activeQueue.length) {
+            this.currentIndex = 0;
+        }
+
+        const verb = activeQueue[this.currentIndex];
         const isFav = this.isVerbFavorite(verb);
         const isKnown = this.isVerbKnown(verb);
 
@@ -994,8 +1080,8 @@ class VerbsEngineClass {
 
             <div class="verb-card-nav">
                 <button class="btn" data-action="prev-card" ${this.currentIndex === 0 ? 'disabled' : ''}>◀ Prev</button>
-                <span class="verb-counter-text">${this.currentIndex + 1} / ${this.queue.length}</span>
-                <button class="btn" data-action="next-card" ${this.currentIndex === this.queue.length - 1 ? 'disabled' : ''}>Next ▶</button>
+                <span class="verb-counter-text">${this.currentIndex + 1} / ${activeQueue.length}</span>
+                <button class="btn" data-action="next-card" ${this.currentIndex === activeQueue.length - 1 ? 'disabled' : ''}>Next ▶</button>
             </div>
         `;
 
@@ -1047,7 +1133,12 @@ class VerbsEngineClass {
     }
 
     nextCard() {
-        if (this.currentIndex < this.queue.length - 1) {
+        let activeQueue = this.queue;
+        if (this.flashcardFavOnly) {
+            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
+        }
+
+        if (this.currentIndex < activeQueue.length - 1) {
             this.currentIndex++;
             this.isFlipped = false;
             this.showHint = false;
@@ -1065,7 +1156,12 @@ class VerbsEngineClass {
     }
 
     markCard(known) {
-        const verb = this.queue[this.currentIndex];
+        let activeQueue = this.queue;
+        if (this.flashcardFavOnly) {
+            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
+        }
+
+        const verb = activeQueue[this.currentIndex];
         if (!verb) return;
 
         const inf = (verb.infinitive || '').toLowerCase();
@@ -1079,8 +1175,11 @@ class VerbsEngineClass {
             this.userData.knownVerbIds = this.userData.knownVerbIds.filter(x => x !== id && x !== verb.infinitive && x !== inf && x !== `v_${inf}`);
 
             if (this.queue.length > 1) {
-                const [unlearnedVerb] = this.queue.splice(this.currentIndex, 1);
-                this.queue.push(unlearnedVerb);
+                const qIdx = this.queue.findIndex(v => v.id === verb.id);
+                if (qIdx > -1) {
+                    const [unlearnedVerb] = this.queue.splice(qIdx, 1);
+                    this.queue.push(unlearnedVerb);
+                }
             }
         }
 
@@ -1104,14 +1203,14 @@ class VerbsEngineClass {
         this.showHint = false;
 
         if (known) {
-            if (this.currentIndex < this.queue.length - 1) {
+            if (this.currentIndex < activeQueue.length - 1) {
                 this.nextCard();
             } else {
                 this.renderCard();
             }
         } else {
-            if (this.currentIndex >= this.queue.length) {
-                this.currentIndex = Math.max(0, this.queue.length - 1);
+            if (this.currentIndex >= activeQueue.length) {
+                this.currentIndex = Math.max(0, activeQueue.length - 1);
             }
             this.renderCard();
         }
@@ -1144,7 +1243,12 @@ class VerbsEngineClass {
     }
 
     speakCurrentCard() {
-        const verb = this.queue[this.currentIndex];
+        let activeQueue = this.queue;
+        if (this.flashcardFavOnly) {
+            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
+        }
+
+        const verb = activeQueue[this.currentIndex];
         if (verb) {
             speak(cleanTextForAudio(verb.infinitive), 'de');
         }
