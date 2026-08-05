@@ -1114,30 +1114,58 @@ class VerbsEngineClass {
                             `;
 
                             if (isExMode) {
+                                const firstPair = examplePairs.length > 0 ? examplePairs[0] : null;
                                 return `
                                     <!-- Priority Example & Full Translation Section -->
                                     <div class="back-example-priority-box" style="background: var(--surface-hover); border: 1.5px solid var(--primary); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px;">
                                         <div style="font-weight: 700; font-size: 0.88rem; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
                                             <span>💬 Example Sentence & Full Translation</span>
-                                            <button class="speak-btn" style="font-size: 1rem;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${(examplePairs[0] ? examplePairs[0].de : verb.infinitive).replace(/"/g, '&quot;')}', 'de')" title="Listen to German Sentence">🔊</button>
+                                            ${firstPair ? `<button class="speak-btn" style="font-size: 1rem;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${firstPair.de.replace(/"/g, '&quot;')}', 'de')" title="Listen to German Sentence">🔊</button>` : ''}
                                         </div>
-                                        ${examplePairs.length > 0 ? examplePairs.map((pair) => {
-                                            const safeDe = pair.de.replace(/"/g, '&quot;');
-                                            return `
-                                                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border);">
-                                                    <div style="font-size: 1.15rem; font-weight: 600; color: var(--text-main); line-height: 1.4; display: flex; align-items: flex-start; gap: 8px;">
-                                                        <span style="font-size: 1.1rem; flex-shrink: 0;">🇩🇪</span>
-                                                        <span class="ex-sentence-span" style="cursor:pointer;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${safeDe}', 'de')" title="Click sentence to pronounce">
-                                                            ${sanitize(pair.de)}
-                                                        </span>
-                                                    </div>
-                                                    <div style="font-size: 1.05rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-top: 6px; display: flex; align-items: flex-start; gap: 8px;">
-                                                        <span style="font-size: 1.1rem; flex-shrink: 0;">🇺🇸</span>
-                                                        <span>${pair.en ? sanitize(pair.en) : '—'}</span>
+                                        ${firstPair ? `
+                                            <!-- Main First Example -->
+                                            <div style="margin-bottom: 6px;">
+                                                <div style="font-size: 1.15rem; font-weight: 600; color: var(--text-main); line-height: 1.4; display: flex; align-items: flex-start; gap: 8px;">
+                                                    <span style="font-size: 1.1rem; flex-shrink: 0;">🇩🇪</span>
+                                                    <span class="ex-sentence-span" style="cursor:pointer;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${firstPair.de.replace(/"/g, '&quot;')}', 'de')" title="Click sentence to pronounce">
+                                                        ${sanitize(firstPair.de)}
+                                                    </span>
+                                                </div>
+                                                <div style="font-size: 1.05rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-top: 6px; display: flex; align-items: flex-start; gap: 8px;">
+                                                    <span style="font-size: 1.1rem; flex-shrink: 0;">🇺🇸</span>
+                                                    <span>${firstPair.en ? sanitize(firstPair.en) : '—'}</span>
+                                                </div>
+                                            </div>
+
+                                            ${examplePairs.length > 1 ? `
+                                                <!-- Toggle for additional examples -->
+                                                <div style="margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px;">
+                                                    <button class="ex-row-toggle-btn" style="padding: 4px 10px; font-size: 0.8rem;" onclick="event.stopPropagation(); const container = this.closest('.back-example-priority-box').querySelector('.extra-card-examples'); container.classList.toggle('hidden'); this.textContent = container.classList.contains('hidden') ? '+${examplePairs.length - 1} More Examples ▾' : '▲ Hide Extra Examples';" title="Toggle additional examples">
+                                                        +${examplePairs.length - 1} More Examples ▾
+                                                    </button>
+
+                                                    <div class="extra-card-examples hidden" style="margin-top: 10px;">
+                                                        ${examplePairs.slice(1).map((pair) => {
+                                                            const safeDe = pair.de.replace(/"/g, '&quot;');
+                                                            return `
+                                                                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border);">
+                                                                    <div style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); line-height: 1.4; display: flex; align-items: flex-start; gap: 8px;">
+                                                                        <span style="font-size: 1rem; flex-shrink: 0;">🇩🇪</span>
+                                                                        <span class="ex-sentence-span" style="cursor:pointer;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${safeDe}', 'de')" title="Click sentence to pronounce">
+                                                                            ${sanitize(pair.de)}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style="font-size: 0.98rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-top: 4px; display: flex; align-items: flex-start; gap: 8px;">
+                                                                        <span style="font-size: 1rem; flex-shrink: 0;">🇺🇸</span>
+                                                                        <span>${pair.en ? sanitize(pair.en) : '—'}</span>
+                                                                    </div>
+                                                                </div>
+                                                            `;
+                                                        }).join('')}
                                                     </div>
                                                 </div>
-                                            `;
-                                        }).join('') : `<div style="color:var(--text-muted); opacity:0.8;">No example sentence available for this verb.</div>`}
+                                            ` : ''}
+                                        ` : `<div style="color:var(--text-muted); opacity:0.8;">No example sentence available for this verb.</div>`}
                                     </div>
 
                                     ${mainVerbRowHTML}
