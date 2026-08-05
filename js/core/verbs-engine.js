@@ -49,6 +49,7 @@ class VerbsEngineClass {
         this.showHint = false;
         this.showConjugations = false;
         this.showOrigins = false;
+        this.showVerbDetails = false;
         this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
         this.cardDirectionMode = 'de-to-en'; // 'de-to-en', 'en-to-de', 'audio-to-de'
         this.isShuffle = false;
@@ -408,6 +409,7 @@ class VerbsEngineClass {
         this.cardDirectionMode = mode;
         this.isFlipped = false;
         this.showHint = false;
+        this.showVerbDetails = false;
         this.renderCard();
     }
 
@@ -1095,52 +1097,108 @@ class VerbsEngineClass {
                         </div>
                     </div>
 
-                    <div class="verb-back-content">
-                        <div class="back-main-row">
-                            <div class="back-field"><span>Infinitive:</span> <strong style="font-size: 1.2rem; color: var(--primary);">${verb.infinitive}</strong></div>
-                            <div class="back-field meaning-field"><span>Meaning:</span> <strong>${verb.meaning}</strong></div>
-                            ${verb.prefixInfo.prefix ? `<div class="back-field"><span>Prefix:</span> <strong>${verb.prefixInfo.prefix}</strong> (separable)</div>` : ''}
-                            <div class="back-field"><span>Participle (Partizip II):</span> <strong>${conj.participle}</strong></div>
-                            <div class="back-field"><span>Auxiliary:</span> <strong>${conj.auxiliary}</strong></div>
-                        </div>
+                        <!-- BACK OF CARD CONTENT -->
+                        ${(() => {
+                            const isExMode = (this.cardDirectionMode === 'ex-de-to-all' || this.cardDirectionMode === 'ex-en-to-all');
 
-                        ${examplePairs.length > 0 ? `
-                            <div class="back-example-box">
-                                <div class="ex-label" style="margin-bottom: 6px;">Example Sentences:</div>
-                                <div class="ex-text" style="margin: 6px 0; line-height: 1.5;">
-                                    💬 ${examplePairs.map((pair, idx) => {
-                                        const safeDe = pair.de.replace(/"/g, '&quot;');
-                                        return `
-                                            <span class="ex-sentence-span" style="cursor:pointer;" onclick="window.verbsEngine.speakText('${safeDe}')" title="Click sentence to pronounce">
-                                                ${sanitize(pair.de)}
-                                            </span>
-                                            ${idx < examplePairs.length - 1 ? '<span style="color:var(--text-muted); opacity:0.4; margin: 0 4px;">|</span>' : ''}
-                                        `;
-                                    }).join('')}
-                                </div>
-
-                                ${hasEn ? `
-                                    <div style="margin-top: 6px;">
-                                        <button class="ex-en-chip" onclick="this.closest('.back-example-box').querySelector('.ex-en-line').classList.toggle('hidden');" title="Toggle English Example Translations">
-                                            🇺🇸 EN
-                                        </button>
-                                        <div class="ex-en-line hidden" style="margin-top: 4px; font-size: 0.88rem; color: var(--text-muted);">
-                                            (${sanitize(examplePairs.map(p => p.en).filter(Boolean).join(' | '))})
-                                        </div>
+                            const mainVerbRowHTML = `
+                                <div class="back-main-row-block ${isExMode && !this.showVerbDetails ? 'hidden' : ''}">
+                                    <div class="back-main-row">
+                                        <div class="back-field"><span>Infinitive:</span> <strong style="font-size: 1.2rem; color: var(--primary);">${verb.infinitive}</strong></div>
+                                        <div class="back-field meaning-field"><span>Meaning:</span> <strong>${verb.meaning}</strong></div>
+                                        ${verb.prefixInfo.prefix ? `<div class="back-field"><span>Prefix:</span> <strong>${verb.prefixInfo.prefix}</strong> (separable)</div>` : ''}
+                                        <div class="back-field"><span>Participle (Partizip II):</span> <strong>${conj.participle}</strong></div>
+                                        <div class="back-field"><span>Auxiliary:</span> <strong>${conj.auxiliary}</strong></div>
                                     </div>
-                                ` : ''}
-                            </div>
-                        ` : ''}
+                                </div>
+                            `;
 
-                        <!-- Accordion Toggles -->
-                        <div class="accordion-toggles-row">
-                            <button class="accordion-btn" id="btn-toggle-orig" data-action="toggle-orig">
-                                🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}
-                            </button>
-                            <button class="accordion-btn" id="btn-toggle-conj" data-action="toggle-conj">
-                                📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}
-                            </button>
-                        </div>
+                            if (isExMode) {
+                                return `
+                                    <!-- Priority Example & Full Translation Section -->
+                                    <div class="back-example-priority-box" style="background: var(--surface-hover); border: 1.5px solid var(--primary); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px;">
+                                        <div style="font-weight: 700; font-size: 0.88rem; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                            <span>💬 Example Sentence & Full Translation</span>
+                                            <button class="speak-btn" style="font-size: 1rem;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${(examplePairs[0] ? examplePairs[0].de : verb.infinitive).replace(/"/g, '&quot;')}', 'de')" title="Listen to German Sentence">🔊</button>
+                                        </div>
+                                        ${examplePairs.length > 0 ? examplePairs.map((pair) => {
+                                            const safeDe = pair.de.replace(/"/g, '&quot;');
+                                            return `
+                                                <div style="margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border);">
+                                                    <div style="font-size: 1.15rem; font-weight: 600; color: var(--text-main); line-height: 1.4; display: flex; align-items: flex-start; gap: 8px;">
+                                                        <span style="font-size: 1.1rem; flex-shrink: 0;">🇩🇪</span>
+                                                        <span class="ex-sentence-span" style="cursor:pointer;" onclick="event.stopPropagation(); window.verbsEngine.speakText('${safeDe}', 'de')" title="Click sentence to pronounce">
+                                                            ${sanitize(pair.de)}
+                                                        </span>
+                                                    </div>
+                                                    <div style="font-size: 1.05rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-top: 6px; display: flex; align-items: flex-start; gap: 8px;">
+                                                        <span style="font-size: 1.1rem; flex-shrink: 0;">🇺🇸</span>
+                                                        <span>${pair.en ? sanitize(pair.en) : '—'}</span>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('') : `<div style="color:var(--text-muted); opacity:0.8;">No example sentence available for this verb.</div>`}
+                                    </div>
+
+                                    ${mainVerbRowHTML}
+
+                                    <!-- Accordion Toggles -->
+                                    <div class="accordion-toggles-row">
+                                        <button class="accordion-btn" id="btn-toggle-verb-details" data-action="toggle-verb-details">
+                                            🔍 ${this.showVerbDetails ? 'Hide Verb Details' : `Show Verb Details (${verb.infinitive} — ${verb.meaning})`}
+                                        </button>
+                                        <button class="accordion-btn" id="btn-toggle-orig" data-action="toggle-orig">
+                                            🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}
+                                        </button>
+                                        <button class="accordion-btn" id="btn-toggle-conj" data-action="toggle-conj">
+                                            📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}
+                                        </button>
+                                    </div>
+                                `;
+                            } else {
+                                return `
+                                    ${mainVerbRowHTML}
+
+                                    ${examplePairs.length > 0 ? `
+                                        <div class="back-example-box">
+                                            <div class="ex-label" style="margin-bottom: 6px;">Example Sentences:</div>
+                                            <div class="ex-text" style="margin: 6px 0; line-height: 1.5;">
+                                                💬 ${examplePairs.map((pair, idx) => {
+                                                    const safeDe = pair.de.replace(/"/g, '&quot;');
+                                                    return `
+                                                        <span class="ex-sentence-span" style="cursor:pointer;" onclick="window.verbsEngine.speakText('${safeDe}')" title="Click sentence to pronounce">
+                                                            ${sanitize(pair.de)}
+                                                        </span>
+                                                        ${idx < examplePairs.length - 1 ? '<span style="color:var(--text-muted); opacity:0.4; margin: 0 4px;">|</span>' : ''}
+                                                    `;
+                                                }).join('')}
+                                            </div>
+
+                                            ${hasEn ? `
+                                                <div style="margin-top: 6px;">
+                                                    <button class="ex-en-chip" onclick="this.closest('.back-example-box').querySelector('.ex-en-line').classList.toggle('hidden');" title="Toggle English Example Translations">
+                                                        🇺🇸 EN
+                                                    </button>
+                                                    <div class="ex-en-line hidden" style="margin-top: 4px; font-size: 0.88rem; color: var(--text-muted);">
+                                                        (${sanitize(examplePairs.map(p => p.en).filter(Boolean).join(' | '))})
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- Accordion Toggles -->
+                                    <div class="accordion-toggles-row">
+                                        <button class="accordion-btn" id="btn-toggle-orig" data-action="toggle-orig">
+                                            🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}
+                                        </button>
+                                        <button class="accordion-btn" id="btn-toggle-conj" data-action="toggle-conj">
+                                            📊 ${this.showConjugations ? 'Hide Conjugation Tables' : 'View Conjugation Tables'}
+                                        </button>
+                                    </div>
+                                `;
+                            }
+                        })()}
 
                         ${originsHTML}
                         ${conjTableHTML}
@@ -1209,6 +1267,18 @@ class VerbsEngineClass {
         }
         if (btn) {
             btn.innerHTML = `🧠 ${this.showOrigins ? 'Hide Verb Origins & Prefix Logic' : 'View Verb Origins & Prefix Logic'}`;
+        }
+    }
+
+    toggleVerbDetails() {
+        this.showVerbDetails = !this.showVerbDetails;
+        const block = document.querySelector('.back-main-row-block');
+        const btn = document.querySelector('#btn-toggle-verb-details');
+        if (block) {
+            block.classList.toggle('hidden', !this.showVerbDetails);
+        }
+        if (btn) {
+            btn.innerHTML = `🔍 ${this.showVerbDetails ? 'Hide Verb Details' : 'Show Verb Details'}`;
         }
     }
 
@@ -1418,6 +1488,7 @@ class VerbsEngineClass {
             if (action === 'toggle-hint') this.toggleHint();
             else if (action === 'toggle-conj') this.toggleConjugations();
             else if (action === 'toggle-orig') this.toggleOrigins();
+            else if (action === 'toggle-verb-details') this.toggleVerbDetails();
             else if (action === 'speak') this.speakCurrentCard();
             else if (action === 'speak-text') this.speakText(actionBtn.dataset.text, 'de');
             else if (action === 'play-from-row') {
