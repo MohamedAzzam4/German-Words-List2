@@ -444,6 +444,36 @@ th {
     visibility: hidden;
 }
 
+/* Deck section separator (every 10 verbs) */
+.deck-section-separator td {
+    padding: 4px 0 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.deck-separator-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.35;
+}
+
+.deck-separator-line::before,
+.deck-separator-line::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.deck-separator-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
 /* Flashcard View */
 .flashcard-container {
     display: flex;

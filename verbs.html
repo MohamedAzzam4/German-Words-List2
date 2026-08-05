@@ -8,16 +8,20 @@
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="css/core.css">
     <style>
-        /* Page layout & scrolling */
-        body {
-            display: flex;
-            min-height: 100vh;
+        /* Robust App Viewport & Fixed Header Layout */
+        html, body {
+            height: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             background-color: var(--bg);
             color: var(--text-main);
             transition: all 0.3s ease;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
+        }
+
+        body {
+            display: flex;
         }
 
         #sidebar {
@@ -25,11 +29,21 @@
             z-index: 100;
         }
 
-        /* Sticky Topbar Header */
+        /* Main Content Viewport Container */
+        #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh; /* Dynamic Viewport Height for mobile browsers */
+            min-width: 0;
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Fixed Topbar Header (Flex-shrink: 0, 100% visible on all screen sizes) */
         #topbar {
-            position: sticky;
-            top: 0;
-            z-index: 90;
             background: var(--surface);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
@@ -40,57 +54,63 @@
             flex-shrink: 0;
             width: 100%;
             box-sizing: border-box;
-            min-height: 56px;
+            z-index: 10;
         }
 
-        /* Mobile specific topbar adjustments */
+        /* Main Scrollable Content Area */
+        #content-area {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
+            padding: 20px 28px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Responsive Topbar for All Mobile Devices */
         @media (max-width: 768px) {
             #topbar {
-                padding: 10px 14px !important;
-                min-height: 54px !important;
-                height: auto !important;
+                padding: 8px 12px !important;
                 gap: 8px !important;
             }
 
             #topbar .progress-container {
-                margin: 0 6px !important;
+                margin: 0 4px !important;
                 max-width: 100% !important;
                 flex: 1 !important;
             }
 
             #topbar #progress-label {
-                font-size: 0.72rem !important;
-                color: var(--text-muted) !important;
-                display: inline !important;
+                display: none !important; /* Hide label on small mobile screens to prevent text crowding */
             }
 
             #topbar #overall-progress-text {
                 font-size: 0.76rem !important;
                 font-weight: 700 !important;
+                white-space: nowrap;
             }
 
             #topbar .progress-bar-bg {
-                height: 8px !important;
-                margin-top: 3px !important;
+                height: 6px !important;
+                margin-top: 2px !important;
             }
 
             #topbar #sync-status {
-                font-size: 0.7rem !important;
-                padding: 3px 8px !important;
+                font-size: 0.68rem !important;
+                padding: 2px 6px !important;
+                white-space: nowrap;
             }
 
             #topbar .topbar-desktop-toggle {
                 display: none !important;
             }
 
-            #topbar #theme-btn {
-                padding: 6px 10px !important;
+            #topbar #theme-btn, #topbar #mobile-menu-btn {
+                padding: 5px 8px !important;
                 font-size: 0.85rem !important;
-            }
-
-            #topbar #mobile-menu-btn {
-                padding: 6px 10px !important;
-                font-size: 0.95rem !important;
+                flex-shrink: 0;
             }
         }
 
@@ -187,25 +207,6 @@
                 padding: 0 !important;
                 z-index: 10;
             }
-        }
-
-        #main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        /* Wide Content Container */
-        #content-area {
-            padding: 20px 28px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-            flex: 1;
         }
 
         /* Deck Progress Tracker Section */
@@ -417,7 +418,7 @@
             border-color: var(--primary);
         }
 
-        /* Sleek Row Action Buttons (SVG Play Button Chip & Speaker) */
+        /* Sleek Row Action Buttons (SVG Play Button Chip) */
         .row-action-group {
             display: inline-flex;
             align-items: center;
@@ -444,12 +445,6 @@
             color: white;
             transform: scale(1.12);
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
-        }
-
-        .row-speak-btn:hover {
-            background: rgba(79, 70, 229, 0.22);
-            color: var(--primary);
-            transform: scale(1.12);
         }
 
         /* Sleek Animated Highlight for Pronounced Row */
@@ -548,7 +543,7 @@
             background: var(--danger);
         }
 
-        /* Consistent Favorite Icon size (Un-favorited & Favorited are EXACT same dimensions) */
+        /* Consistent Favorite Icon size */
         .fav-icon-btn {
             font-size: 1.2rem;
             cursor: pointer;
@@ -569,8 +564,8 @@
 
         .fav-icon-btn.active {
             opacity: 1;
-            transform: none !important; /* Keep exact same size! */
-            font-size: 1.2rem !important; /* Keep exact same size! */
+            transform: none !important;
+            font-size: 1.2rem !important;
             filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
         }
 
@@ -1046,7 +1041,7 @@
                 background: var(--surface);
             }
 
-            /* FORCE TABLE CELLS TO FULL WIDTH ON MOBILE (Overriding inline style="width:XX%") */
+            /* FORCE TABLE CELLS TO FULL WIDTH ON MOBILE */
             .table-container td {
                 display: block !important;
                 width: 100% !important;
@@ -1139,8 +1134,8 @@
         <header id="topbar">
             <button id="mobile-menu-btn" class="topbar-btn" onclick="window.verbsEngine.toggleSidebar(event)">☰</button>
             <div class="progress-container">
-                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
-                    <span id="progress-label">Overall Verb Progress</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 0.82rem; margin-bottom: 4px;">
+                    <span id="progress-label">Overall Progress</span>
                     <span id="overall-progress-text">0 / 1757 (0%)</span>
                 </div>
                 <div class="progress-bar-bg">
@@ -1199,6 +1194,7 @@
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('en')">Hide EN</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('de')">Hide DE</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.toggleColumn('mixed')">Mix</button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" id="btn-hide-ex-de" onclick="window.verbsEngine.toggleColumn('exde')">Hide Examples</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" id="btn-toggle-examples" onclick="window.verbsEngine.toggleTableExamples()">💬 Show All Sentences (OFF)</button>
                                 <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="window.verbsEngine.revealAllTable()">Reveal</button>
                             </div>
