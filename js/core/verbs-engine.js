@@ -433,16 +433,37 @@ class VerbsEngineClass {
             btn.textContent = `💬 Show All Sentences (${this.showAllTableExamples ? 'ON' : 'OFF'})`;
             btn.classList.toggle('primary', this.showAllTableExamples);
         }
-        this.renderTable();
+
+        document.querySelectorAll('.row-extra-sentences').forEach(el => {
+            el.classList.toggle('hidden', !this.showAllTableExamples);
+        });
+
+        document.querySelectorAll('.ex-row-toggle-btn').forEach(b => {
+            const extraCount = b.dataset.extraCount || '';
+            b.textContent = this.showAllTableExamples ? '▲ Hide' : `+${extraCount} ▾`;
+        });
     }
 
     toggleRowSentences(verbId) {
-        if (this.expandedRowIds.has(verbId)) {
+        const isExpanded = this.expandedRowIds.has(verbId);
+        if (isExpanded) {
             this.expandedRowIds.delete(verbId);
         } else {
             this.expandedRowIds.add(verbId);
         }
-        this.renderTable();
+
+        const nowExpanded = !isExpanded;
+        const tr = document.querySelector(`tr[data-id="${verbId}"]`);
+        if (tr) {
+            tr.querySelectorAll('.row-extra-sentences').forEach(el => {
+                el.classList.toggle('hidden', !nowExpanded);
+            });
+            const btn = tr.querySelector('.ex-row-toggle-btn');
+            if (btn) {
+                const extraCount = btn.dataset.extraCount || '';
+                btn.textContent = nowExpanded ? '▲ Hide' : `+${extraCount} ▾`;
+            }
+        }
     }
 
     isVerbKnown(w) {
@@ -719,33 +740,58 @@ class VerbsEngineClass {
                         <!-- COLUMN 3: EXAMPLE SENTENCE GERMAN -->
                         <td style="width: 31%;">
                             <div class="table-ex-de-text ${(hideEX || hideExDE) ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
-                                ${displayPairs.length > 0 ? displayPairs.map((pair, pIdx) => {
-                                    const safeDe = pair.de.replace(/"/g, '&quot;');
-                                    const isFirst = pIdx === 0;
-                                    return `
-                                        <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                            <span>💬 <span class="ex-sentence-span" style="cursor:pointer;" onclick="if(this.closest('.hideable').classList.contains('hidden-word')){this.closest('.hideable').classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
-                                                ${sanitize(pair.de)}
-                                            </span></span>
-                                            ${(isFirst && hasMoreSentences) ? `
-                                                <button class="ex-row-toggle-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleRowSentences('${w.id}');" title="Toggle extra sentences">
-                                                    ${isRowExpanded ? '▲ Hide' : `+${examplePairs.length - 1} ▾`}
-                                                </button>
-                                            ` : ''}
+                                ${examplePairs.length > 0 ? `
+                                    <!-- Primary First Sentence -->
+                                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span>💬 <span class="ex-sentence-span" style="cursor:pointer;" onclick="if(this.closest('.hideable').classList.contains('hidden-word')){this.closest('.hideable').classList.remove('hidden-word');}else{window.verbsEngine.speakText('${examplePairs[0].de.replace(/"/g, '&quot;')}');}" title="Click sentence to pronounce">
+                                            ${sanitize(examplePairs[0].de)}
+                                        </span></span>
+                                        ${hasMoreSentences ? `
+                                            <button class="ex-row-toggle-btn" data-extra-count="${examplePairs.length - 1}" onclick="event.stopPropagation(); window.verbsEngine.toggleRowSentences('${w.id}');" title="Toggle extra sentences">
+                                                ${isRowExpanded ? '▲ Hide' : `+${examplePairs.length - 1} ▾`}
+                                            </button>
+                                        ` : ''}
+                                    </div>
+
+                                    <!-- Extra Sentences (In-place DOM toggleable) -->
+                                    ${hasMoreSentences ? `
+                                        <div class="row-extra-sentences ${isRowExpanded ? '' : 'hidden'}">
+                                            ${examplePairs.slice(1).map(pair => {
+                                                const safeDe = pair.de.replace(/"/g, '&quot;');
+                                                return `
+                                                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                                        <span>💬 <span class="ex-sentence-span" style="cursor:pointer;" onclick="if(this.closest('.hideable').classList.contains('hidden-word')){this.closest('.hideable').classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
+                                                            ${sanitize(pair.de)}
+                                                        </span></span>
+                                                    </div>
+                                                `;
+                                            }).join('')}
                                         </div>
-                                    `;
-                                }).join('') : '<span style="color:var(--text-muted); opacity:0.6;">No example</span>'}
+                                    ` : ''}
+                                ` : '<span style="color:var(--text-muted); opacity:0.6;">No example</span>'}
                             </div>
                         </td>
 
                         <!-- COLUMN 4: ENGLISH TRANSLATION -->
                         <td style="width: 31%;">
                             <div class="table-ex-en-text ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
-                                ${displayPairs.length > 0 ? displayPairs.map(pair => `
+                                ${examplePairs.length > 0 ? `
+                                    <!-- Primary First Sentence Translation -->
                                     <div style="margin-bottom: 4px;">
-                                        ${pair.en ? sanitize(pair.en) : '<span style="opacity:0.5;">—</span>'}
+                                        ${examplePairs[0].en ? sanitize(examplePairs[0].en) : '<span style="opacity:0.5;">—</span>'}
                                     </div>
-                                `).join('') : '<span style="color:var(--text-muted); opacity:0.6;">—</span>'}
+
+                                    <!-- Extra Sentence Translations (In-place DOM toggleable) -->
+                                    ${hasMoreSentences ? `
+                                        <div class="row-extra-sentences ${isRowExpanded ? '' : 'hidden'}">
+                                            ${examplePairs.slice(1).map(pair => `
+                                                <div style="margin-bottom: 4px;">
+                                                    ${pair.en ? sanitize(pair.en) : '<span style="opacity:0.5;">—</span>'}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                ` : '<span style="color:var(--text-muted); opacity:0.6;">—</span>'}
                             </div>
                         </td>
                     </tr>
