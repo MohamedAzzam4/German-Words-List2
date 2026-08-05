@@ -867,7 +867,7 @@ class VerbsEngineClass {
             (idx, item) => {
                 const tr = document.querySelector(`tr[data-id="${item.verbId}"]`);
                 if (tr) {
-                    tr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     document.querySelectorAll('.highlighted-speech').forEach(el => el.classList.remove('highlighted-speech'));
                     tr.classList.add('highlighted-speech');
                 }
@@ -905,6 +905,11 @@ class VerbsEngineClass {
         const btn = document.getElementById('btn-play-all-words');
         const pauseBtn = document.getElementById('btn-pause-words');
         const fab = document.getElementById('floating-audio-bar');
+        const startVerbSelect = document.getElementById('auto-start-verb');
+
+        if (startVerbSelect) {
+            startVerbSelect.value = '0';
+        }
 
         if (btn) {
             btn.classList.remove('playing');
@@ -912,6 +917,7 @@ class VerbsEngineClass {
         }
         if (pauseBtn) {
             pauseBtn.classList.add('hidden');
+            pauseBtn.innerHTML = '<span>⏸️</span> Pause';
         }
         if (fab) {
             fab.classList.add('hidden');
@@ -1026,6 +1032,26 @@ class VerbsEngineClass {
                 <div class="verb-tags-container">${tagsHTML}</div>
             `;
             frontHintText = `Meaning: ${verb.meaning}`;
+        } else if (this.cardDirectionMode === 'ex-de-to-all') {
+            const firstEx = examplePairs.length > 0 ? examplePairs[0].de : verb.infinitive;
+            frontMainHTML = `
+                <div class="verb-label">German Example 💬</div>
+                <h3 class="verb-infinitive" style="font-size: 1.5rem; color: var(--primary); font-weight: 500; text-align: center; margin: 16px 0; line-height: 1.4;">
+                    ${sanitize(firstEx)}
+                </h3>
+                <div class="verb-tags-container">${tagsHTML}</div>
+            `;
+            frontHintText = `Verb: ${verb.infinitive} | Meaning: ${verb.meaning}`;
+        } else if (this.cardDirectionMode === 'ex-en-to-all') {
+            const firstExEn = (examplePairs.length > 0 && examplePairs[0].en) ? examplePairs[0].en : verb.meaning;
+            frontMainHTML = `
+                <div class="verb-label">English Example 💬</div>
+                <h3 class="verb-infinitive" style="font-size: 1.5rem; color: var(--primary); font-weight: 500; text-align: center; margin: 16px 0; line-height: 1.4;">
+                    ${sanitize(firstExEn)}
+                </h3>
+                <div class="verb-tags-container">${tagsHTML}</div>
+            `;
+            frontHintText = `German Verb: ${verb.infinitive}`;
         } else {
             frontMainHTML = `
                 <div class="verb-label">Verb (German)</div>
@@ -1319,7 +1345,17 @@ class VerbsEngineClass {
         }
 
         const verb = activeQueue[this.currentIndex];
-        if (verb) {
+        if (!verb) return;
+
+        const examplePairs = this._getExamplePairs(verb);
+
+        if (this.cardDirectionMode === 'ex-de-to-all') {
+            const firstEx = examplePairs.length > 0 ? examplePairs[0].de : verb.infinitive;
+            speak(cleanTextForAudio(firstEx), 'de');
+        } else if (this.cardDirectionMode === 'ex-en-to-all') {
+            const firstExEn = (examplePairs.length > 0 && examplePairs[0].en) ? examplePairs[0].en : verb.meaning;
+            speak(cleanTextForAudio(firstExEn), 'en');
+        } else {
             speak(cleanTextForAudio(verb.infinitive), 'de');
         }
     }

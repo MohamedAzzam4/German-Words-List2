@@ -219,6 +219,7 @@ select {
     background-color: var(--header-bg);
     color: var(--header-text);
     padding: 15px 24px;
+    padding-top: max(15px, env(safe-area-inset-top, 15px));
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -796,6 +797,12 @@ th {
         justify-content: center;
         cursor: pointer;
         padding: 0;
+    }
+
+    #topbar {
+        padding: 12px 14px;
+        padding-top: max(14px, env(safe-area-inset-top, 14px));
+        gap: 8px;
     }
 
     #mobile-menu-btn {
