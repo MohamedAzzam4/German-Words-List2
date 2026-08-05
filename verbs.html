@@ -1253,22 +1253,8 @@
                     </div>
                 </div>
 
-                <!-- Clean 4-Column Table (GERMAN VERB, TRANSLATION, EXAMPLE SENTENCE GERMAN, ENGLISH TRANSLATION) -->
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>GERMAN VERB <button class="speak-btn" style="font-size:0.9rem" title="Read visible" onclick="window.verbsEngine.playAllVerbsAudio()">🔊</button></th>
-                                <th>TRANSLATION</th>
-                                <th>EXAMPLE SENTENCE GERMAN</th>
-                                <th>ENGLISH TRANSLATION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="verbs-table-tbody">
-                            <!-- Table rows rendered dynamically -->
-                        </tbody>
-                    </table>
-                </div>
+                <!-- Verb groups: 10 verbs per framed card, rendered dynamically by verbs-engine.js -->
+                <div id="verbs-groups-container"></div>
             </div>
 
             <!-- VIEW 2: FLASHCARD VIEW -->

@@ -632,8 +632,8 @@ class VerbsEngineClass {
     }
 
     renderTable() {
-        const tbody = document.getElementById('verbs-table-tbody');
-        if (!tbody || this.queue.length === 0) return;
+        const container = document.getElementById('verbs-groups-container');
+        if (!container || this.queue.length === 0) return;
 
         const filtered = this.queue.filter(w => {
             if (this.typeFilter === 'fav') return this.isVerbFavorite(w);
@@ -643,99 +643,129 @@ class VerbsEngineClass {
         });
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2.5rem;">No verbs match your current filter</td></tr>`;
+            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:2.5rem;">No verbs match your current filter</div>`;
             return;
         }
 
-        const rows = [];
-        filtered.forEach((w, arrayIdx) => {
-            const isKnown = this.isVerbKnown(w);
-            const isFav = this.isVerbFavorite(w);
+        const GROUP_SIZE = 10;
+        const groups = [];
+        for (let i = 0; i < filtered.length; i += GROUP_SIZE) {
+            groups.push(filtered.slice(i, i + GROUP_SIZE));
+        }
 
-            const isMixed = this.hiddenCols.has('mixed');
-            const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
-            const hideEN = this.hiddenCols.has('en') || (isMixed && !hideDE);
-            const hideEX = this.hiddenCols.has('ex');
-            const hideExDE = this.hiddenCols.has('exde');
+        const isMixed = this.hiddenCols.has('mixed');
+        // Pre-compute hideDE/hideEN per group when in mixed mode to avoid re-randomizing on DOM rebuild
+        // (Mixed randomly assigns per-row, we do it at row level inside)
 
-            const examplePairs = this._getExamplePairs(w);
-            const isRowExpanded = this.expandedRowIds.has(w.id) || this.showAllTableExamples;
-            const displayPairs = isRowExpanded ? examplePairs : examplePairs.slice(0, 1);
-            const hasMoreSentences = examplePairs.length > 1;
+        const tableHeaderHTML = `
+            <thead>
+                <tr>
+                    <th style="width:20%;">GERMAN VERB</th>
+                    <th style="width:18%;">TRANSLATION</th>
+                    <th style="width:31%;">EXAMPLE SENTENCE GERMAN</th>
+                    <th style="width:31%;">ENGLISH TRANSLATION</th>
+                </tr>
+            </thead>`;
 
-            // Insert a visual separator every 10 verbs (before items at index 10, 20, 30...)
-            if (arrayIdx > 0 && arrayIdx % 10 === 0) {
-                rows.push(`
-                    <tr class="deck-section-separator" aria-hidden="true">
-                        <td colspan="4">
-                            <div class="deck-separator-line"><span class="deck-separator-label">· · ·</span></div>
+        const groupsHTML = groups.map((group, groupIdx) => {
+            const firstVerb = group[0];
+            const lastVerb = group[group.length - 1];
+            const groupLabel = `Verbs ${firstVerb.index}–${lastVerb.index}`;
+            const globalStartIdx = groupIdx * GROUP_SIZE;
+
+            const rowsHTML = group.map((w, localIdx) => {
+                const arrayIdx = globalStartIdx + localIdx;
+                const isKnown = this.isVerbKnown(w);
+                const isFav = this.isVerbFavorite(w);
+
+                const hideDE = this.hiddenCols.has('de') || (isMixed && Math.random() > 0.5);
+                const hideEN = this.hiddenCols.has('en') || (isMixed && !hideDE);
+                const hideEX = this.hiddenCols.has('ex');
+                const hideExDE = this.hiddenCols.has('exde');
+
+                const examplePairs = this._getExamplePairs(w);
+                const isRowExpanded = this.expandedRowIds.has(w.id) || this.showAllTableExamples;
+                const displayPairs = isRowExpanded ? examplePairs : examplePairs.slice(0, 1);
+                const hasMoreSentences = examplePairs.length > 1;
+
+                return `
+                    <tr data-id="${w.id}" data-array-idx="${arrayIdx}" class="${isKnown ? 'known-row' : ''}">
+                        <!-- COLUMN 1: GERMAN VERB -->
+                        <td style="width: 20%;">
+                            <div style="display:flex; align-items:flex-start; gap: 8px;">
+                                <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
+                                <div class="row-action-group">
+                                    <button class="row-play-btn" data-action="play-from-row" data-array-idx="${arrayIdx}" title="Start Auto-Play Audio sequence from this verb">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                    </button>
+                                </div>
+                                <div style="flex:1; margin-left: 2px;">
+                                    <span class="verb-infinitive-click ${hideDE ? 'hidden-word' : ''} hideable" onclick="if(this.classList.contains('hidden-word')){this.classList.remove('hidden-word');}else{window.verbsEngine.speakText('${w.infinitive}');}" title="Click verb text to pronounce">${sanitize(w.infinitive)}</span>
+                                    <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- COLUMN 2: TRANSLATION -->
+                        <td style="width: 18%;">
+                            <div class="verb-meaning-sub ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">
+                                ${sanitize(w.meaning)}
+                                ${isKnown ? '<span style="color:var(--success); font-weight:bold; margin-left:4px;" title="Known">✓</span>' : ''}
+                            </div>
+                        </td>
+
+                        <!-- COLUMN 3: EXAMPLE SENTENCE GERMAN -->
+                        <td style="width: 31%;">
+                            <div class="table-ex-de-text ${(hideEX || hideExDE) ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
+                                ${displayPairs.length > 0 ? displayPairs.map((pair, pIdx) => {
+                                    const safeDe = pair.de.replace(/"/g, '&quot;');
+                                    const isFirst = pIdx === 0;
+                                    return `
+                                        <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                            <span>💬 <span class="ex-sentence-span" style="cursor:pointer;" onclick="if(this.closest('.hideable').classList.contains('hidden-word')){this.closest('.hideable').classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
+                                                ${sanitize(pair.de)}
+                                            </span></span>
+                                            ${(isFirst && hasMoreSentences) ? `
+                                                <button class="ex-row-toggle-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleRowSentences('${w.id}');" title="Toggle extra sentences">
+                                                    ${isRowExpanded ? '▲ Hide' : `+${examplePairs.length - 1} ▾`}
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }).join('') : '<span style="color:var(--text-muted); opacity:0.6;">No example</span>'}
+                            </div>
+                        </td>
+
+                        <!-- COLUMN 4: ENGLISH TRANSLATION -->
+                        <td style="width: 31%;">
+                            <div class="table-ex-en-text ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
+                                ${displayPairs.length > 0 ? displayPairs.map(pair => `
+                                    <div style="margin-bottom: 4px;">
+                                        ${pair.en ? sanitize(pair.en) : '<span style="opacity:0.5;">—</span>'}
+                                    </div>
+                                `).join('') : '<span style="color:var(--text-muted); opacity:0.6;">—</span>'}
+                            </div>
                         </td>
                     </tr>
-                `);
-            }
+                `;
+            }).join('');
 
-            rows.push(`
-                <tr data-id="${w.id}" data-array-idx="${arrayIdx}" class="${isKnown ? 'known-row' : ''}">
-                    <!-- COLUMN 1: GERMAN VERB (Infinitive + 3rd Form + Actions) -->
-                    <td style="width: 20%;">
-                        <div style="display:flex; align-items:flex-start; gap: 8px;">
-                            <span class="fav-icon-btn ${isFav ? 'active' : ''}" data-action="fav" data-verb-id="${w.id}" title="Toggle Favorite">${isFav ? '⭐' : '☆'}</span>
-                            <div class="row-action-group">
-                                <button class="row-play-btn" data-action="play-from-row" data-array-idx="${arrayIdx}" title="Start Auto-Play Audio sequence from this verb">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                </button>
-                            </div>
-                            <div style="flex:1; margin-left: 2px;">
-                                <span class="verb-infinitive-click ${hideDE ? 'hidden-word' : ''} hideable" onclick="if(this.classList.contains('hidden-word')){this.classList.remove('hidden-word');}else{window.verbsEngine.speakText('${w.infinitive}');}" title="Click verb text to pronounce">${sanitize(w.infinitive)}</span>
-                                <div class="${hideDE ? 'hidden-word' : ''} hideable" style="font-size:0.8rem; color:var(--text-muted); cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">${w.conjugation.present3rd}</div>
-                            </div>
-                        </div>
-                    </td>
+            return `
+                <div class="verb-group-card">
+                    <div class="verb-group-header">
+                        <span class="verb-group-label">${groupLabel}</span>
+                    </div>
+                    <div class="table-container verb-group-table-wrap">
+                        <table>
+                            ${tableHeaderHTML}
+                            <tbody>${rowsHTML}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-                    <!-- COLUMN 2: TRANSLATION (Word Meaning Translation with High Contrast) -->
-                    <td style="width: 18%;">
-                        <div class="verb-meaning-sub ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')" title="Click to reveal">
-                            ${sanitize(w.meaning)}
-                            ${isKnown ? '<span style="color:var(--success); font-weight:bold; margin-left:4px;" title="Known">✓</span>' : ''}
-                        </div>
-                    </td>
-
-                    <!-- COLUMN 3: EXAMPLE SENTENCE GERMAN -->
-                    <td style="width: 31%;">
-                        <div class="table-ex-de-text ${(hideEX || hideExDE) ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
-                            ${displayPairs.length > 0 ? displayPairs.map((pair, pIdx) => {
-                                const safeDe = pair.de.replace(/"/g, '&quot;');
-                                const isFirst = pIdx === 0;
-                                return `
-                                    <div style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                        <span>💬 <span class="ex-sentence-span" style="cursor:pointer;" onclick="if(this.closest('.hideable').classList.contains('hidden-word')){this.closest('.hideable').classList.remove('hidden-word');}else{window.verbsEngine.speakText('${safeDe}');}" title="Click sentence to pronounce">
-                                            ${sanitize(pair.de)}
-                                        </span></span>
-                                        ${(isFirst && hasMoreSentences) ? `
-                                            <button class="ex-row-toggle-btn" onclick="event.stopPropagation(); window.verbsEngine.toggleRowSentences('${w.id}');" title="Toggle extra sentences">
-                                                ${isRowExpanded ? '▲ Hide' : `+${examplePairs.length - 1} ▾`}
-                                            </button>
-                                        ` : ''}
-                                    </div>
-                                `;
-                            }).join('') : '<span style="color:var(--text-muted); opacity:0.6;">No example</span>'}
-                        </div>
-                    </td>
-
-                    <!-- COLUMN 4: ENGLISH TRANSLATION -->
-                    <td style="width: 31%;">
-                        <div class="table-ex-en-text ${hideEN ? 'hidden-word' : ''} hideable" style="cursor:pointer;" onclick="this.classList.remove('hidden-word')">
-                            ${displayPairs.length > 0 ? displayPairs.map(pair => `
-                                <div style="margin-bottom: 4px;">
-                                    ${pair.en ? sanitize(pair.en) : '<span style="opacity:0.5;">—</span>'}
-                                </div>
-                            `).join('') : '<span style="color:var(--text-muted); opacity:0.6;">—</span>'}
-                        </div>
-                    </td>
-                </tr>
-            `);
-        });
-        tbody.innerHTML = rows.join('');
+        container.innerHTML = groupsHTML;
     }
 
     // ── ADVANCED AUTO-PLAY AUDIO PRACTICE QUEUE ──
