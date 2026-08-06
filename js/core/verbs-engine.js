@@ -17,7 +17,7 @@
  * Sleek SVG Row Action Play Chip buttons & Animated pulsing speech highlight (speechPulse),
  * AND full Firebase Account Authentication & Real-time Cloud Progress Sync.
  */
-import { speak, cleanTextForAudio, SpeechQueue } from './tts.js';
+import { speak, cleanTextForAudio, SpeechQueue, setSpeakHook, playChime } from './tts.js';
 import { 
     initFirebase, 
     loginWithGoogle as fbLoginWithGoogle, 
@@ -38,6 +38,9 @@ import {
     getDefaultProgressObj 
 } from './storage.js?v=3';
 import { sanitize } from './utils.js';
+import { ActivityService } from './activity-service.js?v=3';
+import { TrophyEngine, VERB_TROPHIES } from './trophies.js?v=3';
+import { getLocalDateString } from './srs-logic.js?v=3';
 
 class VerbsEngineClass {
     constructor() {
@@ -79,6 +82,16 @@ class VerbsEngineClass {
         if (!this.userData.verbFavorites) {
             this.userData.verbFavorites = [];
         }
+
+        // WP-041: GitHub-style learning activity tracker for the verbs module
+        this._activityState = { data: this.userData };
+        this.activityService = new ActivityService({
+            state: this._activityState,
+            onSave: () => this._save()
+        });
+
+        // WP-041: Trophy shelf for the verbs module (reuses shared TrophyEngine + VERB_TROPHIES)
+        this.trophyEngine = null;
     }
 
     async init() {
@@ -108,6 +121,19 @@ class VerbsEngineClass {
             const res = await fetch('content/generated/verbs/top_verbs_2000.json');
             if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             this.dataset = await res.json();
+
+            // WP-041: Count every spoken word toward the daily TTS listen total (15+ = a learning day)
+            setSpeakHook(() => {
+                this.userData.ttsCount = (this.userData.ttsCount || 0) + 1;
+                this.activityService.recordListen();
+            });
+
+            // WP-041: Trophy shelf for the verbs module
+            this.trophyEngine = new TrophyEngine(
+                'verb-trophy-container', this.userData, this.appId,
+                (msg) => this._showToast(msg), VERB_TROPHIES
+            );
+            this._evaluateVerbTrophies();
 
             // 3. Set up Auth Listener & Sync
             if (this.auth) {
@@ -150,13 +176,35 @@ class VerbsEngineClass {
             this.userData = getLocalProgress(this.appId);
         }
 
+        this._activityState.data = this.userData;
+        if (this.trophyEngine) this.trophyEngine.render();
+
         this.renderAuthUI();
         this.renderDeckTracker();
         this.loadDeck(this.currentDeckId);
         this.updateOverallProgress();
+        this._evaluateVerbTrophies();
     }
 
     _save() {
+        // WP-041: Accumulate elapsed study time
+        if (this._lastSaveTime) {
+            const elapsed = Date.now() - this._lastSaveTime;
+            this.userData.totalStudyTimeMs = (this.userData.totalStudyTimeMs || 0) + elapsed;
+        }
+        this._lastSaveTime = Date.now();
+        this._accumulateDarkModeTime();
+
+        // WP-041: Prune activity + ttsDaily to prevent unbounded growth (keep last ~400 days)
+        const activityCutoff = getLocalDateString(new Date(Date.now() - 400 * 86400000));
+        const pruneDaily = (map) => {
+            for (const d in map) {
+                if (d < activityCutoff) delete map[d];
+            }
+        };
+        if (this.userData.activity) pruneDaily(this.userData.activity);
+        if (this.userData.ttsDaily) pruneDaily(this.userData.ttsDaily);
+
         saveLocalProgress(this.appId, this.userData, this.uid);
 
         if (this.uid && this.auth) {
@@ -165,6 +213,35 @@ class VerbsEngineClass {
             const displayName = this.auth.currentUser?.displayName || this.auth.currentUser?.email || "Linguist";
             const photoURL = this.auth.currentUser?.photoURL || "";
             updateLeaderboard(this.appId, this.uid, displayName, photoURL, knownCount);
+        }
+    }
+
+    // WP-041: Toast notification (reuses shared #toast markup) with chime
+    _showToast(msg) {
+        const t = document.getElementById('toast');
+        const m = document.getElementById('toast-msg');
+        if (m) m.textContent = msg;
+        if (t) {
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+        playChime(600, 150);
+        setTimeout(() => playChime(900, 150), 150);
+    }
+
+    // WP-041: Evaluate the verbs trophy shelf against current progress
+    async _evaluateVerbTrophies() {
+        if (!this.trophyEngine || !this.dataset) return;
+        const allVerbs = this.dataset.decks.flatMap(d => d.verbs);
+        // knownVerbIds may hold aliases (id + infinitive + lowercase); count unique verbs instead
+        const canonicalKnown = allVerbs.filter(v => this.isVerbKnown(v)).map(v => v.id);
+        const earned = await this.trophyEngine.evaluate(
+            { ...this.userData, knownVerbIds: canonicalKnown, totalWords: allVerbs.length },
+            allVerbs
+        );
+        if (earned && earned.length > 0) {
+            this._save();
+            this.trophyEngine.render();
         }
     }
 
@@ -372,8 +449,23 @@ class VerbsEngineClass {
 
     toggleDarkMode() {
         this.userData.darkMode = !this.userData.darkMode;
+        this.userData.darkModeToggleCount = (this.userData.darkModeToggleCount || 0) + 1;
+        if (this.userData.darkMode) {
+            this.userData._darkModeStartTime = Date.now();
+        } else {
+            this._accumulateDarkModeTime();
+        }
         this._save();
         this._applyTheme();
+    }
+
+    // WP-041: Accumulate elapsed dark mode minutes (for the dark-mode trophy)
+    _accumulateDarkModeTime() {
+        if (this.userData.darkMode && this.userData._darkModeStartTime) {
+            const elapsed = (Date.now() - this.userData._darkModeStartTime) / 60000;
+            this.userData.darkModeStudyMinutes = (this.userData.darkModeStudyMinutes || 0) + elapsed;
+            this.userData._darkModeStartTime = Date.now();
+        }
     }
 
     toggleSidebar(e) {
@@ -1431,10 +1523,17 @@ class VerbsEngineClass {
         const inf = (verb.infinitive || '').toLowerCase();
         const id = verb.id;
 
+        // WP-041: A completely new verb marked as Known → counts as a learning day activity
+        const wasKnown = this.isVerbKnown(verb);
+
         if (known) {
             if (!this.userData.knownVerbIds.includes(id)) this.userData.knownVerbIds.push(id);
             if (!this.userData.knownVerbIds.includes(verb.infinitive)) this.userData.knownVerbIds.push(verb.infinitive);
             if (!this.userData.knownVerbIds.includes(inf)) this.userData.knownVerbIds.push(inf);
+            if (!wasKnown) {
+                this.activityService.recordWordLearned();
+                this._recordStudyDate();
+            }
         } else {
             this.userData.knownVerbIds = this.userData.knownVerbIds.filter(x => x !== id && x !== verb.infinitive && x !== inf && x !== `v_${inf}`);
         }
@@ -1467,6 +1566,20 @@ class VerbsEngineClass {
 
         this.renderCard();
         this.renderTable();
+
+        if (document.getElementById('view-dashboard') && !document.getElementById('view-dashboard').classList.contains('hidden')) {
+            this.renderDashboard();
+        }
+        this._evaluateVerbTrophies();
+    }
+
+    // WP-041: Record today as a study date (dedup) so streak trophies & activity stay in sync
+    _recordStudyDate() {
+        const today = getLocalDateString();
+        if (!this.userData.studyDates) this.userData.studyDates = [];
+        if (!this.userData.studyDates.includes(today)) {
+            this.userData.studyDates.push(today);
+        }
     }
 
     toggleFavorite(verbId) {
@@ -1534,16 +1647,71 @@ class VerbsEngineClass {
     }
 
     switchMode(mode) {
-        this.activeMode = mode;
-        const glossaryView = document.getElementById('view-glossary');
-        const flashcardView = document.getElementById('view-flashcard');
+        this.switchView(mode);
+    }
 
-        if (mode === 'glossary') {
-            if (glossaryView) glossaryView.classList.remove('hidden');
-            if (flashcardView) flashcardView.classList.add('hidden');
-        } else {
-            if (glossaryView) glossaryView.classList.add('hidden');
-            if (flashcardView) flashcardView.classList.remove('hidden');
+    // WP-041: Unified view switcher (glossary / flashcard / dashboard / trophies)
+    switchView(v) {
+        this.activeMode = v;
+        const views = ['glossary', 'flashcard', 'dashboard', 'trophies'];
+        views.forEach(id => {
+            const el = document.getElementById(`view-${id}`);
+            if (el) el.classList.toggle('hidden', id !== v);
+        });
+
+        if (v === 'dashboard') {
+            this.renderDashboard();
+        }
+        if (v === 'trophies' && this.trophyEngine) {
+            this._evaluateVerbTrophies();
+            this.trophyEngine.render();
+        }
+
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.remove('open', 'active');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (overlay) overlay.classList.remove('visible', 'active');
+    }
+
+    // WP-041: Dashboard stat cards + shared GitHub-style activity graph
+    renderDashboard() {
+        if (!this.dataset) return;
+        const allVerbs = this.dataset.decks.flatMap(d => d.verbs);
+        const total = allVerbs.length;
+        const knownCount = allVerbs.filter(v => this.isVerbKnown(v)).length;
+        const pct = Math.round((knownCount / total) * 100);
+        const favCount = allVerbs.filter(v => this.isVerbFavorite(v)).length;
+        const finishedCount = (this.userData.finishedVerbDecks || []).length;
+
+        const setEl = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        };
+        setEl('verb-stat-known', knownCount);
+        setEl('verb-stat-total', total);
+        setEl('verb-stat-percent', `${pct}%`);
+        setEl('verb-stat-decks', finishedCount);
+        setEl('verb-stat-favs', favCount);
+
+        // Shared GitHub-style activity graph + streak stats
+        this.activityService.render();
+
+        // Deck breakdown table (reuses shared .table-container + progress-bar styles)
+        const tbody = document.getElementById('verb-stats-tbody');
+        if (tbody) {
+            tbody.innerHTML = this.dataset.decks.map(deck => {
+                const knownInDeck = deck.verbs.filter(v => this.isVerbKnown(v)).length;
+                const deckPct = Math.round((knownInDeck / deck.count) * 100);
+                return `<tr>
+                    <td>${deck.title}</td>
+                    <td>
+                        <div class="progress-bar-bg" style="width: 100%; height: 6px; margin-bottom: 4px;">
+                            <div class="progress-bar-fill" style="width: ${deckPct}%;"></div>
+                        </div>
+                        <div style="font-size: 0.75rem; text-align: right; color: var(--text-muted);">${knownInDeck}/${deck.count} (${deckPct}%)</div>
+                    </td>
+                </tr>`;
+            }).join('');
         }
     }
 

@@ -49,6 +49,40 @@ export const TROPHIES = [
     }
 ];
 
+// WP-041: Trophy shelf for the verbs module — reuses TrophyEngine + calcStreak.
+// Progress shape used by these reqs: { knownVerbIds, finishedVerbDecks, studyDates, ttsCount }
+export const VERB_TROPHIES = [
+    // Tier 1 - Progress & Mastery
+    { id: 'verb_first_steps', tier: 1, name: 'First Steps', desc: 'Learn your first 10 verbs', icon: '🏅', req: p => (p.knownVerbIds?.length || 0) >= 10 },
+    { id: 'verb_slayer', tier: 1, name: 'Verb Slayer', desc: 'Mark 50 verbs as known', icon: '💅', req: p => (p.knownVerbIds?.length || 0) >= 50 },
+    { id: 'verb_vault', tier: 1, name: 'Verb Vault', desc: 'Know 100 verbs', icon: '📚', req: p => (p.knownVerbIds?.length || 0) >= 100 },
+    { id: 'verb_walking_dict', tier: 1, name: 'Walking Dictionary', desc: 'Know 500 verbs', icon: '📖', req: p => (p.knownVerbIds?.length || 0) >= 500 },
+    { id: 'verb_bronze', tier: 1, name: 'Bronze Deck Learner', desc: 'Learn 25% of all verbs', icon: '🥉', req: p => { const t = p.totalWords || 1; return ((p.knownVerbIds?.length || 0) / t) >= 0.25; } },
+    { id: 'verb_silver', tier: 1, name: 'Silver Deck Learner', desc: 'Learn 50% of all verbs', icon: '🥈', req: p => { const t = p.totalWords || 1; return ((p.knownVerbIds?.length || 0) / t) >= 0.5; } },
+    { id: 'verb_gold', tier: 1, name: 'Gold Deck Learner', desc: 'Learn 75% of all verbs', icon: '🥇', req: p => { const t = p.totalWords || 1; return ((p.knownVerbIds?.length || 0) / t) >= 0.75; } },
+    { id: 'verb_deck_master', tier: 1, name: 'Deck Champion', desc: 'Finish any single 50-verb deck', icon: '🎯', req: p => (p.finishedVerbDecks?.length || 0) >= 1 },
+    { id: 'verb_5_decks', tier: 1, name: 'Deck Collector', desc: 'Finish 5 verb decks', icon: '🗂️', req: p => (p.finishedVerbDecks?.length || 0) >= 5 },
+    { id: 'verb_10_decks', tier: 1, name: 'Deck Hoarder', desc: 'Finish 10 verb decks', icon: '📦', req: p => (p.finishedVerbDecks?.length || 0) >= 10 },
+    { id: 'verb_all_decks', tier: 1, name: 'Verbs Conqueror', desc: 'Master all 36 verb decks', icon: '👑', req: p => (p.finishedVerbDecks?.length || 0) >= 36 },
+
+    // Tier 2 - Gen Z / Meme
+    { id: 'verb_speaker_100', tier: 2, name: 'TTS Titan', desc: 'Use text-to-speech 100 times', icon: '🔊', req: p => (p.ttsCount || 0) >= 100 },
+    { id: 'verb_skibidi', tier: 2, name: 'Skibidi Sprecher', desc: 'Use text-to-speech 25 times', icon: '🗣️', req: p => (p.ttsCount || 0) >= 25 },
+    { id: 'verb_npc', tier: 2, name: 'NPC Arc', desc: 'Get the same verb wrong 10+ times', icon: '🤖', req: p => { const vals = Object.values(p.flashcardErrors || {}); return vals.length > 0 ? Math.max(...vals) >= 10 : false; } },
+    { id: 'verb_brain_rot', tier: 2, name: 'Brain Rot Activated', desc: 'Spend 30 min studying verbs', icon: '🧠', req: p => (p.totalStudyTimeMs || 0) >= 30 * 60 * 1000 },
+    { id: 'verb_rizzed_dark', tier: 2, name: 'Rizzed Up Dark Mode', desc: 'Study 30 min in dark mode', icon: '🌚', req: p => (p.darkModeStudyMinutes || 0) >= 30 },
+
+    // Tier 3 - Consistency & Streaks
+    { id: 'verb_streak_3', tier: 3, name: 'Locked TF In', desc: '3-day study streak', icon: '🔒', req: p => calcStreak(p.studyDates || []) >= 3 },
+    { id: 'verb_streak_7', tier: 3, name: 'Creature of Habit', desc: '7-day study streak', icon: '🔗', req: p => calcStreak(p.studyDates || []) >= 7 },
+    { id: 'verb_streak_30', tier: 3, name: 'Dedicated Learner', desc: '30-day study streak', icon: '🧘', req: p => calcStreak(p.studyDates || []) >= 30 },
+
+    // Tier 4 - Secret / Hidden
+    { id: 'verb_night_owl', tier: 4, name: 'Sigma Night Owl', desc: 'Study between 10 PM and 4 AM', icon: '🦉', req: p => { const h = new Date().getHours(); return h >= 22 || h < 4; }, secret: true },
+    { id: 'verb_early_bird', tier: 4, name: 'Early Bird', desc: 'Study before 8 AM', icon: '🌅', req: p => new Date().getHours() < 8, secret: true },
+    { id: 'verb_weekend_warrior', tier: 4, name: 'Weekend Warrior', desc: 'Study on a weekend', icon: '🏕️', req: p => { const d = new Date().getDay(); return d === 0 || d === 6; }, secret: true }
+];
+
 // WP-021: Calculate study streak from dates, handling duplicates
 export function calcStreak(dates) {
     if (!dates || dates.length === 0) return 0;
@@ -77,11 +111,12 @@ export function calcStreak(dates) {
 }
 
 export class TrophyEngine {
-    constructor(containerId, userData, appId, onAward) {
+    constructor(containerId, userData, appId, onAward, trophies = TROPHIES) {
         this.container = document.getElementById(containerId);
         this.userData = userData || {};
         this.appId = appId;
         this.onAward = onAward || (() => { });
+        this.trophies = trophies;
         this.trophyCounts = this.userData.trophyCounts || {};
         this.render();
     }
@@ -92,7 +127,7 @@ export class TrophyEngine {
         let html = '';
         // Group by tier
         for (let tier = 1; tier <= 4; tier++) {
-            const tierTrophies = TROPHIES.filter(t => t.tier === tier);
+            const tierTrophies = this.trophies.filter(t => t.tier === tier);
             if (tierTrophies.length === 0) continue;
 
             html += `<div class="tier-header">Tier ${tier} ${['Progress', 'Meme', 'Streaks', 'Secret'][tier - 1]}</div>`;
@@ -130,7 +165,7 @@ export class TrophyEngine {
         }
         const unitPerfect = Object.values(unitMap).some(u => u.total > 0 && u.known >= u.total);
 
-        for (const t of TROPHIES) {
+        for (const t of this.trophies) {
             // Skip level-specific trophies
             if (t.levelOnly && t.levelOnly !== this.appId.replace('german-', '').replace('-app', '')) continue;
 

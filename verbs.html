@@ -1124,6 +1124,14 @@
             <span class="nav-icon">🔥</span>
             <span class="nav-text">Top Verbs Mastery</span>
         </div>
+        <div class="nav-item" onclick="window.verbsEngine.switchView('dashboard')">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="window.verbsEngine.switchView('trophies')">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-text">Trophy Shelf</span>
+        </div>
     </nav>
 
     <!-- Mobile Drawer Overlay -->
@@ -1288,6 +1296,78 @@
                     <!-- Flashcard rendered dynamically -->
                 </div>
             </div>
+
+            <!-- VIEW 3: DASHBOARD VIEW -->
+            <div id="view-dashboard" class="hidden">
+                <h2 style="margin-bottom: 20px;">📊 Your Verb Learning Stats</h2>
+                <div class="grid-cards">
+                    <div class="stat-card">
+                        <h3>Verbs Known</h3>
+                        <div class="stat-value" id="verb-stat-known">0</div>
+                        <div style="color: var(--text-muted);">Out of <span id="verb-stat-total">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Overall Completion</h3>
+                        <div class="stat-value" id="verb-stat-percent">0%</div>
+                        <div style="color: var(--text-muted);">Keep it up!</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Decks Finished</h3>
+                        <div class="stat-value" id="verb-stat-decks">0</div>
+                        <div style="color: var(--text-muted);">Out of 36 deck</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Favourite Verbs</h3>
+                        <div class="stat-value" id="verb-stat-favs">0</div>
+                        <div style="color: var(--text-muted);">⭐ Saved verbs</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">🔥 Learning Activity</h3>
+                <div class="grid-cards" id="activity-summary">
+                    <div class="stat-card">
+                        <h3>🔥 Current Streak</h3>
+                        <div class="stat-value" id="stat-streak-current">0</div>
+                        <div style="color: var(--text-muted);">days in a row</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>🏆 Best Streak</h3>
+                        <div class="stat-value" id="stat-streak-best">0</div>
+                        <div style="color: var(--text-muted);">longest streak yet</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>📅 Active Days</h3>
+                        <div class="stat-value" id="stat-active-days">0</div>
+                        <div style="color: var(--text-muted);">days you learned a new word</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>📝 Learned Today</h3>
+                        <div class="stat-value" id="stat-today-count">0</div>
+                        <div style="color: var(--text-muted);">new words today</div>
+                    </div>
+                </div>
+                <div class="activity-graph-card" id="activity-graph"></div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">Deck Breakdown</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Deck</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verb-stats-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 4: TROPHY SHELF VIEW -->
+            <div id="view-trophies" class="hidden">
+                <h2 style="margin-bottom: 5px;">🏆 Trophy Shelf</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Earn badges as you master the German verbs.</p>
+                <div class="trophy-grid" id="verb-trophy-container"></div>
+            </div>
         </div>
     </main>
 
@@ -1306,6 +1386,15 @@
                     <span>⏹️</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Trophy Award Toast -->
+    <div id="toast">
+        <div style="font-size: 2rem;">🏆</div>
+        <div>
+            <div style="font-weight: bold; color: var(--warning);">Achievement Unlocked!</div>
+            <div id="toast-msg"></div>
         </div>
     </div>
 
