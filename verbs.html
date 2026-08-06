@@ -1162,6 +1162,8 @@
                     <div class="btn-group" style="width: 100%; justify-content: space-between; margin-top: 6px;">
                         <select id="type-filter" class="filter-select" onchange="window.verbsEngine.setFilter(this.value)">
                             <option value="all">🔍 All Verbs</option>
+                            <option value="unlearned">❌ Unlearned Only</option>
+                            <option value="known">✅ Known Only</option>
                             <option value="fav">⭐ Favourites Only</option>
                             <option value="sep">🏃‍♂️ Separable Verbs</option>
                             <option value="irreg">⚡ Irregular Verbs</option>
@@ -1262,7 +1264,7 @@
                 <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
                     <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.switchMode('glossary')">⬅ Back to List</button>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <span style="font-weight: bold; font-size: 0.85rem;">🎴 Front Card:</span>
+                        <span style="font-weight: bold; font-size: 0.85rem;">🎴 Front:</span>
                         <select class="filter-select" style="padding: 5px 10px; font-size: 0.82rem;" onchange="window.verbsEngine.setCardDirectionMode(this.value)">
                             <option value="de-to-en">🇩🇪 German (Verb) → 🇺🇸 English</option>
                             <option value="en-to-de">🇺🇸 English (Meaning) → 🇩🇪 German</option>
@@ -1270,7 +1272,14 @@
                             <option value="ex-de-to-all">💬 German Example → Verb & Meaning</option>
                             <option value="ex-en-to-all">💬 English Example → German Verb</option>
                         </select>
-                        <button class="btn" id="fav-only-btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.toggleFlashcardFavOnly()">⭐ Favorites Only: OFF</button>
+                        
+                        <span style="font-weight: bold; font-size: 0.85rem; margin-left: 4px;">🎯 Review Scope:</span>
+                        <select class="filter-select" style="padding: 5px 10px; font-size: 0.82rem;" id="flashcard-filter-select" onchange="window.verbsEngine.setFlashcardFilter(this.value)">
+                            <option value="all">📚 All Verbs</option>
+                            <option value="unlearned">❌ Unlearned Only (Review)</option>
+                            <option value="known">✅ Known Only</option>
+                            <option value="fav">⭐ Favorites Only</option>
+                        </select>
                     </div>
                     <button class="btn" id="shuffle-btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.toggleShuffle()">🔀 Shuffle: OFF</button>
                 </div>

@@ -53,7 +53,10 @@ class VerbsEngineClass {
         this.activeMode = 'glossary'; // Default view: 'glossary' (List View)
         this.cardDirectionMode = 'de-to-en'; // 'de-to-en', 'en-to-de', 'audio-to-de'
         this.isShuffle = false;
-        this.flashcardFavOnly = false; // Review only favorites in flashcards
+        this.flashcardFavOnly = false; // Backward compatibility
+        this.flashcardFilter = 'all'; // 'all', 'unlearned', 'known', 'fav'
+        this._shuffledFlashcardQueue = null;
+        this._shuffledFilterKey = null;
         this.showAllTableExamples = false; // Global toggle
         this.expandedRowIds = new Set(); // Per-row sentence toggle tracking
         this.hiddenCols = new Set(); // 'de', 'en', 'mixed', 'ex'
@@ -413,17 +416,25 @@ class VerbsEngineClass {
         this.renderCard();
     }
 
-    toggleFlashcardFavOnly() {
-        this.flashcardFavOnly = !this.flashcardFavOnly;
-        const btn = document.getElementById('fav-only-btn');
-        if (btn) {
-            btn.textContent = `⭐ Favorites Only: ${this.flashcardFavOnly ? 'ON' : 'OFF'}`;
-            btn.classList.toggle('primary', this.flashcardFavOnly);
-        }
+    setFlashcardFilter(filter) {
+        this.flashcardFilter = filter;
+        this.flashcardFavOnly = (filter === 'fav');
+        const select = document.getElementById('flashcard-filter-select');
+        if (select) select.value = filter;
         this.currentIndex = 0;
         this.isFlipped = false;
         this.showHint = false;
+        this._shuffledFlashcardQueue = null;
+        this._shuffledFilterKey = null;
         this.renderCard();
+    }
+
+    toggleFlashcardFavOnly() {
+        if (this.flashcardFilter === 'fav') {
+            this.setFlashcardFilter('all');
+        } else {
+            this.setFlashcardFilter('fav');
+        }
     }
 
     toggleTableExamples() {
@@ -503,15 +514,15 @@ class VerbsEngineClass {
         if (!deck) return;
 
         this.currentDeckId = deckId;
-        this.queue = [...deck.verbs];
-        if (this.isShuffle) {
-            this._shuffleQueue();
-        }
+        this.queue = [...deck.verbs]; // ALWAYS PRESERVES NATURAL NUMERICAL DECK ORDER (#1..#50)
+        this._shuffledFlashcardQueue = null;
+        this._shuffledFilterKey = null;
         this.currentIndex = 0;
         this.isFlipped = false;
         this.showHint = false;
         this.showConjugations = false;
         this.showOrigins = false;
+        this.showVerbDetails = false;
 
         this.updateDeckHeader(deck);
         this.renderTable();
@@ -529,20 +540,52 @@ class VerbsEngineClass {
         `).join('');
     }
 
-    _shuffleQueue() {
-        for (let i = this.queue.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
+    _getFlashcardQueue() {
+        if (!this.queue) return [];
+
+        let list = [...this.queue];
+
+        // Apply Flashcard Review Filter ('all', 'unlearned', 'known', 'fav')
+        if (this.flashcardFilter === 'unlearned') {
+            list = list.filter(w => !this.isVerbKnown(w));
+        } else if (this.flashcardFilter === 'known') {
+            list = list.filter(w => this.isVerbKnown(w));
+        } else if (this.flashcardFilter === 'fav') {
+            list = list.filter(w => this.isVerbFavorite(w));
         }
+
+        // Apply shuffle to flashcard queue ONLY if enabled
+        if (this.isShuffle && list.length > 0) {
+            const filterKey = `${this.currentDeckId}_${this.flashcardFilter}_${list.map(v => v.id).join(',')}`;
+            if (!this._shuffledFlashcardQueue || this._shuffledFilterKey !== filterKey) {
+                const arr = [...list];
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                this._shuffledFlashcardQueue = arr;
+                this._shuffledFilterKey = filterKey;
+            }
+            return this._shuffledFlashcardQueue;
+        }
+
+        this._shuffledFlashcardQueue = null;
+        this._shuffledFilterKey = null;
+        return list;
     }
 
     toggleShuffle() {
         this.isShuffle = !this.isShuffle;
+        this._shuffledFlashcardQueue = null;
+        this._shuffledFilterKey = null;
         const btn = document.getElementById('shuffle-btn');
         if (btn) {
             btn.textContent = `🔀 Shuffle: ${this.isShuffle ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('primary', this.isShuffle);
         }
-        this.loadDeck(this.currentDeckId);
+        this.currentIndex = 0;
+        this.isFlipped = false;
+        this.renderCard();
     }
 
     updateDeckHeader(deck) {
@@ -660,6 +703,8 @@ class VerbsEngineClass {
 
         const filtered = this.queue.filter(w => {
             if (this.typeFilter === 'fav') return this.isVerbFavorite(w);
+            if (this.typeFilter === 'unlearned') return !this.isVerbKnown(w);
+            if (this.typeFilter === 'known') return this.isVerbKnown(w);
             if (this.typeFilter === 'sep') return w.prefixInfo.isSeparable;
             if (this.typeFilter === 'irreg') return w.tags.includes('irregular');
             return true;
@@ -977,18 +1022,20 @@ class VerbsEngineClass {
         const cardContainer = document.getElementById('verbs-card-working-area');
         if (!cardContainer || this.queue.length === 0) return;
 
-        let activeQueue = this.queue;
-        if (this.flashcardFavOnly) {
-            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
-        }
+        const activeQueue = this._getFlashcardQueue();
 
         if (activeQueue.length === 0) {
+            let filterLabel = 'verbs';
+            if (this.flashcardFilter === 'unlearned') filterLabel = 'Unlearned Verbs';
+            else if (this.flashcardFilter === 'known') filterLabel = 'Known Verbs';
+            else if (this.flashcardFilter === 'fav') filterLabel = 'Favorite Verbs';
+
             cardContainer.innerHTML = `
                 <div style="text-align: center; padding: 3rem 1.5rem; background: var(--surface); border: 1px dashed var(--border); border-radius: 20px; color: var(--text-main);">
-                    <div style="font-size: 3rem; margin-bottom: 0.8rem;">⭐</div>
-                    <h3 style="margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif;">No Favorite Verbs in this Deck</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 400px; margin: 0 auto 1.2rem;">Star (⭐) some verbs in the list view to practice them here!</p>
-                    <button class="btn primary" onclick="window.verbsEngine.toggleFlashcardFavOnly()">Show All Verbs</button>
+                    <div style="font-size: 3rem; margin-bottom: 0.8rem;">🎉</div>
+                    <h3 style="margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif;">No ${filterLabel} in this Deck</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 400px; margin: 0 auto 1.2rem;">Try switching review scope or practicing other verbs!</p>
+                    <button class="btn primary" onclick="window.verbsEngine.setFlashcardFilter('all')">Show All Verbs</button>
                 </div>
             `;
             return;
@@ -1357,10 +1404,7 @@ class VerbsEngineClass {
     }
 
     nextCard() {
-        let activeQueue = this.queue;
-        if (this.flashcardFavOnly) {
-            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
-        }
+        const activeQueue = this._getFlashcardQueue();
 
         if (this.currentIndex < activeQueue.length - 1) {
             this.currentIndex++;
@@ -1380,11 +1424,7 @@ class VerbsEngineClass {
     }
 
     markCard(known) {
-        let activeQueue = this.queue;
-        if (this.flashcardFavOnly) {
-            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
-        }
-
+        const activeQueue = this._getFlashcardQueue();
         const verb = activeQueue[this.currentIndex];
         if (!verb) return;
 
@@ -1397,14 +1437,6 @@ class VerbsEngineClass {
             if (!this.userData.knownVerbIds.includes(inf)) this.userData.knownVerbIds.push(inf);
         } else {
             this.userData.knownVerbIds = this.userData.knownVerbIds.filter(x => x !== id && x !== verb.infinitive && x !== inf && x !== `v_${inf}`);
-
-            if (this.queue.length > 1) {
-                const qIdx = this.queue.findIndex(v => v.id === verb.id);
-                if (qIdx > -1) {
-                    const [unlearnedVerb] = this.queue.splice(qIdx, 1);
-                    this.queue.push(unlearnedVerb);
-                }
-            }
         }
 
         const deckVerbs = this.queue;
@@ -1483,11 +1515,7 @@ class VerbsEngineClass {
     }
 
     speakCurrentCard() {
-        let activeQueue = this.queue;
-        if (this.flashcardFavOnly) {
-            activeQueue = this.queue.filter(w => this.isVerbFavorite(w));
-        }
-
+        const activeQueue = this._getFlashcardQueue();
         const verb = activeQueue[this.currentIndex];
         if (!verb) return;
 
