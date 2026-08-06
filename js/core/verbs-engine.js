@@ -1458,18 +1458,15 @@ class VerbsEngineClass {
         this.isFlipped = false;
         this.showHint = false;
 
-        if (known) {
-            if (this.currentIndex < activeQueue.length - 1) {
-                this.nextCard();
-            } else {
-                this.renderCard();
-            }
+        const newQueue = this._getFlashcardQueue();
+        if (newQueue.length === 0) {
+            this.currentIndex = 0;
         } else {
-            if (this.currentIndex >= activeQueue.length) {
-                this.currentIndex = Math.max(0, activeQueue.length - 1);
-            }
-            this.renderCard();
+            this.currentIndex = (this.currentIndex + 1) % newQueue.length;
         }
+
+        this.renderCard();
+        this.renderTable();
     }
 
     toggleFavorite(verbId) {
