@@ -7,7 +7,7 @@ import { GlossaryEngine } from './glossary.js?v=3';
 import { FlashcardEngine } from './flashcards.js?v=3';
 import { QuizEngine } from './quiz.js?v=3';
 import { TrophyEngine } from './trophies.js?v=3';
-import { speak, cleanTextForAudio, playChime, SpeechQueue } from './tts.js?v=3';
+import { speak, cleanTextForAudio, playChime, SpeechQueue, setSpeakHook } from './tts.js?v=3';
 import { debounce, sanitize } from './utils.js?v=3';
 import { AuthService } from './auth-service.js?v=3';
 import { NavigationService } from './nav-service.js?v=3';
@@ -15,6 +15,7 @@ import { StatsService } from './stats-service.js?v=3';
 import { LeaderboardService } from './leaderboard-service.js?v=3';
 import { ContentLoader } from './content-parser.js?v=3';
 import { getLocalDateString } from './srs-logic.js?v=3';
+import { ActivityService } from './activity-service.js?v=3';
 
 // 1. Load Level Config
 const level = document.querySelector('script[data-level]')?.dataset?.level || 'a1';
@@ -142,6 +143,16 @@ function _save() {
         state.data.studyDates = [...new Set(state.data.studyDates)].sort().slice(-90);
     }
 
+    // WP-040: Prune activity + ttsDaily to prevent unbounded growth (keep last ~400 days)
+    const activityCutoff = getLocalDateString(new Date(Date.now() - 400 * 86400000));
+    const pruneDaily = (map) => {
+        for (const d in map) {
+            if (d < activityCutoff) delete map[d];
+        }
+    };
+    if (state.data.activity) pruneDaily(state.data.activity);
+    if (state.data.ttsDaily) pruneDaily(state.data.ttsDaily);
+
     const payload = {
         known: state.data.known || [],
         favorites: state.data.favorites || [],
@@ -162,6 +173,8 @@ function _save() {
         darkModeToggleCount: state.data.darkModeToggleCount || 0,
         flashcardErrors: state.data.flashcardErrors || {},
         studyDates: state.data.studyDates || [],
+        activity: state.data.activity || {},
+        ttsDaily: state.data.ttsDaily || {},
         migrationVersion: state.data.migrationVersion || 0,
         srsData: state.data.srsData || {},
         lastUpdated: new Date().toISOString()
@@ -244,6 +257,14 @@ const statsService = new StatsService({
 });
 
 const leaderboardService = new LeaderboardService({ state });
+
+// WP-040: GitHub-style learning streak / activity tracker
+const activityService = new ActivityService({
+    state,
+    onSave: () => _save()
+});
+// Every spoken word counts toward the daily TTS listen total (15+ = a learning day)
+setSpeakHook(() => activityService.recordListen());
 
 // ── Initialize Engines ──
 let _enginesReady = false;
@@ -680,6 +701,7 @@ window.app = {
         navService.switchView(v);
         if (v === 'leaderboard') leaderboardService.render();
         if (v === 'dashboard') statsService.updateStats();
+        if (v === 'dashboard') activityService.render();
     },
     switchMode: (m) => navService.switchMode(m),
     toggleSidebar: (e) => navService.toggleSidebar(e),
@@ -971,6 +993,12 @@ window.app = {
     restartFlashcards() { engines.flashcard?.restart(); },
     speakCurrentCard() { engines.flashcard?.speak(); },
     async markCard(known) {
+        // WP-040: Marking a brand-new card as Known counts as learning a new word today
+        const fc = engines.flashcard;
+        const card = fc?.queue?.[fc.index];
+        if (known && card && !fc.knownIds.has(card.id)) {
+            activityService.recordWordLearned();
+        }
         engines.flashcard?.mark(known);
         // WP-022: Record study date on every flashcard interaction
         if (!state.data.studyDates) state.data.studyDates = [];

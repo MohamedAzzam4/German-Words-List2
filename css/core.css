@@ -20,6 +20,11 @@
     --header-text: #0F172A;
     --radius-card: 20px;
     --radius-btn: 16px;
+    --act-0: #EBEDF0;
+    --act-1: #9BE9A8;
+    --act-2: #40C463;
+    --act-3: #30A14E;
+    --act-4: #216E39;
 }
 
 [data-theme="dark"] {
@@ -38,6 +43,11 @@
     --hide-bg: #475569;
     --header-bg: #0F172A;
     --header-text: #F8FAFC;
+    --act-0: #2D333B;
+    --act-1: #0E4429;
+    --act-2: #006D32;
+    --act-3: #26A641;
+    --act-4: #39D353;
     --shadow: 0 4px 15px -3px rgb(0 0 0 / 0.05), 0 2px 6px -2px rgb(0 0 0 / 0.025);
     --shadow-hover: 0 10px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
 }
@@ -634,6 +644,103 @@ th {
     font-weight: bold;
     background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin: 10px 0;
+}
+
+/* ========== Activity / Streak Tracker (GitHub-style) ========== */
+.activity-graph-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.act-months {
+    display: grid;
+    grid-template-columns: 28px repeat(53, 12px);
+    gap: 3px;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    height: 14px;
+}
+
+.act-month {
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.act-month-spacer {
+    content: '';
+}
+
+.act-body {
+    display: flex;
+    gap: 4px;
+}
+
+.act-weekdays {
+    display: grid;
+    grid-template-rows: repeat(7, 12px);
+    gap: 3px;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    width: 28px;
+    justify-items: start;
+}
+
+.act-weekdays span {
+    line-height: 12px;
+}
+
+.act-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 12px);
+    grid-auto-columns: 12px;
+    gap: 3px;
+}
+
+.act-cell {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    background: var(--act-0);
+    cursor: default;
+}
+
+.act-cell.act-today {
+    outline: 1.5px solid var(--text-main);
+    outline-offset: 0;
+}
+
+.act-l1 { background: var(--act-1); }
+.act-l2 { background: var(--act-2); }
+.act-l3 { background: var(--act-3); }
+.act-l4 { background: var(--act-4); }
+
+.act-legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    margin-top: 12px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.act-legend-label {
+    margin: 0 4px;
+}
+
+@media (max-width: 768px) {
+    .act-months { grid-template-columns: 28px repeat(53, 10px); }
+    .act-weekdays { grid-template-rows: repeat(7, 10px); width: 24px; }
+    .act-weekdays span { line-height: 10px; }
+    .act-grid { grid-template-rows: repeat(7, 10px); grid-auto-columns: 10px; }
+    .act-cell { width: 10px; height: 10px; }
 }
 
 .trophy-grid {

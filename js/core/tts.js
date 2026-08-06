@@ -88,8 +88,13 @@ export const speak = (text, lang = 'de') => {
     }
     utterance.rate = lang === 'en' ? 0.95 : 0.85;
 
+    if (speakHook) speakHook(text, lang);
     window.speechSynthesis.speak(utterance);
 };
+
+// WP-040: Optional hook fired right before each spoken word (single + queue paths)
+let speakHook = null;
+export const setSpeakHook = (fn) => { speakHook = fn; };
 
 export const playChime = (frequency = 600, duration = 150) => {
     if (!audioCtx) return;
@@ -209,6 +214,7 @@ class SpeechQueueClass {
             };
 
             this.currentUtterance = utterance;
+            if (speakHook) speakHook(clean, itemLang);
             window.speechSynthesis.speak(utterance);
 
             this._watchdogTimer = setTimeout(() => {

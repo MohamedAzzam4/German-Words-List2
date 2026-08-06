@@ -125,6 +125,24 @@ export const mergeProgress = (local, remote) => {
         ...(remote.studyDates || [])
     ])).sort();
 
+    // WP-040: Merge daily activity counts (keep higher count per day)
+    merged.activity = { ...(local.activity || {}), ...(remote.activity || {}) };
+    for (const d in local.activity) {
+        merged.activity[d] = Math.max(local.activity[d] || 0, merged.activity[d] || 0);
+    }
+    for (const d in remote.activity) {
+        merged.activity[d] = Math.max(remote.activity[d] || 0, merged.activity[d] || 0);
+    }
+
+    // WP-040: Merge daily TTS listen counts (keep higher count per day)
+    merged.ttsDaily = { ...(local.ttsDaily || {}), ...(remote.ttsDaily || {}) };
+    for (const d in local.ttsDaily) {
+        merged.ttsDaily[d] = Math.max(local.ttsDaily[d] || 0, merged.ttsDaily[d] || 0);
+    }
+    for (const d in remote.ttsDaily) {
+        merged.ttsDaily[d] = Math.max(remote.ttsDaily[d] || 0, merged.ttsDaily[d] || 0);
+    }
+
     // Keep most recent timestamps
     merged.lastUpdated = remote.lastUpdated || local.lastUpdated;
     merged.lastStudyDate = remote.lastStudyDate || local.lastStudyDate;
@@ -179,6 +197,8 @@ const getDefaultProgress = () => ({
     columnHideCount: 0,
     darkModeToggleCount: 0,
     studyDates: [],
+    activity: {},
+    ttsDaily: {},
     totalStudyTimeMs: 0,
     flashcardErrors: {},
     phraseErrors: {},
