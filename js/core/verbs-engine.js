@@ -40,6 +40,7 @@ import {
 import { sanitize } from './utils.js';
 import { ActivityService } from './activity-service.js?v=3';
 import { TrophyEngine, VERB_TROPHIES } from './trophies.js?v=3';
+import { LeaderboardService } from './leaderboard-service.js?v=3';
 import { getLocalDateString } from './srs-logic.js?v=3';
 
 class VerbsEngineClass {
@@ -89,6 +90,9 @@ class VerbsEngineClass {
             state: this._activityState,
             onSave: () => this._save()
         });
+
+        // WP-041: Global leaderboard (reuses shared LeaderboardService + #leaderboard-tbody)
+        this.leaderboardService = new LeaderboardService({ state: this });
 
         // WP-041: Trophy shelf for the verbs module (reuses shared TrophyEngine + VERB_TROPHIES)
         this.trophyEngine = null;
@@ -1650,10 +1654,10 @@ class VerbsEngineClass {
         this.switchView(mode);
     }
 
-    // WP-041: Unified view switcher (glossary / flashcard / dashboard / trophies)
+    // WP-041: Unified view switcher (glossary / flashcard / dashboard / trophies / leaderboard)
     switchView(v) {
         this.activeMode = v;
-        const views = ['glossary', 'flashcard', 'dashboard', 'trophies'];
+        const views = ['glossary', 'flashcard', 'dashboard', 'trophies', 'leaderboard'];
         views.forEach(id => {
             const el = document.getElementById(`view-${id}`);
             if (el) el.classList.toggle('hidden', id !== v);
@@ -1665,6 +1669,9 @@ class VerbsEngineClass {
         if (v === 'trophies' && this.trophyEngine) {
             this._evaluateVerbTrophies();
             this.trophyEngine.render();
+        }
+        if (v === 'leaderboard') {
+            this.leaderboardService.render();
         }
 
         const sidebar = document.getElementById('sidebar');

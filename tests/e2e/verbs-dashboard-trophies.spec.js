@@ -168,4 +168,23 @@ test.describe('Verbs Dashboard & Trophy Shelf E2E Suite (WP-041)', () => {
     const deckChampion = await page.locator('.trophy-card.earned', { hasText: 'Deck Champion' }).count();
     expect(deckChampion).toBe(1);
   });
+
+  test('leaderboard view renders the shared table and is reachable via nav and switchView', async ({ page }) => {
+    await seedVerbProgress(page, {});
+    await openVerbs(page);
+
+    // Nav item exists
+    const navItem = page.locator('.nav-item', { hasText: 'Leaderboard' });
+    await expect(navItem).toBeVisible();
+
+    // switchView('leaderboard') unhides view and triggers the shared renderer
+    await page.evaluate(() => window.verbsEngine.switchView('leaderboard'));
+    await expect(page.locator('#view-leaderboard')).not.toHaveClass(/hidden/);
+    await page.waitForSelector('#leaderboard-tbody tr');
+
+    // Renderer resolves the async fetch: loading placeholder is replaced by real rows
+    await expect(page.locator('#leaderboard-tbody tr').first()).not.toHaveText(/Loading ranks/);
+    const rows = await page.locator('#leaderboard-tbody tr').count();
+    expect(rows).toBeGreaterThan(0);
+  });
 });

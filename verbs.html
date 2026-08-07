@@ -1132,6 +1132,10 @@
             <span class="nav-icon">🏆</span>
             <span class="nav-text">Trophy Shelf</span>
         </div>
+        <div class="nav-item" onclick="window.verbsEngine.switchView('leaderboard')">
+            <span class="nav-icon">🌍</span>
+            <span class="nav-text">Leaderboard</span>
+        </div>
     </nav>
 
     <!-- Mobile Drawer Overlay -->
@@ -1367,6 +1371,25 @@
                 <h2 style="margin-bottom: 5px;">🏆 Trophy Shelf</h2>
                 <p style="color: var(--text-muted); margin-bottom: 20px;">Earn badges as you master the German verbs.</p>
                 <div class="trophy-grid" id="verb-trophy-container"></div>
+            </div>
+
+            <!-- VIEW 5: LEADERBOARD VIEW -->
+            <div id="view-leaderboard" class="hidden">
+                <h2 style="margin-bottom: 5px;">🌍 Global Leaderboard</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">See how you rank against all linguists across
+                    the app combined!</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px; text-align: center;">Rank</th>
+                                <th>Linguist</th>
+                                <th style="text-align: center;">Words Mastered (All Levels)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
