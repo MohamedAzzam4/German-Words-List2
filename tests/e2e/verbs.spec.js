@@ -87,11 +87,10 @@ test.describe('Top German Verbs Mastery E2E Suite (Card Recycling & Custom Auto-
     const fcBtn = page.locator('button:has-text("Flashcards")');
     await fcBtn.click();
 
-    const favOnlyBtn = page.locator('#fav-only-btn');
-    await expect(favOnlyBtn).toBeVisible();
-    await favOnlyBtn.click();
-
-    await expect(favOnlyBtn).toHaveText(/Favorites Only: ON/);
+    const filterSelect = page.locator('#flashcard-filter-select');
+    await expect(filterSelect).toBeVisible();
+    await filterSelect.selectOption('fav');
+    await expect(filterSelect).toHaveValue('fav');
   });
 
 });

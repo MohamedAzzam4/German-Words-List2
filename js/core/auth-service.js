@@ -2,7 +2,7 @@
 // Handles all authentication-related operations: login, logout, email auth, auth state
 
 import { loginWithGoogle, logout, loadProgress, saveProgress, loginWithEmailAndPassword, signUpWithEmailAndPassword } from './firebase.js?v=3';
-import { getLocalProgress, getLocalProgressForUser, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js?v=3';
+import { getLocalProgress, getLocalProgressForUser, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js?v=4';
 
 export class AuthService {
     constructor({ auth, state, appId, engines, levelConfig, onSave, showToast }) {

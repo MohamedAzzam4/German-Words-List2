@@ -2,14 +2,14 @@
 // Wires services together; delegates to AuthService, NavigationService, StatsService, LeaderboardService
 
 import { initFirebase, loginWithGoogle, logout, loadProgress, saveProgress, listenAuth, updateLeaderboard, getLeaderboard, batchSaveProgressAndLeaderboard } from './firebase.js?v=3';
-import { getLocalProgress, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js?v=3';
+import { getLocalProgress, saveLocalProgress, mergeProgress, clearLocalProgress, getDefaultProgressObj } from './storage.js?v=4';
 import { GlossaryEngine } from './glossary.js?v=3';
 import { FlashcardEngine } from './flashcards.js?v=3';
 import { QuizEngine } from './quiz.js?v=3';
 import { TrophyEngine } from './trophies.js?v=3';
 import { speak, cleanTextForAudio, playChime, SpeechQueue, setSpeakHook } from './tts.js?v=3';
 import { debounce, sanitize } from './utils.js?v=3';
-import { AuthService } from './auth-service.js?v=3';
+import { AuthService } from './auth-service.js?v=4';
 import { NavigationService } from './nav-service.js?v=3';
 import { StatsService } from './stats-service.js?v=3';
 import { LeaderboardService } from './leaderboard-service.js?v=3';

@@ -1,0 +1,228 @@
+/* Guided Challenge — adaptive learning workflow for the verbs module */
+
+.guided-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.guided-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.guided-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.guided-phase-badge {
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 5px 14px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.guided-progress-wrap {
+    flex: 1;
+    min-width: 140px;
+    max-width: 280px;
+}
+
+.guided-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.guided-progress-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.guided-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4F46E5, #7C3AED);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* The main card */
+.guided-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 26px 24px;
+    margin-bottom: 16px;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.guided-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.guided-prompt-main {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    word-break: break-word;
+    margin-bottom: 10px;
+    line-height: 1.25;
+}
+
+.guided-prompt-sub {
+    font-size: 1.05rem;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+.guided-prompt-example {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.guided-example-en {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    opacity: 0.85;
+    margin-top: 2px;
+}
+
+.guided-spacer-note {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--warning);
+    margin-top: 8px;
+}
+
+/* Revealed answer area */
+.guided-answer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+}
+
+.guided-answer-main {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--success);
+    word-break: break-word;
+    margin-bottom: 6px;
+}
+
+/* Milestone / transition banner */
+.guided-milestone {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.guided-milestone-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.guided-milestone-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, #4F46E5, #7C3AED);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.guided-milestone-sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
+
+/* Controls */
+.guided-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.guided-controls .btn {
+    min-width: 120px;
+}
+
+.guided-btn-answer {
+    padding: 12px 26px;
+    font-size: 1rem;
+}
+
+/* Complete screen */
+.guided-complete {
+    text-align: center;
+    padding: 30px 10px;
+}
+
+.guided-complete-icon {
+    font-size: 4rem;
+    margin-bottom: 12px;
+}
+
+.guided-complete-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.guided-complete-sub {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .guided-prompt-main {
+        font-size: 1.7rem;
+    }
+    .guided-card {
+        padding: 20px 16px;
+        min-height: 220px;
+    }
+    .guided-controls .btn {
+        min-width: 100px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+}

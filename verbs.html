@@ -7,6 +7,7 @@
     <title>🇩🇪 Top German Verbs Mastery (50-Verb Decks)</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="stylesheet" href="css/core.css">
+    <link rel="stylesheet" href="css/verb-challenge.css">
     <style>
         /* Robust App Viewport & Fixed Header Layout */
         html, body {
@@ -1181,6 +1182,8 @@
                             <option value="irreg">⚡ Irregular Verbs</option>
                         </select>
                         <button class="btn primary" onclick="window.verbsEngine.switchMode('flashcard')">🃏 Flashcards Mode</button>
+                        <button class="btn" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; border: none;" onclick="window.verbsEngine.startGuidedChallenge()">🎯 Guided Challenge</button>
+                        <button class="btn" onclick="window.verbsEngine.startChallengeReview()">📅 Daily Review</button>
                     </div>
                 </div>
 
@@ -1299,6 +1302,17 @@
                 <div class="verb-flashcard-wrapper" id="verbs-card-working-area">
                     <!-- Flashcard rendered dynamically -->
                 </div>
+            </div>
+
+            <!-- VIEW 3: GUIDED CHALLENGE VIEW -->
+            <div id="view-guided" class="hidden">
+                <div class="controls-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.exitGuidedChallenge()">⬅ Back to List</button>
+                    <button id="guided-restart-btn" class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="window.verbsEngine.restartGuidedChallenge()">🔄 Restart Challenge</button>
+                </div>
+
+                <!-- Guided Challenge content rendered dynamically -->
+                <div id="guided-challenge-root"></div>
             </div>
 
             <!-- VIEW 3: DASHBOARD VIEW -->
@@ -1422,7 +1436,7 @@
     </div>
 
     <script type="module">
-        import { VerbsEngine } from './js/core/verbs-engine.js';
+        import { VerbsEngine } from './js/core/verbs-engine.js?v=4';
         document.addEventListener('DOMContentLoaded', () => {
             VerbsEngine.init();
         });

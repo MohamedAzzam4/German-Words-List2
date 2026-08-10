@@ -35,13 +35,26 @@ import {
     saveLocalProgress, 
     mergeProgress, 
     clearLocalProgress, 
-    getDefaultProgressObj 
-} from './storage.js?v=3';
-import { sanitize } from './utils.js';
+    getDefaultProgressObj,
+    mergeVerbRecord
+} from './storage.js?v=4';
+import { sanitize, debounce } from './utils.js';
 import { ActivityService } from './activity-service.js?v=3';
 import { TrophyEngine, VERB_TROPHIES } from './trophies.js?v=3';
 import { LeaderboardService } from './leaderboard-service.js?v=3';
-import { getLocalDateString } from './srs-logic.js?v=3';
+import { getLocalDateString, calculateNextReview } from './srs-logic.js?v=3';
+import {
+    VerbChallengeEngine,
+    PHASE_ACQUISITION,
+    PHASE_RECOGNITION,
+    PHASE_PRODUCTION,
+    PHASE_REVIEW,
+    PHASE_COMPLETE
+} from './verb-challenge-engine.js';
+
+// Review sessions live under their own storage slot so they can never be
+// mistaken for (or overwrite) a learning session for whatever deckId they span.
+const REVIEW_SESSION_KEY = '__daily_review__';
 
 class VerbsEngineClass {
     constructor() {
@@ -96,6 +109,18 @@ class VerbsEngineClass {
 
         // WP-041: Trophy shelf for the verbs module (reuses shared TrophyEngine + VERB_TROPHIES)
         this.trophyEngine = null;
+
+        // Guided Challenge state
+        this.challengeEngine = new VerbChallengeEngine();
+        this.challengeSession = null;   // active learning/review session snapshot
+        this.challengePresentation = null; // current presentation model
+        this.challengeRevealed = false; // whether the recall back side is revealed
+        this.challengePromptStartedAt = null; // performance.now() when a scored recall prompt was first shown
+        this.challengeRecallLatencyMs = null; // frozen prompt-to-reveal latency (set on Reveal)
+        this._challengePromptId = null;    // stable presentation identity (phase + verbId + turn)
+        this._challengeRenderToken = 0; // minted every render; guards stale button clicks
+        this._challengeVerbMap = null;  // verbId → verb (whole dataset)
+        this._guidedSave = debounce(() => this._save(), 2500);
     }
 
     async init() {
@@ -131,6 +156,10 @@ class VerbsEngineClass {
                 this.userData.ttsCount = (this.userData.ttsCount || 0) + 1;
                 this.activityService.recordListen();
             });
+
+            // Guided Challenge: collapse legacy knownVerbIds aliases into canonical ids
+            this._buildChallengeVerbMap();
+            this._migrateCanonicalVerbIds();
 
             // WP-041: Trophy shelf for the verbs module
             this.trophyEngine = new TrophyEngine(
@@ -183,6 +212,11 @@ class VerbsEngineClass {
         this._activityState.data = this.userData;
         if (this.trophyEngine) this.trophyEngine.render();
 
+        // Post-auth: collapse legacy alias keys into canonical verb ids so the
+        // merged dataset, leaderboard counts and guided-challenge lookups all
+        // agree on one stable identity per verb.
+        this._migrateCanonicalVerbIds();
+
         this.renderAuthUI();
         this.renderDeckTracker();
         this.loadDeck(this.currentDeckId);
@@ -213,7 +247,10 @@ class VerbsEngineClass {
 
         if (this.uid && this.auth) {
             fbSaveProgress(this.appId, this.uid, this.userData);
-            const knownCount = (this.userData.knownVerbIds || []).length;
+            // Count unique known verbs against canonical ids (migrated aliases collapse)
+            const knownCount = this.dataset
+                ? new Set(this.dataset.decks.flatMap(d => d.verbs).filter(v => this.isVerbKnown(v)).map(v => v.id)).size
+                : (this.userData.knownVerbIds || []).length;
             const displayName = this.auth.currentUser?.displayName || this.auth.currentUser?.email || "Linguist";
             const photoURL = this.auth.currentUser?.photoURL || "";
             updateLeaderboard(this.appId, this.uid, displayName, photoURL, knownCount);
@@ -574,12 +611,16 @@ class VerbsEngineClass {
     }
 
     isVerbKnown(w) {
-        if (!w || !this.userData.knownVerbIds) return false;
-        const known = this.userData.knownVerbIds;
+        if (!w || !this.userData) return false;
+        const known = Array.isArray(this.userData.knownVerbIds) ? this.userData.knownVerbIds : [];
         const inf = (w.infinitive || '').toLowerCase();
         const id = w.id;
 
-        return known.includes(id) || known.includes(w.infinitive) || known.includes(inf) || known.includes(`v_${inf}`);
+        const legacyKnown = known.includes(id) || known.includes(w.infinitive) || known.includes(inf) || known.includes(`v_${inf}`);
+
+        // Guided Challenge mastery (recognition or production win) also counts
+        const guided = this.userData.verbLearning?.verbs?.[id];
+        return legacyKnown || !!(guided && (guided.recognitionWin || guided.productionWin));
     }
 
     isVerbFavorite(w) {
@@ -1532,8 +1573,6 @@ class VerbsEngineClass {
 
         if (known) {
             if (!this.userData.knownVerbIds.includes(id)) this.userData.knownVerbIds.push(id);
-            if (!this.userData.knownVerbIds.includes(verb.infinitive)) this.userData.knownVerbIds.push(verb.infinitive);
-            if (!this.userData.knownVerbIds.includes(inf)) this.userData.knownVerbIds.push(inf);
             if (!wasKnown) {
                 this.activityService.recordWordLearned();
                 this._recordStudyDate();
@@ -1657,7 +1696,7 @@ class VerbsEngineClass {
     // WP-041: Unified view switcher (glossary / flashcard / dashboard / trophies / leaderboard)
     switchView(v) {
         this.activeMode = v;
-        const views = ['glossary', 'flashcard', 'dashboard', 'trophies', 'leaderboard'];
+        const views = ['glossary', 'flashcard', 'guided', 'dashboard', 'trophies', 'leaderboard'];
         views.forEach(id => {
             const el = document.getElementById(`view-${id}`);
             if (el) el.classList.toggle('hidden', id !== v);
@@ -1720,6 +1759,889 @@ class VerbsEngineClass {
                 </tr>`;
             }).join('');
         }
+    }
+
+    // ── GUIDED CHALLENGE (adaptive learning workflow) ──
+
+    _buildChallengeVerbMap() {
+        this._challengeVerbMap = Object.create(null);
+        for (const deck of this.dataset.decks) {
+            for (const v of deck.verbs) {
+                this._challengeVerbMap[v.id] = v;
+            }
+        }
+    }
+
+    _ensureVerbLearning() {
+        if (!this.userData.verbLearning) {
+            this.userData.verbLearning = { schemaVersion: 2, verbs: {}, sessions: {} };
+        }
+        if (!this.userData.verbLearning.verbs) this.userData.verbLearning.verbs = {};
+        if (!this.userData.verbLearning.sessions) this.userData.verbLearning.sessions = {};
+    }
+
+    _sessionKey(s) {
+        if (!s) return null;
+        return s.sessionType === 'review' ? REVIEW_SESSION_KEY : s.deckId;
+    }
+
+    _storedChallengeSession(deckId) {
+        const s = this.userData?.verbLearning?.sessions?.[deckId];
+        if (s && s.sessionType === 'learning' && s.deckId === deckId && s.phase !== PHASE_COMPLETE && s.phase !== undefined) return s;
+        return null;
+    }
+
+    _storedReviewSession() {
+        const s = this.userData?.verbLearning?.sessions?.[REVIEW_SESSION_KEY];
+        if (s && s.sessionType === 'review' && s.phase !== PHASE_COMPLETE && s.phase !== undefined) return s;
+        return null;
+    }
+
+    _saveChallengeSession() {
+        if (!this.challengeSession) return;
+        this._ensureVerbLearning();
+        const s = this.challengeSession;
+        s.updatedAt = Date.now();
+        this.userData.verbLearning.sessions[this._sessionKey(s)] = s;
+        // persist the resumable snapshot to local storage immediately, then
+        // the debounced full save covers cloud + leaderboard + study time
+        saveLocalProgress(this.appId, this.userData, this.uid);
+        this._guidedSave();
+    }
+
+    _clearChallengeSession(s) {
+        this._ensureVerbLearning();
+        const key = this._sessionKey(s);
+        if (key) {
+            delete this.userData.verbLearning.sessions[key];
+        }
+        this.challengeSession = null;
+        this.challengePresentation = null;
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this._guidedSave();
+    }
+
+    _resetChallengeTimer() {
+        this._challengePromptId = null;
+        this.challengePromptStartedAt = null;
+        this.challengeRecallLatencyMs = null;
+    }
+
+    _challengePresentationId(p) {
+        return `${p.phase}:${p.verbId}:${p.turn}`;
+    }
+
+    // Start timing exactly when a scored recall presentation is first displayed.
+    // Re-rendering the same presentation identity keeps the running timer; a
+    // different presentation (or any non-recall screen) starts a fresh timer.
+    _syncChallengeTimer(p) {
+        if (!p || p.kind !== 'recall' || p.spacer) {
+            this._challengePromptId = null;
+            this.challengePromptStartedAt = null;
+            this.challengeRecallLatencyMs = null;
+            return;
+        }
+        const id = this._challengePresentationId(p);
+        if (id !== this._challengePromptId) {
+            this._challengePromptId = id;
+            this.challengePromptStartedAt = (typeof performance !== 'undefined' && typeof performance.now === 'function')
+                ? performance.now()
+                : Date.now();
+            this.challengeRecallLatencyMs = null;
+        }
+    }
+
+    startGuidedChallenge() {
+        if (!this.dataset) return;
+        this._buildChallengeVerbMap();
+        this._migrateCanonicalVerbIds();
+        const deckId = this.currentDeckId;
+        const stored = this._storedChallengeSession(deckId);
+        if (stored) {
+            this.challengeSession = stored;
+        } else {
+            const deck = this.dataset.decks.find(d => d.deckId === deckId);
+            if (!deck) return;
+            this._clearChallengeSession({ deckId }); // remove any stale snapshot
+            this.challengeSession = this.challengeEngine.createLearningSession({
+                deckId,
+                verbIds: deck.verbs.map(v => v.id)
+            });
+        }
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.switchView('guided');
+        this.renderGuidedChallenge();
+        this._onChallengeViewOpen();
+    }
+
+    _onChallengeViewOpen() {
+        // Persistence flush hooks for the guided session. Bound once so each
+        // visit to the guided view cannot stack duplicate listeners.
+        if (this._challengeViewHooksBound) return;
+        this._challengeViewHooksBound = true;
+        const flush = () => {
+            if (this.challengeSession) {
+                this._ensureVerbLearning();
+                const s = this.challengeSession;
+                s.updatedAt = Date.now();
+                this.userData.verbLearning.sessions[this._sessionKey(s)] = s;
+                this._save();
+            }
+        };
+        const onVis = () => {
+            if (document.visibilityState === 'hidden') flush();
+        };
+        window.addEventListener('beforeunload', flush);
+        document.addEventListener('visibilitychange', onVis);
+    }
+
+    _challengeVerb(verbId) {
+        if (this._challengeVerbMap && this._challengeVerbMap[verbId]) return this._challengeVerbMap[verbId];
+        if (!this.dataset) return null;
+        for (const deck of this.dataset.decks) {
+            const v = deck.verbs.find(x => x.id === verbId || (x.infinitive || '').toLowerCase() === String(verbId).toLowerCase());
+            if (v) return v;
+        }
+        return null;
+    }
+
+    _challengeProgress() {
+        const s = this.challengeSession;
+        if (!s) return { ready: 0, total: 0, percent: 0 };
+        const p = this.challengeEngine.phaseProgress(s);
+        if (s.sessionType === 'review') {
+            // Progress reflects cards finished in ALREADY-COMPLETED tracks plus
+            // cards passed inside the CURRENT track, so the bar moves card-by-card
+            // during each review track instead of jumping only at track boundaries.
+            const completed = s.completedTracks || [];
+            const finishedCount = s.reviewItems.filter(it => completed.includes(it.track) && it.track !== s.phase).length;
+            const total = s.reviewItems.length;
+            const inTrack = (p && typeof p.ready === 'number') ? p.ready : ((p && typeof p.passed === 'number') ? p.passed : 0);
+            const ready = finishedCount + inTrack;
+            return { ready: Math.min(ready, total), total, percent: total ? Math.round((Math.min(ready, total) / total) * 100) : 0 };
+        }
+        const done = p.ready !== undefined ? p.ready : (p.passed || 0);
+        return {
+            ready: done,
+            total: p.total,
+            percent: p.total ? Math.round((done / p.total) * 100) : 0
+        };
+    }
+
+    _phaseBadgeText(phase) {
+        if (!phase) return '';
+        const map = {
+            [PHASE_ACQUISITION]: 'Acquisition',
+            [PHASE_RECOGNITION]: 'Recognition',
+            [PHASE_PRODUCTION]: 'Production',
+            [PHASE_REVIEW]: 'Daily Review'
+        };
+        return map[phase] || phase;
+    }
+
+    renderGuidedChallenge() {
+        const root = document.getElementById('guided-challenge-root');
+        if (!root) return;
+        const s = this.challengeSession;
+        if (!s) {
+            root.innerHTML = '';
+            return;
+        }
+        // A finalized session keeps rendering its last completion screen from
+        // memory so it does not blank out before the user clicks Finish.
+        const p = this.challengePresentation = (s.phase === PHASE_COMPLETE && this.challengePresentation && this.challengePresentation.kind === 'complete')
+            ? this.challengePresentation
+            : this.challengeEngine.nextPresentation(s);
+        if (!p) {
+            root.innerHTML = '';
+            return;
+        }
+        this._syncChallengeTimer(p);
+        // Mint a fresh token for this render. Action buttons carry the token,
+        // so a click that reaches the controller from a superseded render
+        // (the same physical button pressed twice) can be rejected as stale.
+        this._challengeRenderToken += 1;
+        const prog = this._challengeProgress();
+        const phaseBadge = this._phaseBadgeText(s.phase);
+        const restartBtn = document.getElementById('guided-restart-btn');
+        if (restartBtn) {
+            if (s.sessionType === 'review') {
+                // Daily Review MVP has no restart action: hide the button so the
+                // only ways forward are Exit (Back to List) and Resume (refresh).
+                restartBtn.style.display = 'none';
+                restartBtn.hidden = true;
+            } else {
+                restartBtn.textContent = '🔄 Restart Challenge';
+                restartBtn.style.display = '';
+                restartBtn.hidden = false;
+            }
+        }
+
+        let bodyHTML = '';
+
+        if (p.kind === 'transition') {
+            bodyHTML = this.renderChallengeTransition(p);
+        } else if (p.kind === 'complete') {
+            bodyHTML = this.renderChallengeComplete(p);
+        } else if (p.kind === 'intro') {
+            bodyHTML = this.renderChallengeIntro(p);
+        } else if (p.kind === 'recall') {
+            bodyHTML = this.renderChallengeRecall(p);
+        }
+
+        const html = `
+            <div class="guided-container">
+                <div class="guided-topbar">
+                    <div class="guided-topbar-left">
+                        <span class="guided-phase-badge">${phaseBadge}</span>
+                        <div class="guided-progress-wrap">
+                            <div class="guided-progress-label">
+                                <span>Progress</span>
+                                <span>${prog.ready} / ${prog.total} (${prog.percent}%)</span>
+                            </div>
+                            <div class="guided-progress-track">
+                                <div class="guided-progress-fill" style="width: ${prog.percent}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ${bodyHTML}
+            </div>
+        `;
+        root.innerHTML = html;
+    }
+
+    renderChallengeTransition(p) {
+        const s = this.challengeSession;
+        const isReview = s.sessionType === 'review' || p.review;
+        let title = '';
+        let sub = '';
+        if (isReview) {
+            const toLabel = this._phaseBadgeText(p.to);
+            title = `Continuing to ${toLabel}`;
+            sub = p.from === PHASE_REVIEW
+                ? 'Your daily review round is ready.'
+                : `${toLabel} track complete — moving to the next one.`;
+        } else if (p.from === PHASE_ACQUISITION) {
+            title = 'Acquisition Complete!';
+            sub = `You have introduced all ${p.ready || ''} verbs in the pool. Time to test your recognition.`;
+        } else {
+            title = 'Phase Complete!';
+            sub = 'Time to move on.';
+        }
+        return `
+            <div class="guided-card">
+                <div class="guided-milestone">
+                    <div class="guided-milestone-icon">🎯</div>
+                    <div class="guided-milestone-title">${title}</div>
+                    <div class="guided-milestone-sub">${sub}</div>
+                    <div class="guided-controls">
+                        <button class="btn primary guided-btn-answer" onclick="window.verbsEngine.challengeContinue(${this._challengeRenderToken})">
+                            Continue${p.to ? ` to ${this._phaseBadgeText(p.to)}` : ''} →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    renderChallengeComplete(p) {
+        const s = this.challengeSession;
+        const isReview = s.sessionType === 'review' || p.win === 'review' || p.win === PHASE_REVIEW;
+        let title, subtitle;
+        if (isReview) {
+            title = 'Review Finished! 🎉';
+            subtitle = `You reviewed ${p.total || s.reviewItems.length || 0} cards and kept your German sharp. New reviews are scheduled in your SRS timeline.`;
+        } else if (p.win === PHASE_PRODUCTION) {
+            title = 'Second Win! 🏆';
+            subtitle = `You recalled the German forms of every verb in the deck. True production mastery!`;
+        } else {
+            title = 'First Win! 🥇';
+            subtitle = `You recalled the meaning of every verb in the deck. Recognition complete.`;
+        }
+        return `
+            <div class="guided-card guided-complete">
+                <div class="guided-complete-icon">${isReview ? '🎉' : p.win === PHASE_PRODUCTION ? '🏆' : '🥇'}</div>
+                <div class="guided-complete-title">${title}</div>
+                <div class="guided-complete-sub">${subtitle}</div>
+                <div class="guided-controls">
+                    ${!isReview && p.win === PHASE_RECOGNITION ? `
+                        <button class="btn primary" onclick="window.verbsEngine.challengeStartProduction(${this._challengeRenderToken})">🚀 Continue to Production</button>
+                    ` : ''}
+                    <button class="btn" onclick="window.verbsEngine.exitGuidedChallenge(true)">✅ Finish</button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderChallengeIntro(p) {
+        const v = this._challengeVerb(p.verbId);
+        if (!v) return '';
+        const examplePairs = this._getExamplePairs(v);
+        const ex = examplePairs[0];
+        const de = sanitize(ex?.de || '');
+        const en = ex?.en ? sanitize(ex.en) : '';
+        return `
+            <div class="guided-card">
+                <div class="guided-label">New Word</div>
+                <div class="guided-prompt-main">${sanitize(v.infinitive)}</div>
+                <div class="guided-prompt-sub">${sanitize(v.meaning)}</div>
+                ${de ? `<div class="guided-prompt-example">💬 ${de}</div>` : ''}
+                ${en ? `<div class="guided-example-en">🔤 ${en}</div>` : ''}
+                <div class="guided-spacer-note" style="display:none;"></div>
+                <div class="guided-controls">
+                    <button class="btn" onclick="window.verbsEngine.challengeSpeakVerb('${p.verbId}')">🔊 Listen</button>
+                    <button class="btn primary guided-btn-answer" onclick="window.verbsEngine.challengeIntroDone(${this._challengeRenderToken})">Got it — Continue →</button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderChallengeRecall(p) {
+        const v = this._challengeVerb(p.verbId);
+        if (!v) return '';
+        const isSpacer = !!p.spacer;
+        const dir = p.direction;
+        const examplePairs = this._getExamplePairs(v);
+        const ex = examplePairs[0];
+
+        let frontLabel, frontMain, backMain;
+        if (dir === 'en-to-de') {
+            frontLabel = 'Meaning (English)';
+            frontMain = sanitize(v.meaning);
+            backMain = sanitize(v.infinitive);
+        } else {
+            frontLabel = 'Verb (German)';
+            frontMain = sanitize(v.infinitive);
+            backMain = sanitize(v.meaning) + (ex ? ` — ${sanitize(ex.de)}` : '');
+        }
+
+        const revealed = this.challengeRevealed;
+        const spacer = this.challengePresentation && this.challengePresentation.spacer;
+        const spacerNote = spacer
+            ? '<div class="guided-spacer-note">Spacing card — this card is a non-scored spacer.</div>'
+            : '';
+
+        const answerHTML = revealed ? `
+            <div class="guided-answer">
+                <div class="guided-answer-main">${backMain}</div>
+                ${ex ? `<div class="guided-example-en">💬 ${sanitize(ex.de)}</div>` : ''}
+            </div>
+        ` : '';
+
+        // German audio is feedback after the answer is revealed. It never runs
+        // automatically and is never offered on the Production front.
+        const listenBtn = (revealed && !isSpacer)
+            ? `<button class="btn" onclick="window.verbsEngine.challengeSpeakVerb('${p.verbId}')">🔊 Listen</button>`
+            : '';
+
+        let controls = '';
+        if (isSpacer) {
+            // Spacer feedback: reveal, show the answer, continue without grading.
+            controls = revealed
+                ? `
+                    <div class="guided-controls">
+                        <button class="btn primary guided-btn-answer" onclick="window.verbsEngine.challengeDismissSpacer(${this._challengeRenderToken})">Continue →</button>
+                    </div>`
+                : `
+                    <div class="guided-controls">
+                        <button class="btn btn-primary guided-btn-answer" onclick="window.verbsEngine.challengeRevealAnswer()">👁 Reveal Answer</button>
+                    </div>`;
+        } else if (!revealed) {
+            controls = `
+                <div class="guided-controls">
+                    <button class="btn btn-primary guided-btn-answer" onclick="window.verbsEngine.challengeRevealAnswer()">👁 Reveal Answer</button>
+                </div>`;
+        } else {
+            controls = `
+                <div class="guided-controls">
+                    ${listenBtn}
+                    <button class="btn primary" onclick="window.verbsEngine.challengeGrade(true, ${this._challengeRenderToken})">✅ I knew it</button>
+                    <button class="btn danger" onclick="window.verbsEngine.challengeGrade(false, ${this._challengeRenderToken})">❌ I forgot</button>
+                </div>`;
+        }
+
+        return `
+            <div class="guided-card">
+                <div class="guided-label">${frontLabel}</div>
+                <div class="guided-prompt-main">${frontMain}</div>
+                ${p.forced && !p.spacer ? '<div class="guided-spacer-note">Scheduled review — take your time.</div>' : ''}
+                ${spacerNote}
+                ${answerHTML}
+            </div>
+            ${controls}
+        `;
+    }
+
+    challengeSpeakVerb(verbId) {
+        const v = this._challengeVerb(verbId);
+        if (v) speak(cleanTextForAudio(v.infinitive), 'de');
+    }
+
+    challengeContinue(token) {
+        const s = this.challengeSession;
+        const p = this.challengePresentation;
+        if (!s || !p || p.kind !== 'transition') return;
+        // Presentation-token guard: a click carrying an older token is a stale
+        // duplicate from a superseded render and must NOT advance the phase the
+        // screen has already moved on to.
+        if (typeof token !== 'number' || token !== this._challengeRenderToken) return;
+        if (p.review) {
+            const track = p.to || (s.phase === PHASE_RECOGNITION ? PHASE_PRODUCTION : PHASE_RECOGNITION);
+            // Explicitly close the finished track, then move to the next one.
+            this.challengeEngine.completeReviewTrack(s);
+            this.challengeEngine.startReviewTrack(s, track);
+        } else if (p.to === PHASE_RECOGNITION) {
+            this.challengeEngine.startPhase(s, PHASE_RECOGNITION);
+        } else if (p.to === PHASE_PRODUCTION) {
+            this.challengeEngine.startPhase(s, PHASE_PRODUCTION);
+        }
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.renderGuidedChallenge();
+        this._saveChallengeSession();
+    }
+
+    challengeStartProduction(token) {
+        const s = this.challengeSession;
+        if (!s || s.sessionType !== 'learning') return;
+        const p = this.challengePresentation;
+        if (!p || p.kind !== 'complete' || p.win !== PHASE_RECOGNITION) return;
+        // Presentation-token guard: only the current completion render may
+        // advance into Production.
+        if (typeof token !== 'number' || token !== this._challengeRenderToken) return;
+        this.challengeEngine.startPhase(s, PHASE_PRODUCTION);
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.renderGuidedChallenge();
+        this._saveChallengeSession();
+    }
+
+    challengeRevealAnswer() {
+        if (this.challengeRevealed) return;
+        this.challengeRevealed = true;
+        // Stop and freeze the prompt-to-reveal timing. Everything that happens
+        // after Reveal (reading the answer, choosing “I knew it”) must not
+        // affect the graded recall latency.
+        if (this.challengePromptStartedAt !== null && this.challengePromptStartedAt !== undefined) {
+            const now = (typeof performance !== 'undefined' && typeof performance.now === 'function')
+                ? performance.now()
+                : Date.now();
+            this.challengeRecallLatencyMs = now - this.challengePromptStartedAt;
+        } else {
+            this.challengeRecallLatencyMs = null;
+        }
+        this.challengePromptStartedAt = null;
+        this.renderGuidedChallenge();
+    }
+
+    challengeDismissSpacer(token) {
+        const s = this.challengeSession;
+        const p = this.challengePresentation;
+        if (!s || !p) return;
+        // Stale spacer button: a second click on a superseded render must never
+        // dismiss the card the screen has already moved on to.
+        if (typeof token !== 'number' || token !== this._challengeRenderToken) return;
+        this.challengePresentation = this.challengeEngine.dismissSpacer(s, p.verbId);
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.renderGuidedChallenge();
+        this._saveChallengeSession();
+    }
+
+    challengeGrade(remembered, token) {
+        const s = this.challengeSession;
+        const p = this.challengePresentation;
+        if (!s || !p) return;
+        // Presentation-token guard: every render mints a fresh token embedded
+        // in the grade buttons. A click carrying an older token is a stale
+        // duplicate from a superseded render (e.g. a second click on the same
+        // button) and must NOT grade the card the screen has moved on to.
+        if (typeof token !== 'number' || token !== this._challengeRenderToken) return;
+        if (p.spacer) {
+            this.challengeDismissSpacer(token);
+            return;
+        }
+        // The graded latency is the FROZEN prompt-to-reveal value captured when
+        // the answer was revealed. Invalid latencies pass through to the engine,
+        // which never treats unknown/NaN values as fast.
+        const latencyMs = this.challengeRecallLatencyMs;
+        const outcome = this.challengeEngine.grade(s, p.verbId, remembered === true, latencyMs);
+        // A neutral `ignored` outcome (absent card or replayed terminal event)
+        // is a complete no-op: nothing is re-applied, no state, no persistence.
+        if (outcome.ignored) return;
+        this._applyChallengeOutcome(outcome);
+        this.challengePresentation = outcome.next;
+        if (outcome.next && outcome.next.kind === 'complete') {
+            if (s.sessionType === 'review') {
+                if (outcome.next.win === 'review') {
+                    this.challengeEngine.completeReviewTrack(s);
+                    this.challengeEngine.finishSession(s);
+                }
+            } else if (outcome.next.win === PHASE_RECOGNITION) {
+                // First Win: commit recognition mastery for every verb in the
+                // deck atomically (idempotent), then keep the session resumable
+                // on its completion screen so Production may be chosen later.
+                this._commitLearningPhaseWin(s, PHASE_RECOGNITION);
+            } else if (outcome.next.win === PHASE_PRODUCTION) {
+                // Second Win: commit production atomically and seal the session.
+                this._commitLearningPhaseWin(s, PHASE_PRODUCTION);
+                this.challengeEngine.finishSession(s);
+            }
+        }
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.renderGuidedChallenge();
+        this._saveChallengeSession();
+    }
+
+    _ensureVerbRecord(verbId, infinitive) {
+        this._ensureVerbLearning();
+        const existing = this.userData.verbLearning.verbs[verbId];
+        if (existing) {
+            if (!existing.productionSrs) existing.productionSrs = { level: 0, nextReviewDate: '' };
+            if (!existing.srs) existing.srs = { level: 0, nextReviewDate: '' };
+            return existing;
+        }
+        const record = {
+            recognitionWin: null,
+            productionWin: null,
+            srs: { level: 0, nextReviewDate: '' },
+            productionSrs: { level: 0, nextReviewDate: '' },
+            updatedAt: 0,
+            infinitive: infinitive || ''
+        };
+        this.userData.verbLearning.verbs[verbId] = record;
+        return record;
+    }
+
+    _buildReviewStartLevels(items) {
+        const levels = {};
+        for (const item of items) {
+            const rec = this.userData?.verbLearning?.verbs?.[item.verbId];
+            const srsObj = item.track === PHASE_PRODUCTION ? rec?.productionSrs : rec?.srs;
+            levels[`${item.track}:${item.verbId}`] = (srsObj && typeof srsObj.level === 'number') ? srsObj.level : 0;
+        }
+        return levels;
+    }
+
+    _reviewStartLevel(s, phase, verbId) {
+        const key = `${phase}:${verbId}`;
+        const levels = (s && s.reviewStartLevels) || {};
+        if (levels[key] !== undefined && levels[key] !== null) return levels[key];
+        const rec = this.userData?.verbLearning?.verbs?.[verbId];
+        const srsObj = phase === PHASE_PRODUCTION ? rec?.productionSrs : rec?.srs;
+        return (srsObj && typeof srsObj.level === 'number') ? srsObj.level : 0;
+    }
+
+    _applyChallengeOutcome(outcome) {
+        const s = this.challengeSession;
+        if (!outcome) return;
+        if (!s || s.sessionType !== 'review') {
+            // Learning sessions keep all card progress inside the resumable
+            // session. Official wins and first SRS scheduling are committed
+            // atomically only when a whole phase completes (see _commitLearningPhaseWin),
+            // so acquisition and partial recognition never create mastery records.
+            return;
+        }
+        const phase = outcome.phase || s.phase;
+        const verb = this._challengeVerb(outcome.verbId);
+        if (!verb) return;
+
+        const record = this._ensureVerbRecord(verb.id, verb.infinitive);
+        const nowIso = new Date().toISOString();
+
+        // Daily review: long-term SRS is updated EXACTLY ONCE, when the card
+        // reaches its terminal same-session pass. Forgot / slow Remembered /
+        // intermediate recovery attempts stay only in the resumable session.
+        if (!outcome.passed) return;
+
+        const card = s.cardStateById && s.cardStateById[outcome.verbId];
+        const hadForgot = !!(card && card.failCount > 0);
+        const correct = !hadForgot;
+        const startLevel = this._reviewStartLevel(s, phase, verb.id);
+
+        if (phase === PHASE_PRODUCTION) {
+            record.productionSrs = calculateNextReview(startLevel, true, correct, nowIso);
+            if (correct && !record.productionWin) record.productionWin = nowIso;
+            record.productionUpdatedAt = nowIso;
+        } else {
+            record.srs = calculateNextReview(startLevel, true, correct, nowIso);
+            if (correct && !record.recognitionWin) record.recognitionWin = nowIso;
+            record.recognitionUpdatedAt = nowIso;
+        }
+        record.updatedAt = Date.now();
+    }
+
+    // Atomically commit the official First Win (recognition) or Second Win
+    // (production) for EVERY verb in the deck once the whole phase completed.
+    // Idempotent: re-rendering, refreshing, or clicking Finish twice cannot
+    // double-count the activity or duplicate wins.
+    _commitLearningPhaseWin(s, phase) {
+        if (!s || s.sessionType !== 'learning') return;
+        this._ensureVerbLearning();
+        if (!s.committedWins) s.committedWins = [];
+        if (s.committedWins.includes(phase)) return;
+        s.committedWins.push(phase);
+
+        const nowIso = new Date().toISOString();
+        const nowNum = Date.now();
+        let newRecognized = 0;
+        let newProduced = 0;
+        for (const verbId of s.orderIds || []) {
+            const verb = this._challengeVerb(verbId);
+            if (!verb) continue;
+            const record = this._ensureVerbRecord(verbId, verb.infinitive);
+            if (phase === PHASE_RECOGNITION) {
+                if (!record.recognitionWin) {
+                    record.recognitionWin = nowIso;
+                    record.recognitionUpdatedAt = nowIso;
+                    newRecognized += 1;
+                }
+                if (!record.srs || !record.srs.nextReviewDate) {
+                    record.srs = calculateNextReview(0, true, true, nowIso);
+                }
+            } else if (phase === PHASE_PRODUCTION) {
+                if (!record.productionWin) {
+                    record.productionWin = nowIso;
+                    record.productionUpdatedAt = nowIso;
+                    newProduced += 1;
+                }
+                if (!record.productionSrs || !record.productionSrs.nextReviewDate) {
+                    record.productionSrs = calculateNextReview(0, true, true, nowIso);
+                }
+            }
+            record.updatedAt = nowNum;
+        }
+
+        if (newRecognized > 0) {
+            this.activityService.recordWordLearned();
+            this._recordStudyDate();
+        }
+
+        // First/Second Win immediately refresh official deck progress, overall
+        // progress, trophies and persistence (these must not wait for Finish).
+        this._syncFinishedDecksFromGuided();
+        this.renderDeckTracker();
+        this.updateOverallProgress();
+        this._evaluateVerbTrophies();
+        this._saveChallengeSession();
+    }
+
+    _finishChallengeSessionSideEffects(s) {
+        // Mirror guided production/mastery progress into the deck tracker:
+        // a deck with all canonical verbs mastered is marked finished.
+        if (s && s.sessionType === 'learning') {
+            this._syncFinishedDecksFromGuided();
+        }
+        this.renderDeckTracker();
+        this.updateOverallProgress();
+        this._save();
+    }
+
+    // Mark a deck finished when every verb has recognition (or production) mastery.
+    _syncFinishedDecksFromGuided() {
+        if (!this.dataset) return;
+        this._ensureVerbLearning();
+        if (!this.userData.finishedVerbDecks) this.userData.finishedVerbDecks = [];
+
+        const verbs = this.userData.verbLearning.verbs;
+        const masteredDeckIds = [];
+        for (const deck of this.dataset.decks) {
+            const allDone = deck.verbs.length > 0 && deck.verbs.every(v => {
+                const rec = verbs[v.id];
+                return rec && (rec.recognitionWin || rec.productionWin);
+            });
+            if (allDone) masteredDeckIds.push(deck.deckId);
+        }
+
+        const set = new Set(this.userData.finishedVerbDecks);
+        // decks fully mastered via guided are always finished; decks finished via
+        // the flashcard Known button are left untouched by this helper
+        for (const d of masteredDeckIds) set.add(d);
+        this.userData.finishedVerbDecks = Array.from(set).sort((a, b) => a - b);
+    }
+
+    // ── guided challenge lifecycle ──
+
+    challengeIntroDone(token) {
+        const s = this.challengeSession;
+        const p = this.challengePresentation;
+        if (!s || !p || p.kind !== 'intro') return;
+        // Stale intro button: a second click on a superseded render must never
+        // introduce the card the screen has already moved on to.
+        if (typeof token !== 'number' || token !== this._challengeRenderToken) return;
+        this.challengePresentation = this.challengeEngine.completeIntro(s, p.verbId);
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.renderGuidedChallenge();
+        this._saveChallengeSession();
+    }
+
+    // Migrate legacy entries in knownVerbIds (id + infinitive + lowercase +
+    // v_lowercase aliases written by the old flashcard button) to the stable
+    // canonical verb.id. The original list is preserved in knownVerbIdsBackup.
+    _migrateCanonicalVerbIds() {
+        if (!this.dataset || !Array.isArray(this.dataset.decks) || !this.userData) return;
+
+        const canonicalById = {};
+        const byForm = new Map();
+        for (const deck of this.dataset.decks) {
+            if (!deck || !Array.isArray(deck.verbs)) continue;
+            for (const v of deck.verbs) {
+                if (!v || !v.id) continue;
+                canonicalById[v.id] = v;
+                byForm.set(v.id, v);
+                const low = (v.infinitive || '').toLowerCase();
+                if (low) {
+                    byForm.set(low, v);
+                    byForm.set(`v_${low}`, v);
+                }
+            }
+        }
+
+        let changed = false;
+
+        // 1. Canonicalize knownVerbIds
+        if (Array.isArray(this.userData.knownVerbIds)) {
+            const dup = new Set();
+            const cleaned = [];
+            for (const entry of this.userData.knownVerbIds) {
+                const v = canonicalById[entry] || byForm.get(String(entry).toLowerCase());
+                const id = v ? v.id : entry;
+                if (dup.has(id)) {
+                    changed = true;
+                    continue;
+                }
+                dup.add(id);
+                cleaned.push(id);
+                if (id !== entry) changed = true;
+            }
+            if (cleaned.length !== this.userData.knownVerbIds.length || changed) {
+                if (!this.userData._knownIdsBackup) {
+                    this.userData._knownIdsBackup = JSON.parse(JSON.stringify(this.userData.knownVerbIds));
+                }
+                if (!this.userData.knownVerbIdsBackup) {
+                    this.userData.knownVerbIdsBackup = JSON.parse(JSON.stringify(this.userData.knownVerbIds));
+                }
+                this.userData.knownVerbIds = cleaned;
+                changed = true;
+            }
+        }
+
+        // 2. Canonicalize verbLearning.verbs
+        if (this.userData.verbLearning?.verbs) {
+            const records = this.userData.verbLearning.verbs;
+            for (const key of Object.keys(records)) {
+                const v = canonicalById[key] || byForm.get(String(key).toLowerCase());
+                const canonical = v ? v.id : null;
+                if (canonical && canonical !== key) {
+                    if (!records[canonical]) {
+                        records[canonical] = records[key];
+                    } else if (records[canonical] === records[key]) {
+                        /* same object */
+                    } else {
+                        records[canonical] = mergeVerbRecord(records[canonical], records[key]);
+                    }
+                    delete records[key];
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed) this._save();
+    }
+
+    exitGuidedChallenge(completed = false) {
+        const s = this.challengeSession;
+        const isReviewWin = s && (s.sessionType === 'review' || (this.challengePresentation && this.challengePresentation.win === 'review'));
+        const isSecondWin = s && this.challengePresentation && this.challengePresentation.win === PHASE_PRODUCTION;
+        if (completed && (isReviewWin || isSecondWin || s?.phase === PHASE_COMPLETE)) {
+            this._finishChallengeSessionSideEffects(s);
+            this._clearChallengeSession(s);
+            this._syncFinishedDecksFromGuided();
+        } else {
+            // First Win / mid-session: keep the snapshot so the user can resume later
+            this._saveChallengeSession();
+        }
+        this.switchView('glossary');
+    }
+
+    restartGuidedChallenge() {
+        const s = this.challengeSession;
+        this.switchView('glossary');
+        this._clearChallengeSession(s || { deckId: this.currentDeckId });
+        this.currentIndex = 0;
+        this.startGuidedChallenge();
+    }
+
+    startChallengeReview() {
+        if (!this.dataset) return;
+
+        let items = [];
+        const today = getLocalDateString();
+        const isDue = (srsObj) => {
+            const d = srsObj && srsObj.nextReviewDate ? srsObj.nextReviewDate.slice(0, 10) : '';
+            return d && d <= today;
+        };
+        for (const deck of this.dataset.decks) {
+            const deckId = deck.deckId;
+            for (const v of deck.verbs) {
+                const rec = this.userData?.verbLearning?.verbs?.[v.id];
+                if (!rec || !rec.recognitionWin) continue;
+                if (isDue(rec.srs)) {
+                    items.push({
+                        deckId,
+                        verbId: v.id,
+                        track: PHASE_RECOGNITION
+                    });
+                }
+                // production item rides along only when the production SRS is due
+                if (rec.productionWin && isDue(rec.productionSrs)) {
+                    items.push({
+                        deckId,
+                        verbId: v.id,
+                        track: PHASE_PRODUCTION
+                    });
+                }
+            }
+        }
+
+        // an in-progress review is resumed instead of rebuilt on refresh
+        const cached = this._storedReviewSession();
+        if (cached) {
+            this.challengeSession = cached;
+            this.challengeRevealed = false;
+            this._resetChallengeTimer();
+            if (!cached.reviewStartLevels) cached.reviewStartLevels = this._buildReviewStartLevels(cached.reviewItems);
+            this.switchView('guided');
+            this.renderGuidedChallenge();
+            this._onChallengeViewOpen();
+            return;
+        }
+
+        if (items.length === 0) {
+            this._showToast('No verbs are due for review today. Great job!');
+            return;
+        }
+        this._buildChallengeVerbMap();
+        const reviewItems = items.map(i => ({ verbId: i.verbId, track: i.track }));
+        this.challengeSession = this.challengeEngine.createReviewSession({
+            deckId: items[0]?.deckId || this.currentDeckId,
+            items: reviewItems
+        });
+        this.challengeSession.initialItems = reviewItems;
+        // Snapshot the SRS level each card is entering review with, so terminal
+        // rescheduling is calculated against the level the user actually saw.
+        this.challengeSession.reviewStartLevels = this._buildReviewStartLevels(reviewItems);
+        this.challengeRevealed = false;
+        this._resetChallengeTimer();
+        this.switchView('guided');
+        this.renderGuidedChallenge();
+        this._saveChallengeSession();
+        this._onChallengeViewOpen();
     }
 
     bindEvents() {
