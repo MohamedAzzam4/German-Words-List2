@@ -120,11 +120,18 @@
             box-shadow: var(--shadow-hover);
         }
 
+        .card:focus-visible {
+            outline: 3px solid rgba(79, 70, 229, 0.45);
+            outline-offset: 4px;
+            box-shadow: var(--shadow-hover);
+        }
+
         /* Accent Borders */
         .card.a1-card { border-left: 4px solid #3b82f6; }
         .card.a2-card { border-left: 4px solid #0ea5e9; }
         .card.b1-card { border-left: 4px solid #10b981; }
         .card.b2-card { border-left: 4px solid #8b5cf6; }
+        .card.frequency-card { border-left: 4px solid #15803d; }
 
         .card-left {
             flex-shrink: 0;
@@ -149,6 +156,10 @@
         .a2-color { background: linear-gradient(135deg, #38BDF8, #0284C7); }
         .b1-color { background: linear-gradient(135deg, #34D399, #059669); }
         .b2-color { background: linear-gradient(135deg, #A78BFA, #6D28D9); }
+        .frequency-color {
+            background: linear-gradient(135deg, #16A34A, #166534 68%, #854D0E);
+            font-size: 1.75rem;
+        }
 
         .card-right {
             flex: 1;
@@ -197,6 +208,7 @@
         .a2-fill { width: 0%; background: #0ea5e9; }
         .b1-fill { width: 0%; background: #10b981; }
         .b2-fill { width: 45%; background: #8b5cf6; }
+        .frequency-fill { width: 100%; background: linear-gradient(90deg, #16A34A, #15803D); }
 
         /* Redesigned Status Badges */
         .status-chip {
@@ -347,6 +359,21 @@
                 </div>
                 <p>Most common 1,800 German verbs split into 50-verb decks, full conjugations, prefix logic, and interactive flashcards.</p>
                 <div class="progress-track"><div class="progress-fill" style="width: 100%; background: #F59E0B;"></div></div>
+            </div>
+        </a>
+
+        <!-- High-frequency Words & Chunks Card -->
+        <a href="https://mohamedazzam4.github.io/German-cards-temp/" class="card frequency-card">
+            <div class="card-left">
+                <div class="level-badge frequency-color">80/20</div>
+            </div>
+            <div class="card-right">
+                <div class="card-header-row">
+                    <h2>80/20 Words &amp; Chunks</h2>
+                    <span class="status-chip status-ready">40 Decks · 893 Cards</span>
+                </div>
+                <p>Master high-frequency German words and everyday chunks in focused 25-card decks, with spaced repetition and cloud progress.</p>
+                <div class="progress-track"><div class="progress-fill frequency-fill"></div></div>
             </div>
         </a>
     </div>
